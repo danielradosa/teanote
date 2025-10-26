@@ -24,7 +24,7 @@ Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, t
 ---
 
 ## ⚡️ Project Structure
-
+```
 /teaflow
 ├─ /client                  # React frontend
 │  ├─ /public               # Static assets (images, fav, index.html)
@@ -52,3 +52,4 @@ Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, t
 │
 ├─ README.md                # Project documentation
 └─ .gitignore
+```
