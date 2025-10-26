@@ -1,6 +1,6 @@
 # teanote 🌿
 
-** Mindful Tea Journal & Gongfu Brewing Timer**
+**Mindful Tea Journal & Gongfu Brewing Timer**
 
 Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, track infusions, and reflect on each brew. Pro users unlock AI summaries / recommendations and cloud syncing across all devices.
 
