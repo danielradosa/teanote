@@ -1,0 +1,30 @@
+.btn {
+    padding: 6px 16px;
+    color: var(--text-color);
+    border: none;
+    outline: 0;
+    border-radius: 8px;
+    transition: all .15s ease-in-out;
+    cursor: pointer;
+    color: #fff;
+}
+
+.btn-action {
+    background-color: var(--brand-secondary-light);
+}
+
+.btn-sidebar {
+    background-color: var(--brand-primary-light);
+}
+
+.btn-quick {
+    background-color: var(--success-color);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-dark {
+    background-color: var(--dark-color);
+}

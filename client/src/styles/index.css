@@ -1,11 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('./utility.css');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 16px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --brand-primary: #bdb695;
+  --brand-primary-light: #bdb6958e;
+  --brand-secondary: #898565;
+  --brand-secondary-light: #8985658e;
+  --success-color: #24be33;
+  --danger-color: #ed1244;
+  --dark-color: #202121;
+  --text-color-light: rgba(255, 255, 255, 0.88);
+  --text-color: rgba(0, 0, 0, 0.88);
 }
 
 * {
@@ -14,6 +28,129 @@
   box-sizing: border-box;
 }
 
-body {
-  line-height: 1.168;
+button,
+input,
+select,
+textarea,
+summary {
+  font: inherit;
+  color: inherit;
+}
+
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+header {
+  padding: 10px;
+  background-color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header .logo a {
+  font-weight: 600;
+  color: var(--text-color-light);
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.sidebar {
+  width: max-content;
+  background-color: var(--brand-secondary);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+  height: 100%;
+}
+
+.sidebar a {
+  text-decoration: none;
+}
+
+.page-wrap {
+  padding: 10px 24px;
+}
+
+.page-header {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.quick-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dashboard-content,
+.brew-content,
+.journal-content,
+.tea-content,
+.settings-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.dashboard-content section,
+.brew-content section,
+.journal-content section,
+.tea-content section,
+.settings-content section {
+  background: #f9f7f3;
+  padding: 16px;
+  border-radius: 8px;
+
+  h2 {
+    font-size: 18px;
+  }
+}
+
+.page-header .subtitle {
+  font-size: 13px;
+  color: #666;
+}
+
+.subscription button {
+  margin-top: 8px;
+}
+
+.subscription details {
+  background-color: var(--brand-primary-light);
+  margin-top: 8px;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+.subscription details summary {
+  font-weight: bold;
+}
+
+.subscription details[open] {
+  padding: 10px;
+}
+
+.subscription ul li {
+  list-style-position: inside;
 }
