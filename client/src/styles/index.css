@@ -3,7 +3,6 @@
 
 :root {
   font-family: "Inter", system-ui, sans-serif;
-  line-height: 1.5;
   font-weight: 400;
   font-size: 16px;
   font-synthesis: none;
@@ -17,6 +16,7 @@
   --brand-secondary-light: #8985658e;
   --success-color: #24be33;
   --danger-color: #ed1244;
+  --info-color: #3239ff;
   --dark-color: #202121;
   --text-color-light: rgba(255, 255, 255, 0.88);
   --text-color: rgba(0, 0, 0, 0.88);
@@ -46,15 +46,27 @@ summary {
 .layout {
   display: flex;
   flex: 1;
-  height: 100%;
+  height: auto;
+}
+
+main {
+  width: 100%;
+}
+
+.main-header {
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 header {
-  padding: 10px;
+  padding: 10px 0;
   background-color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  
 }
 
 header nav {
@@ -78,6 +90,7 @@ header .logo a {
   padding: 10px;
   gap: 10px;
   height: 100%;
+  width: 210px;
 }
 
 .sidebar a {
@@ -99,7 +112,7 @@ header .logo a {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .dashboard-content,
@@ -107,9 +120,10 @@ header .logo a {
 .journal-content,
 .tea-content,
 .settings-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  align-items: flex-start;
 }
 
 .dashboard-content section,
@@ -120,6 +134,7 @@ header .logo a {
   background: #f9f7f3;
   padding: 16px;
   border-radius: 8px;
+  flex: 1 1 330px;
 
   h2 {
     font-size: 18px;
@@ -132,12 +147,12 @@ header .logo a {
 }
 
 .subscription button {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .subscription details {
   background-color: var(--brand-primary-light);
-  margin-top: 8px;
+  margin-top: 10px;
   border-radius: 8px;
   padding: 6px 16px;
   cursor: pointer;
@@ -153,4 +168,72 @@ header .logo a {
 
 .subscription ul li {
   list-style-position: inside;
+}
+
+.tea-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tea-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 12px;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: var(--brand-primary-light);
+}
+
+.tea-form {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-top: 10px;
+  gap: 10px;
+
+  input, select, textarea {
+    width: 100%;
+  }
+}
+
+.tea-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tea-details .btn {
+  margin-top: 10px;
+}
+
+.tea-details.details-open .btn {
+  margin-top: 0;
+}
+
+.tea-image img {
+  max-width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tea-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: gap 0.15s ease;
+}
+
+.tea-details.details-open {
+  gap: 10px;
+}
+
+.tea-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

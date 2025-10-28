@@ -3,7 +3,7 @@
 function DesktopNav() {
     return (
         <>
-            <header>
+            <header className="main-header">
                 <div className="logo">
                     <a href="/">🍵 teanote</a>
                 </div>
