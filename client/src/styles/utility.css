@@ -1,6 +1,12 @@
 input,
 textarea {
     padding: 8px 16px;
+    border-radius: 8px;
+    background-color: #fff;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid #ccc;
 }
 
 textarea {
@@ -8,7 +14,35 @@ textarea {
 }
 
 select {
-    padding: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: #fff;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid #ccc;
+    min-width: 180px;
+}
+
+label {
+    position: relative;
+}
+
+.arr-down {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid #a9a9a9;
+    transform: translateY(-50%);
+}
+
+::placeholder {
+    color: #a9a9a9 !important;
 }
 
 small {
@@ -129,31 +163,35 @@ small {
 }
 
 .tea-tag-oolong {
-    background: #ffeccc !important;;
-    color: #7c5c2e !important;;
+    background: #ffeccc !important;
+    color: #7c5c2e !important;
 }
 
 .tea-tag-red {
-    background: #ffd6db !important;;
-    color: #a52d44 !important;;
+    background: #ffd6db !important;
+    color: #a52d44 !important;
 }
 
 .tea-tag-white {
-    background: #fff !important;;
-    color: #999 !important;;
+    background: #fff !important;
+    color: #999 !important;
 }
 
 .tea-tag-yellow {
-    background: #fffaa6 !important;;
-    color: #907e00 !important;;
+    background: #fffaa6 !important;
+    color: #907e00 !important;
 }
 
 .tea-tag-puerh {
-    background: #e7dbbd !important;;
-    color: #6b4b26 !important;;
+    background: #e7dbbd !important;
+    color: #6b4b26 !important;
 }
 
 .tea-tag-purple {
     background: #f1e4ff !important;
     color: #673988 !important;
+}
+
+.tea-tag {
+    vertical-align: bottom;
 }

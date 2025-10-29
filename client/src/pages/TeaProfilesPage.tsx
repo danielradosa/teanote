@@ -24,6 +24,7 @@ function TeaProfilesPage() {
     const [editingTea, setEditingTea] = useState<Tea | null>(null)
     const [showMoreFields, setShowMoreFields] = useState(false)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
+    const [typeFilter, setTypeFilter] = useState<string>('');
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -43,6 +44,9 @@ function TeaProfilesPage() {
     const toggleDetails = (id: string) => {
         setOpenDetailsId(prev => (prev === id ? null : id))
     }
+    const filteredTeas = teas.filter(tea =>
+        !typeFilter || tea.type === typeFilter
+    );
 
     return (
         <section className="page-wrap tea-page">
@@ -51,17 +55,53 @@ function TeaProfilesPage() {
                 <p className="subtitle">All your tea profiles 🍵</p>
             </header>
             <div className="tea-content">
+                {/* Tea filters */}
+                <section className="tea-filters" style={{ flex: '1 1 100%' }}>
+                    <h2>Filter teas</h2>
+                    <div className='filter-wrap'>
+                        {/* Tea type dropdown */}
+                        <label>
+                            Type:&nbsp;
+                            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                                <option value="">all types</option>
+                                {[...new Set(teas.map(t => t.type))].map(type =>
+                                    <option value={type} key={type}>{type}</option>
+                                )}
+                            </select>
+                            <span className='arr-down'></span>
+                        </label>
+                        {/* Optional Clear button */}
+                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); }}>
+                            <i className="bxr bx-eraser" /> clear filters
+                        </button>
+                    </div>
+                </section>
                 {/* Tea List */}
                 <section className="tea-table">
                     <h2>All teas</h2>
                     {teas.length > 0 ? (
                         <ul className="tea-list">
-                            {teas.map((tea) => (
+                            {filteredTeas.map((tea) => (
                                 <li key={tea.id} className="tea-item">
                                     <div className={`tea-details ${openDetailsId === tea.id ? 'details-open' : ''}`}>
                                         <span>
-                                            <strong>{tea.name}</strong> {tea.year} ({tea.type})
+                                            <strong>{tea.name}</strong> {tea.year}
                                             {tea.origin && <span> — {tea.origin}</span>}
+                                            <span
+                                                className={`tea-tag tea-tag-${tea.type}`}
+                                                style={{
+                                                    marginLeft: 8,
+                                                    padding: '2px 8px',
+                                                    borderRadius: 8,
+                                                    background: '#f6f6f6',
+                                                    fontSize: '13px',
+                                                    color: '#458253',
+                                                    textTransform: 'capitalize',
+                                                    display: 'inline-block'
+                                                }}
+                                            >
+                                                {tea.type}
+                                            </span>
                                         </span>
                                         {openDetailsId === tea.id && (
                                             <div className="tea-extra">
@@ -95,7 +135,7 @@ function TeaProfilesPage() {
                             ))}
                         </ul>
                     ) : (
-                        <p>no teas yet — add your first one!</p>
+                        <p style={{ marginTop: 8 }}>no teas yet — add your first one</p>
                     )}
                 </section>
 
@@ -104,15 +144,18 @@ function TeaProfilesPage() {
                     <h2>Add new tea</h2>
                     <div className="tea-form">
                         <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-                        <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as Tea['type'] })}>
-                            <option value="green">green</option>
-                            <option value="oolong">oolong</option>
-                            <option value="red">red</option>
-                            <option value="white">white</option>
-                            <option value="yellow">yellow</option>
-                            <option value="puerh">puerh</option>
-                            <option value="purple">purple</option>
-                        </select>
+                        <div style={{ position: "relative", width: '100%' }}>
+                            <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as Tea['type'] })}>
+                                <option value="green">green</option>
+                                <option value="oolong">oolong</option>
+                                <option value="red">red</option>
+                                <option value="white">white</option>
+                                <option value="yellow">yellow</option>
+                                <option value="puerh">puerh</option>
+                                <option value="purple">purple</option>
+                            </select>
+                            <span className="arr-down"></span>
+                        </div>
                         <input type="text" placeholder="Year" value={form.year} onChange={e => setForm({ ...form, year: e.target.value })} />
 
                         <RichToolbar value={form.notes || ''} setValue={v => setForm({ ...form, notes: v })} textareaRef={textareaRef} />

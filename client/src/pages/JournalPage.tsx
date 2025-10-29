@@ -49,6 +49,7 @@ function JournalPage() {
                 <p className="subtitle">Your tea notes & reflections 🍵</p>
             </header>
             <div className="journal-content">
+                {/* Journal Filters */}
                 <section className="journal-filters" style={{ flex: '1 1 100%' }}>
                     <h2>Filter journals</h2>
                     <div className='filter-wrap'>
@@ -61,6 +62,7 @@ function JournalPage() {
                                     <option value={type} key={type}>{type}</option>
                                 )}
                             </select>
+                            <span className='arr-down'></span>
                         </label>
                         {/* Rating dropdown */}
                         <label>
@@ -74,9 +76,10 @@ function JournalPage() {
                                     <option value={r} key={r}>{'⭐'.repeat(r)}</option>
                                 )}
                             </select>
+                            <span className='arr-down'></span>
                         </label>
                         {/* Optional Clear button */}
-                        <button className="btn btn-dark" style={{ marginLeft: 10 }} onClick={() => { setTypeFilter(''); setRatingFilter(''); }}>
+                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
                     </div>
@@ -151,7 +154,7 @@ function JournalPage() {
                             })}
                         </ul>
                     ) : (
-                        <p>no entries yet — add your first journal</p>
+                        <p style={{ marginTop: 8 }}>no journals yet — add your first one</p>
                     )}
                 </section>
 
@@ -159,16 +162,21 @@ function JournalPage() {
                 <section className="new-journal">
                     <h2>Add new journal</h2>
                     <div className="journal-form">
-                        <select
-                            required
-                            value={form.teaId}
-                            onChange={e => setForm({ ...form, teaId: e.target.value })}
-                        >
-                            <option value="">Select tea…</option>
-                            {teas.map(tea => (
-                                <option key={tea.id} value={tea.id}>{tea.name}</option>
-                            ))}
-                        </select>
+                        <div style={{ position: "relative", width: '100%' }}>
+                            <select
+                                id="tea-select"
+                                required
+                                value={form.teaId}
+                                onChange={e => setForm({ ...form, teaId: e.target.value })}
+                                style={{ width: "100%", minWidth: 120 }}
+                            >
+                                <option value="">Select tea…</option>
+                                {teas.map(tea => (
+                                    <option key={tea.id} value={tea.id}>{tea.name}</option>
+                                ))}
+                            </select>
+                            <span className="arr-down"></span>
+                        </div>
                         <input type="text" placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
                         <input
                             type="number"
