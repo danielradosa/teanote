@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTeasStore } from '../stores/useTeasStore'
 import type { Tea } from '../types/Tea'
+import RichToolbar from '../components/RichToolbar'
+import MdDisplay from '../components/MdDisplay'
 
 function TeaProfilesPage() {
     const { teas, addTea, deleteTea, updateTea } = useTeasStore()
@@ -23,20 +25,21 @@ function TeaProfilesPage() {
     const [showMoreFields, setShowMoreFields] = useState(false)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
 
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const editTextareaRef = useRef<HTMLTextAreaElement>(null)
+
     const handleAddTea = () => {
         if (!form.name.trim()) return alert('A tea name is required')
         addTea(form)
         setForm(emptyForm)
         setShowMoreFields(false)
     }
-
     const handleEdit = (tea: Tea) => setEditingTea(tea)
     const handleUpdate = () => {
         if (!editingTea) return
         updateTea(editingTea.id, editingTea)
         setEditingTea(null)
     }
-
     const toggleDetails = (id: string) => {
         setOpenDetailsId(prev => (prev === id ? null : id))
     }
@@ -47,23 +50,19 @@ function TeaProfilesPage() {
                 <h1>Teas</h1>
                 <p className="subtitle">All your tea profiles 🍵</p>
             </header>
-
             <div className="tea-content">
-                {/* Tea List - 1/3 */}
+                {/* Tea List */}
                 <section className="tea-table">
                     <h2>All teas</h2>
                     {teas.length > 0 ? (
                         <ul className="tea-list">
                             {teas.map((tea) => (
                                 <li key={tea.id} className="tea-item">
-                                    <div
-                                        className={`tea-details ${openDetailsId === tea.id ? 'details-open' : ''}`}
-                                    >
+                                    <div className={`tea-details ${openDetailsId === tea.id ? 'details-open' : ''}`}>
                                         <span>
                                             <strong>{tea.name}</strong> {tea.year} ({tea.type})
                                             {tea.origin && <span> — {tea.origin}</span>}
                                         </span>
-
                                         {openDetailsId === tea.id && (
                                             <div className="tea-extra">
                                                 {tea.vendor && <p><strong>Vendor:</strong> {tea.vendor}</p>}
@@ -80,29 +79,17 @@ function TeaProfilesPage() {
                                                         <img src={tea.image} alt={tea.name} />
                                                     </div>
                                                 )}
-                                                {tea.notes && <p><strong>Notes:</strong> {tea.notes}</p>}
+                                                {tea.notes && <p><strong>Notes:</strong> <MdDisplay content={tea.notes} /></p>}
                                             </div>
                                         )}
-
-                                        <button
-                                            className="btn btn-dark btn-simple"
-                                            onClick={() => toggleDetails(tea.id)}
-                                        >
-                                            <i
-                                                className={`bxr ${openDetailsId === tea.id ? 'bx-list-minus' : 'bx-list-plus'
-                                                    }`}
-                                            />{' '}
+                                        <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(tea.id)}>
+                                            <i className={`bxr ${openDetailsId === tea.id ? 'bx-list-minus' : 'bx-list-plus'}`} />{' '}
                                             {openDetailsId === tea.id ? 'hide details' : 'see details'}
                                         </button>
                                     </div>
-
                                     <div className="tea-actions">
-                                        <button className="btn btn-info" onClick={() => handleEdit(tea)}>
-                                            <i className="bxr bx-edit" /> edit
-                                        </button>
-                                        <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}>
-                                            <i className="bxr bx-trash" /> delete
-                                        </button>
+                                        <button className="btn btn-info" onClick={() => handleEdit(tea)}><i className="bxr bx-edit" /> edit</button>
+                                        <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /> delete</button>
                                     </div>
                                 </li>
                             ))}
@@ -112,7 +99,7 @@ function TeaProfilesPage() {
                     )}
                 </section>
 
-                {/* Add New Tea - 1/3 */}
+                {/* Add New Tea */}
                 <section className='new-tea'>
                     <h2>Add new tea</h2>
                     <div className="tea-form">
@@ -127,7 +114,9 @@ function TeaProfilesPage() {
                             <option value="purple">purple</option>
                         </select>
                         <input type="text" placeholder="Year" value={form.year} onChange={e => setForm({ ...form, year: e.target.value })} />
-                        <textarea placeholder="Notes" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
+
+                        <RichToolbar value={form.notes || ''} setValue={v => setForm({ ...form, notes: v })} textareaRef={textareaRef} />
+                        <textarea ref={textareaRef} placeholder="Notes" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
 
                         {showMoreFields && (
                             <>
@@ -137,7 +126,6 @@ function TeaProfilesPage() {
                                 <input type="text" placeholder="Image URL" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} />
                             </>
                         )}
-
                         <div className="tea-actions">
                             <button className="btn btn-quick" onClick={handleAddTea}><i className="bxr bx-plus" /> add tea</button>
                             <button className="btn btn-info" onClick={() => setShowMoreFields(!showMoreFields)}>
@@ -147,7 +135,7 @@ function TeaProfilesPage() {
                     </div>
                 </section>
 
-                {/* Edit Panel - 1/3 */}
+                {/* Edit Panel */}
                 {editingTea && (
                     <section className="edit-panel">
                         <h2>Edit tea — {editingTea.name}</h2>
@@ -167,8 +155,13 @@ function TeaProfilesPage() {
                             <input type="text" placeholder="Vendor" value={editingTea.vendor || ''} onChange={e => setEditingTea({ ...editingTea, vendor: e.target.value })} />
                             <input type="text" placeholder="Link" value={editingTea.link || ''} onChange={e => setEditingTea({ ...editingTea, link: e.target.value })} />
                             <input type="text" placeholder="Image URL" value={editingTea.image || ''} onChange={e => setEditingTea({ ...editingTea, image: e.target.value })} />
-                            <textarea placeholder="Notes" value={editingTea.notes || ''} onChange={e => setEditingTea({ ...editingTea, notes: e.target.value })} />
 
+                            <RichToolbar
+                                value={editingTea.notes || ''}
+                                setValue={v => setEditingTea(t => t ? { ...t, notes: v } : null)}
+                                textareaRef={editTextareaRef}
+                            />
+                            <textarea ref={editTextareaRef} placeholder="Notes" value={editingTea.notes || ''} onChange={e => setEditingTea({ ...editingTea, notes: e.target.value })} />
                             <div className="tea-actions">
                                 <button className="btn btn-quick" onClick={handleUpdate}><i className="bxr bx-save" />save</button>
                                 <button className="btn btn-dark" onClick={() => setEditingTea(null)}><i className="bxr bx-block" />cancel</button>
@@ -180,5 +173,4 @@ function TeaProfilesPage() {
         </section>
     )
 }
-
 export default TeaProfilesPage

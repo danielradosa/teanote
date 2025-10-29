@@ -170,14 +170,16 @@ header .logo a {
   list-style-position: inside;
 }
 
-.tea-list {
+.tea-list,
+.journal-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 10px;
 }
 
-.tea-item {
+.tea-item,
+.journal-item {
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -187,7 +189,8 @@ header .logo a {
   background-color: var(--brand-primary-light);
 }
 
-.tea-form {
+.tea-form,
+.journal-form {
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -199,17 +202,20 @@ header .logo a {
   }
 }
 
-.tea-actions {
+.tea-actions,
+.journal-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.tea-details .btn {
+.tea-details .btn,
+.journal-details .btn {
   margin-top: 10px;
 }
 
-.tea-details.details-open .btn {
+.tea-details.details-open .btn,
+.journal-details.details-open .btn {
   margin-top: 0;
 }
 
@@ -221,18 +227,21 @@ header .logo a {
   border-radius: 8px;
 }
 
-.tea-details {
+.tea-details,
+.journal-details {
   display: flex;
   flex-direction: column;
   gap: 0;
   transition: gap 0.15s ease;
 }
 
-.tea-details.details-open {
+.tea-details.details-open,
+.journal-details.details-open {
   gap: 10px;
 }
 
-.tea-extra {
+.tea-extra,
+.journal-extra {
   display: flex;
   flex-direction: column;
   gap: 10px;
