@@ -88,8 +88,8 @@ function TeaProfilesPage() {
                                         </button>
                                     </div>
                                     <div className="tea-actions">
-                                        <button className="btn btn-info" onClick={() => handleEdit(tea)}><i className="bxr bx-edit" /> edit</button>
-                                        <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /> delete</button>
+                                        <button className="btn btn-info" onClick={() => handleEdit(tea)}><i className="bxr bx-edit" /></button>
+                                        <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /></button>
                                     </div>
                                 </li>
                             ))}

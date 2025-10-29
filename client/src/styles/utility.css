@@ -89,29 +89,71 @@ small {
 }
 
 .markdown-body {
-  font-size: 16px;
-  word-break: break-word;
-  padding: 16px;
+    font-size: 16px;
+    word-break: break-word;
+    padding: 16px;
 }
 
 .markdown-body ul,
 .markdown-body ol {
-  margin: 10px 0 10px 16px;
-  padding: 0;
+    margin: 10px 0 10px 16px;
+    padding: 0;
 }
 
 .markdown-body li {
-  margin-bottom: 4px;
-  list-style-position: inside;
+    margin-bottom: 4px;
+    list-style-position: inside;
 }
 
-.markdown-body h2, .markdown-body h3, .markdown-body h4 {
-  margin: 10px 0 8px 0;
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+    margin: 10px 0 8px 0;
 }
 
 .markdown-body p {
-  margin: 10px 0 8px 0;
+    margin: 10px 0 8px 0;
 }
 
-.markdown-body strong { font-weight: bold; }
-.markdown-body em { font-style: italic; }
+.markdown-body strong {
+    font-weight: bold;
+}
+
+.markdown-body em {
+    font-style: italic;
+}
+
+.tea-tag-green {
+    background: #dbffd2 !important;
+    color: #27622a !important;
+}
+
+.tea-tag-oolong {
+    background: #ffeccc !important;;
+    color: #7c5c2e !important;;
+}
+
+.tea-tag-red {
+    background: #ffd6db !important;;
+    color: #a52d44 !important;;
+}
+
+.tea-tag-white {
+    background: #fff !important;;
+    color: #999 !important;;
+}
+
+.tea-tag-yellow {
+    background: #fffaa6 !important;;
+    color: #907e00 !important;;
+}
+
+.tea-tag-puerh {
+    background: #e7dbbd !important;;
+    color: #6b4b26 !important;;
+}
+
+.tea-tag-purple {
+    background: #f1e4ff !important;
+    color: #673988 !important;
+}

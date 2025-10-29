@@ -48,8 +48,8 @@ const RichToolbar: React.FC<RichToolbarProps> = ({ value, setValue, textareaRef 
     return (
         <div className="format-toolbar">
             <button type="button" onClick={() => insertAround("**", "**")} className='btn btn-action' style={{ fontWeight: 'bold' }}>B</button>
-            <button type="button" onClick={() => insertAround("*", "*")} className='btn btn-action' style={{ fontStyle: 'italic' }}>I</button>
-            <button type="button" onClick={() => insertAround("## ", "")} className='btn btn-action'>H2</button>
+            <button type="button" onClick={() => insertAround("*", "*")} className='btn btn-action' style={{ fontStyle: 'italic' }}>i</button>
+            <button type="button" onClick={() => insertAround("## ", "")} className='btn btn-action'>Heading</button>
             <button type="button" onClick={() => insertLines("- ")} className='btn btn-action'><i className="bxr bx-list-ul" /> List</button>
             <small>use of markdown is recommended</small>
         </div>

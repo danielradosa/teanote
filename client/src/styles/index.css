@@ -219,6 +219,12 @@ header .logo a {
   margin-top: 0;
 }
 
+.tea-image {
+  width: 210px;
+  height: 210px;
+  padding: 16px;
+}
+
 .tea-image img {
   max-width: 100%;
   height: auto;
@@ -244,5 +250,12 @@ header .logo a {
 .journal-extra {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.filter-wrap {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
   gap: 10px;
 }
