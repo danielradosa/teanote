@@ -6,8 +6,7 @@ interface RichToolbarProps {
     textareaRef: React.RefObject<HTMLTextAreaElement | null>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const RichToolbar: React.FC<RichToolbarProps> = ({ value, setValue, textareaRef }) => {
+const RichToolbar: React.FC<RichToolbarProps> = ({ setValue, textareaRef }) => {
     function insertAround(before: string, after: string) {
         const textarea = textareaRef.current
         if (!textarea) return
