@@ -51,6 +51,7 @@ summary {
 
 main {
   width: 100%;
+  margin-left: 210px;
 }
 
 .main-header {
@@ -66,7 +67,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
+
 }
 
 header nav {
@@ -83,15 +84,19 @@ header .logo a {
 }
 
 .sidebar {
-  width: max-content;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 210px;
+  height: 100vh;
   background-color: var(--brand-secondary);
   display: flex;
   flex-direction: column;
   padding: 10px;
   gap: 10px;
-  height: 100%;
-  width: 210px;
+  z-index: 1;
 }
+
 
 .sidebar a {
   text-decoration: none;
@@ -171,7 +176,8 @@ header .logo a {
 }
 
 .tea-list,
-.journal-list {
+.journal-list,
+.brew-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -179,7 +185,9 @@ header .logo a {
 }
 
 .tea-item,
-.journal-item {
+.journal-item,
+.brew-item,
+.brew-timer-container {
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -197,13 +205,16 @@ header .logo a {
   margin-top: 10px;
   gap: 10px;
 
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     width: 100%;
   }
 }
 
 .tea-actions,
-.journal-actions {
+.journal-actions,
+.brew-actions {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -220,15 +231,16 @@ header .logo a {
 }
 
 .tea-image {
-  width: 210px;
-  height: 210px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  max-width: 100%;
   padding: 16px;
 }
 
 .tea-image img {
-  max-width: 100%;
-  height: auto;
-  max-height: 200px;
+  height: 210px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -257,5 +269,29 @@ header .logo a {
   display: flex;
   align-items: center;
   margin-top: 10px;
+  gap: 10px;
+}
+
+.brew-meta {
+  margin-top: 10px;
+}
+
+.brew-main-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.brew-timer-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.brew-timer-actions {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }

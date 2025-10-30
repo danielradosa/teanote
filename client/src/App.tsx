@@ -1,6 +1,7 @@
 import React from 'react';
-import DesktopNav from './components/DesktopNav'
-import DesktopSidebar from './components/DesktopSidebar';
+import { Toaster } from 'react-hot-toast';
+import DesktopNav from './components/layout/DesktopNav'
+import DesktopSidebar from './components/layout/DesktopSidebar';
 import { Outlet } from 'react-router-dom';
 
 const App: React.FC = () => {
@@ -13,6 +14,7 @@ const App: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      <Toaster />
     </div>
   );
 };
