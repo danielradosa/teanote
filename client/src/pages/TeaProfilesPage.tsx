@@ -1,10 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useTeasStore } from '../stores/useTeasStore'
 import type { Tea } from '../types/Tea'
 import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 function TeaProfilesPage() {
     const { teas, addTea, deleteTea, updateTea } = useTeasStore()
@@ -26,6 +27,9 @@ function TeaProfilesPage() {
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
     const [typeFilter, setTypeFilter] = useState<string>('');
 
+    const batchSize = 6;
+    const [teaItemsToShow, setTeaItemsToShow] = useState(batchSize)
+
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -44,9 +48,25 @@ function TeaProfilesPage() {
     const toggleDetails = (id: string) => {
         setOpenDetailsId(prev => (prev === id ? null : id))
     }
-    const filteredTeas = teas.filter(tea =>
-        !typeFilter || tea.type === typeFilter
-    );
+
+    const filteredTeas = teas.filter(tea => !typeFilter || tea.type === typeFilter);
+    const orderedTeas = [...filteredTeas].reverse();
+
+    useEffect(() => {
+        const ensureScrollable = () => {
+            const ul = document.querySelector('.tea-list');
+            if (!ul) return;
+            const rect = ul.getBoundingClientRect();
+            if (rect.bottom < window.innerHeight && teaItemsToShow < orderedTeas.length) {
+                setTeaItemsToShow(prev => Math.min(prev + 1, orderedTeas.length));
+                requestAnimationFrame(ensureScrollable);
+            }
+        };
+        requestAnimationFrame(ensureScrollable);
+        // eslint-disable-next-line
+    }, [teas, typeFilter]);
+
+    const fetchMoreTeas = () => setTeaItemsToShow(prev => prev + 6);
 
     return (
         <section className="page-wrap tea-page">
@@ -55,11 +75,9 @@ function TeaProfilesPage() {
                 <p className="subtitle">All your tea profiles 🍵</p>
             </header>
             <div className="tea-content">
-                {/* Tea filters */}
                 <section className="tea-filters" style={{ flex: '1 1 100%' }}>
                     <h2>Filter teas</h2>
                     <div className='filter-wrap'>
-                        {/* Tea type dropdown */}
                         <label>
                             Type:&nbsp;
                             <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
@@ -70,70 +88,76 @@ function TeaProfilesPage() {
                             </select>
                             <span className='arr-down'></span>
                         </label>
-                        {/* Optional Clear button */}
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
                     </div>
                 </section>
-                {/* Tea List */}
                 <section className="tea-table">
                     <h2>All teas</h2>
-                    {teas.length > 0 ? (
-                        <ul className="tea-list">
-                            {filteredTeas.map((tea) => (
-                                <li key={tea.id} className="tea-item">
-                                    <div className={`tea-details ${openDetailsId === tea.id ? 'details-open' : ''}`}>
-                                        <span>
-                                            <strong>{tea.name}</strong> {tea.year}
-                                            {tea.origin && <span> — {tea.origin}</span>}
-                                            <span
-                                                className={`tea-tag tea-tag-${tea.type}`}
-                                                style={{
-                                                    marginLeft: 8,
-                                                    padding: '2px 8px',
-                                                    borderRadius: 8,
-                                                    background: '#f6f6f6',
-                                                    fontSize: '13px',
-                                                    color: '#458253',
-                                                    textTransform: 'capitalize',
-                                                    display: 'inline-block'
-                                                }}
-                                            >
-                                                {tea.type}
+                    {filteredTeas.length > 0 ? (
+                        <InfiniteScroll
+                            dataLength={Math.min(teaItemsToShow, orderedTeas.length)}
+                            next={fetchMoreTeas}
+                            hasMore={teaItemsToShow < orderedTeas.length}
+                            loader={<div style={{ paddingTop: '16px', textAlign: 'center' }}>loading more...</div>}
+                            endMessage={<div style={{ paddingTop: '16px', textAlign: 'center' }}>no more teas</div>}
+                        >
+                            <ul className="tea-list">
+                                {orderedTeas.slice(0, teaItemsToShow).map((tea) => (
+                                    <li key={tea.id} className="tea-item">
+                                        <div className={`tea-details ${openDetailsId === tea.id ? 'details-open' : ''}`}>
+                                            <span>
+                                                <strong>{tea.name}</strong> {tea.year}
+                                                {tea.origin && <span> — {tea.origin}</span>}
+                                                <span
+                                                    className={`tea-tag tea-tag-${tea.type}`}
+                                                    style={{
+                                                        marginLeft: 8,
+                                                        padding: '2px 8px',
+                                                        borderRadius: 8,
+                                                        background: '#f6f6f6',
+                                                        fontSize: '13px',
+                                                        color: '#458253',
+                                                        textTransform: 'capitalize',
+                                                        display: 'inline-block'
+                                                    }}
+                                                >
+                                                    {tea.type}
+                                                </span>
                                             </span>
-                                        </span>
-                                        {openDetailsId === tea.id && (
-                                            <div className="tea-extra">
-                                                {tea.vendor && <p><strong>Vendor:</strong> {tea.vendor}</p>}
-                                                {tea.link && (
-                                                    <p>
-                                                        <strong>Link:</strong>{' '}
-                                                        <a href={tea.link} target="_blank" rel="noreferrer">
-                                                            {tea.link}
-                                                        </a>
-                                                    </p>
-                                                )}
-                                                {tea.image && (
-                                                    <div className="tea-image">
-                                                        <img src={tea.image} alt={tea.name} />
-                                                    </div>
-                                                )}
-                                                {tea.notes && <p><strong>Notes:</strong> <MdDisplay content={tea.notes} /></p>}
-                                            </div>
-                                        )}
-                                        <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(tea.id)}>
-                                            <i className={`bxr ${openDetailsId === tea.id ? 'bx-list-minus' : 'bx-list-plus'}`} />{' '}
-                                            {openDetailsId === tea.id ? 'hide details' : 'see details'}
-                                        </button>
-                                    </div>
-                                    <div className="tea-actions">
-                                        <button className="btn btn-info" onClick={() => handleEdit(tea)}><i className="bxr bx-edit" /></button>
-                                        <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /></button>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                                            {openDetailsId === tea.id && (
+                                                <div className="tea-extra">
+                                                    {tea.vendor && <p><strong>Vendor:</strong> {tea.vendor}</p>}
+                                                    {tea.link && (
+                                                        <p>
+                                                            <strong>Link:</strong>{' '}
+                                                            <a href={tea.link} target="_blank" rel="noreferrer">
+                                                                {tea.link}
+                                                            </a>
+                                                        </p>
+                                                    )}
+                                                    {tea.image && (
+                                                        <div className="tea-image">
+                                                            <img src={tea.image} alt={tea.name} />
+                                                        </div>
+                                                    )}
+                                                    {tea.notes && <p><strong>Notes:</strong> <MdDisplay content={tea.notes} /></p>}
+                                                </div>
+                                            )}
+                                            <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(tea.id)}>
+                                                <i className={`bxr ${openDetailsId === tea.id ? 'bx-list-minus' : 'bx-list-plus'}`} />{' '}
+                                                {openDetailsId === tea.id ? 'hide details' : 'see details'}
+                                            </button>
+                                        </div>
+                                        <div className="tea-actions">
+                                            <button className="btn btn-info" onClick={() => handleEdit(tea)}><i className="bxr bx-edit" /></button>
+                                            <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /></button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </InfiniteScroll>
                     ) : (
                         <p style={{ marginTop: 8 }}>no teas yet — add your first one</p>
                     )}
@@ -216,4 +240,5 @@ function TeaProfilesPage() {
         </section>
     )
 }
+
 export default TeaProfilesPage

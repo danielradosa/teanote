@@ -54,20 +54,19 @@ main {
   margin-left: 210px;
 }
 
-.main-header {
-  padding: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
 header {
   padding: 10px 0;
   background-color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
 
+.main-header {
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 header nav {
@@ -85,7 +84,7 @@ header .logo a {
 
 .sidebar {
   position: fixed;
-  top: 56px;
+  top: 55px;
   left: 0;
   width: 210px;
   height: 100vh;

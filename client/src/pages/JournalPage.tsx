@@ -1,11 +1,12 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useJournalsStore } from '../stores/useJournalsStore'
 import { useTeasStore } from '../stores/useTeasStore'
 import type { Journal } from '../types/Journal'
 import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 function JournalPage() {
     const { teas } = useTeasStore()
@@ -16,6 +17,9 @@ function JournalPage() {
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
     const [typeFilter, setTypeFilter] = useState<string>('');
     const [ratingFilter, setRatingFilter] = useState<number | ''>('');
+
+    const batchSize = 6;
+    const [journalItemsToShow, setJournalItemsToShow] = useState(batchSize)
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -34,6 +38,7 @@ function JournalPage() {
     const toggleDetails = (id: string) => {
         setOpenDetailsId(prev => (prev === id ? null : id))
     }
+
     const filteredJournals = journals.filter(journal => {
         const tea = teas.find(t => t.id === journal.teaId);
         return (
@@ -41,6 +46,23 @@ function JournalPage() {
             (!ratingFilter || journal.rating === ratingFilter)
         );
     });
+    const orderedJournals = [...filteredJournals].reverse();
+
+    useEffect(() => {
+        const ensureScrollable = () => {
+            const ul = document.querySelector('.journal-list');
+            if (!ul) return;
+            const rect = ul.getBoundingClientRect();
+            if (rect.bottom < window.innerHeight && journalItemsToShow < orderedJournals.length) {
+                setJournalItemsToShow(prev => Math.min(prev + 1, orderedJournals.length));
+                requestAnimationFrame(ensureScrollable);
+            }
+        };
+        requestAnimationFrame(ensureScrollable);
+        // eslint-disable-next-line
+    }, [journals, typeFilter, ratingFilter]);
+
+    const fetchMoreJournals = () => setJournalItemsToShow(prev => prev + 6);
 
     return (
         <section className="page-wrap journal-page">
@@ -87,72 +109,80 @@ function JournalPage() {
                 {/* Journal List */}
                 <section className="journal-table">
                     <h2>All journals</h2>
-                    {journals.length > 0 ? (
-                        <ul className="journal-list">
-                            {filteredJournals.map(journal => {
-                                const tea = teas.find(t => t.id === journal.teaId)
-                                return (
-                                    <li key={journal.id} className="journal-item">
-                                        <div className={`journal-details ${openDetailsId === journal.id ? 'details-open' : ''}`}>
-                                            <span>
-                                                <strong>{journal.title}</strong>{' '}
-                                                {/* Tea tag */}
-                                                {tea && (
-                                                    <>
-                                                        <span
-                                                            className={`tea-tag tea-tag-${tea.type}`}
-                                                            style={{
-                                                                marginLeft: 4,
-                                                                padding: '2px 8px',
-                                                                borderRadius: 8,
-                                                                background: '#f6f6f6',
-                                                                fontSize: '13px',
-                                                                color: '#458253',
-                                                                textTransform: 'capitalize',
-                                                                display: 'inline-block'
-                                                            }}
-                                                        >
-                                                            {tea.type}
+                    {filteredJournals.length > 0 ? (
+                        <InfiniteScroll
+                            dataLength={Math.min(journalItemsToShow, orderedJournals.length)}
+                            next={fetchMoreJournals}
+                            hasMore={journalItemsToShow < orderedJournals.length}
+                            loader={<div style={{ paddingTop: '16px', textAlign: 'center' }}>loading more...</div>}
+                            endMessage={<div style={{ paddingTop: '16px', textAlign: 'center' }}>no more teas</div>}
+                        >
+                            <ul className="journal-list">
+                                {orderedJournals.slice(0, journalItemsToShow).map(journal => {
+                                    const tea = teas.find(t => t.id === journal.teaId)
+                                    return (
+                                        <li key={journal.id} className="journal-item">
+                                            <div className={`journal-details ${openDetailsId === journal.id ? 'details-open' : ''}`}>
+                                                <span>
+                                                    <strong>{journal.title}</strong>{' '}
+                                                    {/* Tea tag */}
+                                                    {tea && (
+                                                        <>
+                                                            <span
+                                                                className={`tea-tag tea-tag-${tea.type}`}
+                                                                style={{
+                                                                    marginLeft: 4,
+                                                                    padding: '2px 8px',
+                                                                    borderRadius: 8,
+                                                                    background: '#f6f6f6',
+                                                                    fontSize: '13px',
+                                                                    color: '#458253',
+                                                                    textTransform: 'capitalize',
+                                                                    display: 'inline-block'
+                                                                }}
+                                                            >
+                                                                {tea.type}
+                                                            </span>
+                                                            {/* Tea name right next to tag */}
+                                                            <span
+                                                                className="tea-name"
+                                                                style={{
+                                                                    marginLeft: 8,
+                                                                    fontStyle: 'italic',
+                                                                    fontSize: '13px'
+                                                                }}
+                                                            >{tea.name}</span>
+                                                        </>
+                                                    )}
+                                                    {/* Rating stars/number */}
+                                                    {journal.rating !== undefined && (
+                                                        <span style={{ marginLeft: 8, color: '#ffc21a', fontWeight: 600 }}>
+                                                            {'⭐'.repeat(journal.rating)}
                                                         </span>
-                                                        {/* Tea name right next to tag */}
-                                                        <span
-                                                            className="tea-name"
-                                                            style={{
-                                                                marginLeft: 8,
-                                                                fontStyle: 'italic',
-                                                                fontSize: '13px'
-                                                            }}
-                                                        >{tea.name}</span>
-                                                    </>
-                                                )}
-                                                {/* Rating stars/number */}
-                                                {journal.rating !== undefined && (
-                                                    <span style={{ marginLeft: 8, color: '#ffc21a', fontWeight: 600 }}>
-                                                        {'⭐'.repeat(journal.rating)}
+                                                    )}
+                                                    <span className="journal-date" style={{ fontSize: '10px', marginLeft: 8 }}>
+                                                        ({new Date(journal.dateAdded).toLocaleDateString()})
                                                     </span>
-                                                )}
-                                                <span className="journal-date" style={{ fontSize: '10px', marginLeft: 8 }}>
-                                                    ({new Date(journal.dateAdded).toLocaleDateString()})
                                                 </span>
-                                            </span>
-                                            {openDetailsId === journal.id && (
-                                                <div className="journal-extra">
-                                                    <MdDisplay content={journal.content} />
-                                                </div>
-                                            )}
-                                            <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(journal.id)}>
-                                                <i className={`bxr ${openDetailsId === journal.id ? 'bx-list-minus' : 'bx-list-plus'}`} />
-                                                {openDetailsId === journal.id ? 'hide' : 'see'} details
-                                            </button>
-                                        </div>
-                                        <div className="journal-actions">
-                                            <button className="btn btn-info" onClick={() => handleEdit(journal)}><i className="bxr bx-edit" /></button>
-                                            <button className="btn btn-danger" onClick={() => deleteJournal(journal.id)}><i className="bxr bx-trash" /></button>
-                                        </div>
-                                    </li>
-                                )
-                            })}
-                        </ul>
+                                                {openDetailsId === journal.id && (
+                                                    <div className="journal-extra">
+                                                        <MdDisplay content={journal.content} />
+                                                    </div>
+                                                )}
+                                                <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(journal.id)}>
+                                                    <i className={`bxr ${openDetailsId === journal.id ? 'bx-list-minus' : 'bx-list-plus'}`} />
+                                                    {openDetailsId === journal.id ? 'hide' : 'see'} details
+                                                </button>
+                                            </div>
+                                            <div className="journal-actions">
+                                                <button className="btn btn-info" onClick={() => handleEdit(journal)}><i className="bxr bx-edit" /></button>
+                                                <button className="btn btn-danger" onClick={() => deleteJournal(journal.id)}><i className="bxr bx-trash" /></button>
+                                            </div>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </InfiniteScroll>
                     ) : (
                         <p style={{ marginTop: 8 }}>no journals yet — add your first one</p>
                     )}
@@ -181,6 +211,7 @@ function JournalPage() {
                         <input
                             type="number"
                             placeholder="Rating (1 to 5)"
+                            inputMode="numeric"
                             min={1}
                             max={5}
                             value={form.rating || ''}
