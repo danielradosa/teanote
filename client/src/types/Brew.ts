@@ -11,12 +11,17 @@ export interface Brew {
 
 export interface Infusion {
     number: number
-    plannedTime?: number            // Optional: pre-set if wanted
-    actualTime: number              // Actual timer (seconds) used
-    notes?: string
-    rating?: number                 // Optional numeric rating per infusion
+    actualTime: number
 }
 
-// 1. rating of brew session will be recommended from averaging rating of infusions
-// 2. Infusion plannedTime will be presets for different tea types
-// 3. Make a preset library for different tea types 
+export interface Preset {
+    name: string
+    teaId: string
+    infusionsAmount: number
+    infusionTimes: number[]
+}
+
+// TODO
+// rating of brew session after end
+// infusion plannedTime will be presets for different tea types
+// make a preset library for different tea types - maybeee?!

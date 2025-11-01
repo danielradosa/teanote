@@ -7,6 +7,7 @@ import type { Journal } from '../types/Journal'
 import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import SearchBar from '../components/SearchBar'
 
 function JournalPage() {
     const { teas } = useTeasStore()
@@ -15,8 +16,9 @@ function JournalPage() {
     const [form, setForm] = useState(emptyForm)
     const [editingJournal, setEditingJournal] = useState<Journal | null>(null)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
-    const [typeFilter, setTypeFilter] = useState<string>('');
-    const [ratingFilter, setRatingFilter] = useState<number | ''>('');
+    const [typeFilter, setTypeFilter] = useState<string>('')
+    const [ratingFilter, setRatingFilter] = useState<number | ''>('')
+    const [search, setSearch] = useState('')
 
     const batchSize = 6;
     const [journalItemsToShow, setJournalItemsToShow] = useState(batchSize)
@@ -41,9 +43,16 @@ function JournalPage() {
 
     const filteredJournals = journals.filter(journal => {
         const tea = teas.find(t => t.id === journal.teaId);
+
         return (
             (!typeFilter || tea?.type === typeFilter) &&
-            (!ratingFilter || journal.rating === ratingFilter)
+            (!ratingFilter || journal.rating === ratingFilter) &&
+            (
+                !search ||
+                journal.title.toLowerCase().includes(search.toLowerCase()) ||
+                (tea?.name?.toLowerCase() || '').includes(search.toLowerCase()) ||
+                (tea?.type?.toLowerCase() || '').includes(search.toLowerCase())
+            )
         );
     });
     const orderedJournals = [...filteredJournals].reverse();
@@ -100,8 +109,11 @@ function JournalPage() {
                             </select>
                             <span className='arr-down'></span>
                         </label>
-                        {/* Optional Clear button */}
-                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); }}>
+                        <label>
+                            Search:&nbsp;
+                            <SearchBar value={search} setValue={setSearch} placeholder="Search by teas or journal title..." />
+                        </label>
+                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
                     </div>

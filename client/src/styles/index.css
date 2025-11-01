@@ -277,9 +277,18 @@ header .logo a {
 
 .brew-main-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   margin-top: 10px;
   gap: 10px;
+
+  label {
+    flex: 1 1 100%;
+
+    select {
+      width: 100%;
+    }
+  }
 }
 
 .brew-timer-container {

@@ -5,6 +5,7 @@ import { useTeasStore } from '../stores/useTeasStore'
 import type { Tea } from '../types/Tea'
 import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
+import SearchBar from '../components/SearchBar'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 function TeaProfilesPage() {
@@ -25,7 +26,8 @@ function TeaProfilesPage() {
     const [editingTea, setEditingTea] = useState<Tea | null>(null)
     const [showMoreFields, setShowMoreFields] = useState(false)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
-    const [typeFilter, setTypeFilter] = useState<string>('');
+    const [typeFilter, setTypeFilter] = useState<string>('')
+    const [search, setSearch] = useState('')
 
     const batchSize = 6;
     const [teaItemsToShow, setTeaItemsToShow] = useState(batchSize)
@@ -49,12 +51,19 @@ function TeaProfilesPage() {
         setOpenDetailsId(prev => (prev === id ? null : id))
     }
 
-    const filteredTeas = teas.filter(tea => !typeFilter || tea.type === typeFilter);
-    const orderedTeas = [...filteredTeas].reverse();
+    const filteredTeas = teas.filter(tea =>
+        (!typeFilter || tea.type === typeFilter) &&
+        (
+            !search ||
+            tea.name.toLowerCase().includes(search.toLowerCase()) ||
+            tea.type.toLowerCase().includes(search.toLowerCase())
+        )
+    );
+    const orderedTeas = [...filteredTeas].reverse()
 
     useEffect(() => {
         const ensureScrollable = () => {
-            const ul = document.querySelector('.tea-list');
+            const ul = document.querySelector('.tea-list')
             if (!ul) return;
             const rect = ul.getBoundingClientRect();
             if (rect.bottom < window.innerHeight && teaItemsToShow < orderedTeas.length) {
@@ -88,7 +97,11 @@ function TeaProfilesPage() {
                             </select>
                             <span className='arr-down'></span>
                         </label>
-                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); }}>
+                        <label>
+                            Search:&nbsp;
+                            <SearchBar value={search} setValue={setSearch} placeholder="Search by tea type or name..." />
+                        </label>
+                        <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
                     </div>
