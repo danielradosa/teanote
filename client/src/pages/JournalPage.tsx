@@ -200,43 +200,6 @@ function JournalPage() {
                     )}
                 </section>
 
-                {/* Add New Journal */}
-                <section className="new-journal">
-                    <h2>Add new journal</h2>
-                    <div className="journal-form">
-                        <div style={{ position: "relative", width: '100%' }}>
-                            <select
-                                id="tea-select"
-                                required
-                                value={form.teaId}
-                                onChange={e => setForm({ ...form, teaId: e.target.value })}
-                                style={{ width: "100%", minWidth: 120 }}
-                            >
-                                <option value="">Select tea…</option>
-                                {teas.map(tea => (
-                                    <option key={tea.id} value={tea.id}>{tea.name}</option>
-                                ))}
-                            </select>
-                            <span className="arr-down"></span>
-                        </div>
-                        <input type="text" placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-                        <input
-                            type="number"
-                            placeholder="Rating (1 to 5)"
-                            inputMode="numeric"
-                            min={1}
-                            max={5}
-                            value={form.rating || ''}
-                            onChange={e => setForm({ ...form, rating: e.target.value === '' ? undefined : Number(e.target.value) })}
-                        />
-                        <RichToolbar value={form.content} setValue={v => setForm({ ...form, content: v })} textareaRef={textareaRef} />
-                        <textarea ref={textareaRef} placeholder="Write your thoughts here…" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
-                        <div className="journal-actions">
-                            <button className="btn btn-quick" onClick={handleAddJournal}><i className="bxr bx-plus" /> add journal</button>
-                        </div>
-                    </div>
-                </section>
-
                 {editingJournal && (
                     <section className="edit-panel">
                         <h2>Edit entry — {editingJournal.title}</h2>
@@ -297,6 +260,43 @@ function JournalPage() {
                         </div>
                     </section>
                 )}
+
+                {/* Add New Journal */}
+                <section className="new-journal">
+                    <h2>Add new journal</h2>
+                    <div className="journal-form">
+                        <div style={{ position: "relative", width: '100%' }}>
+                            <select
+                                id="tea-select"
+                                required
+                                value={form.teaId}
+                                onChange={e => setForm({ ...form, teaId: e.target.value })}
+                                style={{ width: "100%", minWidth: 120 }}
+                            >
+                                <option value="">Select tea…</option>
+                                {teas.map(tea => (
+                                    <option key={tea.id} value={tea.id}>{tea.name}</option>
+                                ))}
+                            </select>
+                            <span className="arr-down"></span>
+                        </div>
+                        <input type="text" placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                        <input
+                            type="number"
+                            placeholder="Rating (1 to 5)"
+                            inputMode="numeric"
+                            min={1}
+                            max={5}
+                            value={form.rating || ''}
+                            onChange={e => setForm({ ...form, rating: e.target.value === '' ? undefined : Number(e.target.value) })}
+                        />
+                        <RichToolbar value={form.content} setValue={v => setForm({ ...form, content: v })} textareaRef={textareaRef} />
+                        <textarea ref={textareaRef} placeholder="Write your thoughts here…" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+                        <div className="journal-actions">
+                            <button className="btn btn-quick" onClick={handleAddJournal}><i className="bxr bx-plus" /> add journal</button>
+                        </div>
+                    </div>
+                </section>
             </div>
         </section>
     )

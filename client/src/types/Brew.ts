@@ -15,13 +15,10 @@ export interface Infusion {
 }
 
 export interface Preset {
+    id: string
     name: string
-    teaId: string
+    teaId?: string
+    teaType?: string
     infusionsAmount: number
     infusionTimes: number[]
 }
-
-// TODO
-// rating of brew session after end
-// infusion plannedTime will be presets for different tea types
-// make a preset library for different tea types - maybeee?!

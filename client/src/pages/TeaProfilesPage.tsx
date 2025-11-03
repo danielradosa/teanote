@@ -113,8 +113,8 @@ function TeaProfilesPage() {
                             dataLength={Math.min(teaItemsToShow, orderedTeas.length)}
                             next={fetchMoreTeas}
                             hasMore={teaItemsToShow < orderedTeas.length}
-                            loader={<div style={{ paddingTop: '16px', textAlign: 'center' }}>loading more...</div>}
-                            endMessage={<div style={{ paddingTop: '16px', textAlign: 'center' }}>no more teas</div>}
+                            loader={<div>loading more...</div>}
+                            endMessage={<div>no more teas</div>}
                         >
                             <ul className="tea-list">
                                 {orderedTeas.slice(0, teaItemsToShow).map((tea) => (
@@ -176,6 +176,46 @@ function TeaProfilesPage() {
                     )}
                 </section>
 
+                {/* Edit Panel */}
+                {editingTea && (
+                    <section className="edit-panel">
+                        <h2>Edit tea — {editingTea.name}</h2>
+                        <div className="tea-form">
+                            <input type="text" placeholder="Name" value={editingTea.name} onChange={e => setEditingTea({ ...editingTea, name: e.target.value })} />
+                            <label style={{ display: 'block', width: '100%' }}>
+                                <select style={{ width: '100%' }} value={editingTea.type}
+                                    onChange={e => setEditingTea({ ...editingTea, type: e.target.value as Tea['type'] })}
+                                >
+                                    <option value="green">green</option>
+                                    <option value="oolong">oolong</option>
+                                    <option value="red">red</option>
+                                    <option value="white">white</option>
+                                    <option value="yellow">yellow</option>
+                                    <option value="puerh">puerh</option>
+                                    <option value="purple">purple</option>
+                                </select>
+                                <span className="arr-down"></span>
+                            </label>
+                            <input type="text" placeholder="Origin" value={editingTea.origin || ''} onChange={e => setEditingTea({ ...editingTea, origin: e.target.value })} />
+                            <input type="text" placeholder="Year" value={editingTea.year || ''} onChange={e => setEditingTea({ ...editingTea, year: e.target.value })} />
+                            <input type="text" placeholder="Vendor" value={editingTea.vendor || ''} onChange={e => setEditingTea({ ...editingTea, vendor: e.target.value })} />
+                            <input type="text" placeholder="Link" value={editingTea.link || ''} onChange={e => setEditingTea({ ...editingTea, link: e.target.value })} />
+                            <input type="text" placeholder="Image URL" value={editingTea.image || ''} onChange={e => setEditingTea({ ...editingTea, image: e.target.value })} />
+
+                            <RichToolbar
+                                value={editingTea.notes || ''}
+                                setValue={v => setEditingTea(t => t ? { ...t, notes: v } : null)}
+                                textareaRef={editTextareaRef}
+                            />
+                            <textarea ref={editTextareaRef} placeholder="Notes" value={editingTea.notes || ''} onChange={e => setEditingTea({ ...editingTea, notes: e.target.value })} />
+                            <div className="tea-actions">
+                                <button className="btn btn-quick" onClick={handleUpdate}><i className="bxr bx-save" />save</button>
+                                <button className="btn btn-dark" onClick={() => setEditingTea(null)}><i className="bxr bx-block" />cancel</button>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
                 {/* Add New Tea */}
                 <section className='new-tea'>
                     <h2>Add new tea</h2>
@@ -214,41 +254,6 @@ function TeaProfilesPage() {
                         </div>
                     </div>
                 </section>
-
-                {/* Edit Panel */}
-                {editingTea && (
-                    <section className="edit-panel">
-                        <h2>Edit tea — {editingTea.name}</h2>
-                        <div className="tea-form">
-                            <input type="text" placeholder="Name" value={editingTea.name} onChange={e => setEditingTea({ ...editingTea, name: e.target.value })} />
-                            <select value={editingTea.type} onChange={e => setEditingTea({ ...editingTea, type: e.target.value as Tea['type'] })}>
-                                <option value="green">green</option>
-                                <option value="oolong">oolong</option>
-                                <option value="red">red</option>
-                                <option value="white">white</option>
-                                <option value="yellow">yellow</option>
-                                <option value="puerh">puerh</option>
-                                <option value="purple">purple</option>
-                            </select>
-                            <input type="text" placeholder="Origin" value={editingTea.origin || ''} onChange={e => setEditingTea({ ...editingTea, origin: e.target.value })} />
-                            <input type="text" placeholder="Year" value={editingTea.year || ''} onChange={e => setEditingTea({ ...editingTea, year: e.target.value })} />
-                            <input type="text" placeholder="Vendor" value={editingTea.vendor || ''} onChange={e => setEditingTea({ ...editingTea, vendor: e.target.value })} />
-                            <input type="text" placeholder="Link" value={editingTea.link || ''} onChange={e => setEditingTea({ ...editingTea, link: e.target.value })} />
-                            <input type="text" placeholder="Image URL" value={editingTea.image || ''} onChange={e => setEditingTea({ ...editingTea, image: e.target.value })} />
-
-                            <RichToolbar
-                                value={editingTea.notes || ''}
-                                setValue={v => setEditingTea(t => t ? { ...t, notes: v } : null)}
-                                textareaRef={editTextareaRef}
-                            />
-                            <textarea ref={editTextareaRef} placeholder="Notes" value={editingTea.notes || ''} onChange={e => setEditingTea({ ...editingTea, notes: e.target.value })} />
-                            <div className="tea-actions">
-                                <button className="btn btn-quick" onClick={handleUpdate}><i className="bxr bx-save" />save</button>
-                                <button className="btn btn-dark" onClick={() => setEditingTea(null)}><i className="bxr bx-block" />cancel</button>
-                            </div>
-                        </div>
-                    </section>
-                )}
             </div>
         </section>
     )

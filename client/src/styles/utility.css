@@ -9,6 +9,10 @@ textarea {
     border: 1px solid #ccc;
 }
 
+ul li:last-of-type {
+    margin-bottom: 16px;
+}
+
 textarea {
     min-height: 150px;
 }
@@ -25,6 +29,11 @@ select {
 }
 
 label {
+    display: block;
+    width: 100%;
+}
+
+.select-wrap {
     position: relative;
 }
 
@@ -60,6 +69,10 @@ small {
     transition: all .15s ease-in-out;
     cursor: pointer;
     color: #fff;
+}
+
+.btn-sync {
+    padding: 4px 8px;
 }
 
 .btn-action {
@@ -157,6 +170,21 @@ small {
     font-style: italic;
 }
 
+.tea-tag {
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-transform: capitalize;
+    display: inline-block;
+}
+
+.tea-tag-generic,
+.tea-tag-undefined {
+    background: #ccc !important;
+    color: #474747 !important;
+}
+
 .tea-tag-green {
     background: #dbffd2 !important;
     color: #27622a !important;
@@ -206,4 +234,16 @@ small {
     background: #dbffd2 !important;
     color: #27622a !important;
     margin-left: 8px;
+}
+
+.req {
+    color: crimson;
+}
+
+.basic-label {
+    display: inline-block;
+    margin-bottom: 4px;
+    margin-left: 8px;
+    font-size: 13px;
+    color: #202121;
 }
