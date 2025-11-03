@@ -230,35 +230,39 @@ function BrewPage() {
                 <section className="brew-filters" style={{ flex: '1 1 100%' }}>
                     <h2>Filter brews</h2>
                     <div className='filter-wrap'>
-                        <label>
+                        <label className='filter-label'>
                             # of infusions/steeps:&nbsp;
-                            <select
-                                value={selectedInfusions ?? ''}
-                                onChange={e =>
-                                    setSelectedInfusions(
-                                        e.target.value ? parseInt(e.target.value) : null
-                                    )
-                                }>
-                                <option value="">any amount</option>
-                                {infusionOptions}
-                            </select>
-                            <span className='arr-down'></span>
+                            <div className="select-wrap">
+                                <select
+                                    value={selectedInfusions ?? ''}
+                                    onChange={e =>
+                                        setSelectedInfusions(
+                                            e.target.value ? parseInt(e.target.value) : null
+                                        )
+                                    }>
+                                    <option value="">any amount</option>
+                                    {infusionOptions}
+                                </select>
+                                <span className='arr-down'></span>
+                            </div>
                         </label>
-                        <label>
+                        <label className='filter-label'>
                             Total brew length:&nbsp;
-                            <select
-                                value={selectedLength ?? ''}
-                                onChange={e =>
-                                    setSelectedLength(
-                                        e.target.value ? parseInt(e.target.value) : null
-                                    )
-                                }>
-                                <option value="">any</option>
-                                {brewLengthOptions}
-                            </select>
-                            <span className='arr-down'></span>
+                            <div className="select-wrap">
+                                <select
+                                    value={selectedLength ?? ''}
+                                    onChange={e =>
+                                        setSelectedLength(
+                                            e.target.value ? parseInt(e.target.value) : null
+                                        )
+                                    }>
+                                    <option value="">any</option>
+                                    {brewLengthOptions}
+                                </select>
+                                <span className='arr-down'></span>
+                            </div>
                         </label>
-                        <label>Search:&nbsp;
+                        <label className='filter-label'>Search:&nbsp;
                             <SearchBar value={search} setValue={setSearch} placeholder="Search brews & presets..." />
                         </label>
                         <button className="btn btn-dark"
@@ -325,11 +329,12 @@ function BrewPage() {
                         <h2>New preset</h2>
                         <div className="brew-main-actions">
                             <label>
+                                <span className="basic-label"><span className="req">* </span>Preset name:</span>
                                 <input
                                     value={presetName}
                                     onChange={e => setPresetName(e.target.value)}
                                     required
-                                    placeholder="Preset name"
+                                    placeholder="e.g. morning gongfu"
                                     style={{ width: '100%' }}
                                 />
                             </label>
@@ -356,7 +361,7 @@ function BrewPage() {
                                     <div className="select-wrap">
                                         <select value={presetTeaType} onChange={e => setPresetTeaType(e.target.value)}
                                             required={!presetTeaId} style={{ width: '100%' }}>
-                                                
+
                                             <option value="any">any</option>
                                             <option value="green">green</option>
                                             <option value="oolong">oolong</option>
@@ -476,11 +481,11 @@ function BrewPage() {
                 </section>
                 {editingPresetId && (
                     <section className='edit-preset-container'>
-
                         <div className='edit-preset'>
                             <h2>Edit preset &mdash; {editName || 'preset'}</h2>
-                            <form className="edit-preset-form" style={{ marginTop: 8, display: 'grid', gap: 8 }} onSubmit={handleBrewEdit}>
+                            <form className="edit-preset-form" style={{ marginTop: 10, display: 'grid', gap: 10 }} onSubmit={handleBrewEdit}>
                                 <label>
+                                    <span className='basic-label'><span className="req">* </span>Preset name:</span>
                                     <input
                                         value={editName}
                                         onChange={e => setEditName(e.target.value)}
@@ -490,37 +495,46 @@ function BrewPage() {
                                     />
                                 </label>
                                 <label>
-                                    <select
-                                        value={editTeaId}
-                                        onChange={e => setEditTeaId(e.target.value)}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <option value="">None (generic)</option>
-                                        {teas.map(tea => (
-                                            <option key={tea.id} value={tea.id}>{tea.name}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                                {(!editTeaId || !teas.find(t => t.id === editTeaId)) && (
-                                    <label>
+                                    <span className="basic-label">Select tea (optional):</span>
+                                    <div className="select-wrap">
                                         <select
-                                            value={editTeaType}
-                                            onChange={e => setEditTeaType(e.target.value)}
-                                            required={!editTeaId}
+                                            value={editTeaId}
+                                            onChange={e => setEditTeaId(e.target.value)}
                                             style={{ width: '100%' }}
                                         >
                                             <option value="">-</option>
-                                            <option value="green">green</option>
-                                            <option value="oolong">oolong</option>
-                                            <option value="red">red</option>
-                                            <option value="white">white</option>
-                                            <option value="yellow">yellow</option>
-                                            <option value="puerh">puerh</option>
-                                            <option value="purple">purple</option>
+                                            {teas.map(tea => (
+                                                <option key={tea.id} value={tea.id}>{tea.name}</option>
+                                            ))}
                                         </select>
+                                        <span className="arr-down"></span>
+                                    </div>
+                                </label>
+                                {(!editTeaId || !teas.find(t => t.id === editTeaId)) && (
+                                    <label>
+                                        <span className='basic-label'><span className="req">* </span>Tea type:</span>
+                                        <div className="select-wrap">
+                                            <select
+                                                value={editTeaType}
+                                                onChange={e => setEditTeaType(e.target.value)}
+                                                required={!editTeaId}
+                                                style={{ width: '100%' }}
+                                            >
+                                                <option value="any">any</option>
+                                                <option value="green">green</option>
+                                                <option value="oolong">oolong</option>
+                                                <option value="red">red</option>
+                                                <option value="white">white</option>
+                                                <option value="yellow">yellow</option>
+                                                <option value="puerh">puerh</option>
+                                                <option value="purple">purple</option>
+                                            </select>
+                                            <span className="arr-down"></span>
+                                        </div>
                                     </label>
                                 )}
                                 <label>
+                                    <span className="basic-label"><span className="req">* </span>Amount of infusions/steeps:</span>
                                     <input
                                         type="number"
                                         min={1}
@@ -531,6 +545,7 @@ function BrewPage() {
                                     />
                                 </label>
                                 <label>
+                                    <span className="basic-label"><span className="req">* </span>Set infusion times (in seconds):</span>
                                     <input
                                         value={editInfusionTimes}
                                         onChange={e => setEditInfusionTimes(e.target.value)}

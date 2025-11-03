@@ -85,31 +85,35 @@ function JournalPage() {
                     <h2>Filter journals</h2>
                     <div className='filter-wrap'>
                         {/* Tea type dropdown */}
-                        <label>
+                        <label className='filter-label'>
                             Type:&nbsp;
-                            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-                                <option value="">all types</option>
-                                {[...new Set(teas.map(t => t.type))].map(type =>
-                                    <option value={type} key={type}>{type}</option>
-                                )}
-                            </select>
-                            <span className='arr-down'></span>
+                            <div className="select-wrap">
+                                <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                                    <option value="">all types</option>
+                                    {[...new Set(teas.map(t => t.type))].map(type =>
+                                        <option value={type} key={type}>{type}</option>
+                                    )}
+                                </select>
+                                <span className='arr-down'></span>
+                            </div>
                         </label>
                         {/* Rating dropdown */}
-                        <label>
+                        <label className='filter-label'>
                             Rating:&nbsp;
-                            <select
-                                value={ratingFilter}
-                                onChange={e => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
-                            >
-                                <option value="">all ratings</option>
-                                {[1, 2, 3, 4, 5].map(r =>
-                                    <option value={r} key={r}>{'⭐'.repeat(r)}</option>
-                                )}
-                            </select>
-                            <span className='arr-down'></span>
+                            <div className="select-wrap">
+                                <select
+                                    value={ratingFilter}
+                                    onChange={e => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
+                                >
+                                    <option value="">all ratings</option>
+                                    {[1, 2, 3, 4, 5].map(r =>
+                                        <option value={r} key={r}>{'⭐'.repeat(r)}</option>
+                                    )}
+                                </select>
+                                <span className='arr-down'></span>
+                            </div>
                         </label>
-                        <label>
+                        <label className='filter-label'>
                             Search:&nbsp;
                             <SearchBar value={search} setValue={setSearch} placeholder="Search by teas or journal title..." />
                         </label>
@@ -202,53 +206,64 @@ function JournalPage() {
 
                 {editingJournal && (
                     <section className="edit-panel">
-                        <h2>Edit entry — {editingJournal.title}</h2>
+                        <h2>Edit journal — {editingJournal.title}</h2>
                         <div className="journal-form">
-                            {/* Tea selector */}
-                            <select
-                                required
-                                value={editingJournal.teaId}
-                                onChange={e => setEditingJournal(j => j ? { ...j, teaId: e.target.value } : null)}
-                            >
-                                <option value="">Select tea…</option>
-                                {teas.map(tea => (
-                                    <option key={tea.id} value={tea.id}>
-                                        {tea.name} {tea.type ? `[${tea.type}]` : ''}
-                                    </option>
-                                ))}
-                            </select>
-                            {/* Title */}
-                            <input
-                                type="text"
-                                placeholder="Title"
-                                value={editingJournal.title}
-                                onChange={e => setEditingJournal(j => j ? { ...j, title: e.target.value } : null)}
-                            />
-                            {/* Rating */}
-                            <input
-                                type="number"
-                                placeholder="Rating (1 to 5)"
-                                min={1}
-                                max={5}
-                                value={editingJournal.rating || ''}
-                                onChange={e =>
-                                    setEditingJournal(j =>
-                                        j ? { ...j, rating: e.target.value === '' ? undefined : Number(e.target.value) } : null
-                                    )
-                                }
-                            />
-                            {/* Notes */}
+                            <label>
+                                <span className='basic-label'>Select tea (optional):</span>
+                                <div className="select-wrap">
+                                    <select
+                                        required
+                                        value={editingJournal.teaId}
+                                        onChange={e => setEditingJournal(j => j ? { ...j, teaId: e.target.value } : null)}
+                                    >
+                                        <option value="">-</option>
+                                        {teas.map(tea => (
+                                            <option key={tea.id} value={tea.id}>
+                                                {tea.name} {tea.type ? `[${tea.type}]` : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <span className="arr-down"></span>
+                                </div>
+                            </label>
+                            <label>
+                                <span className="basic-label"><span className="req">* </span>Journal name:</span>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Thoughts on Duck Shit"
+                                    value={editingJournal.title}
+                                    onChange={e => setEditingJournal(j => j ? { ...j, title: e.target.value } : null)}
+                                />
+                            </label>
+                            <label>
+                                <span className="basic-label">Rating (optional):</span>
+                                <input
+                                    type="number"
+                                    placeholder="Rating (1 to 5)"
+                                    min={1}
+                                    max={5}
+                                    value={editingJournal.rating || ''}
+                                    onChange={e =>
+                                        setEditingJournal(j =>
+                                            j ? { ...j, rating: e.target.value === '' ? undefined : Number(e.target.value) } : null
+                                        )
+                                    }
+                                />
+                            </label>
                             <RichToolbar
                                 value={editingJournal.content}
                                 setValue={v => setEditingJournal(j => j ? { ...j, content: v } : null)}
                                 textareaRef={editTextareaRef}
                             />
-                            <textarea
-                                ref={editTextareaRef}
-                                placeholder="Write your thoughts here…"
-                                value={editingJournal.content}
-                                onChange={e => setEditingJournal(j => j ? { ...j, content: e.target.value } : null)}
-                            />
+                            <label>
+                                <span className='basic-label'><span className="req">* </span>Notes:</span>
+                                <textarea
+                                    ref={editTextareaRef}
+                                    placeholder="Write your thoughts here…"
+                                    value={editingJournal.content}
+                                    onChange={e => setEditingJournal(j => j ? { ...j, content: e.target.value } : null)}
+                                />
+                            </label>
                             <div className="journal-actions">
                                 <button className="btn btn-quick" onClick={handleUpdate}>
                                     <i className="bxr bx-save" /> save
@@ -265,33 +280,45 @@ function JournalPage() {
                 <section className="new-journal">
                     <h2>Add new journal</h2>
                     <div className="journal-form">
-                        <div style={{ position: "relative", width: '100%' }}>
-                            <select
-                                id="tea-select"
-                                required
-                                value={form.teaId}
-                                onChange={e => setForm({ ...form, teaId: e.target.value })}
-                                style={{ width: "100%", minWidth: 120 }}
-                            >
-                                <option value="">Select tea…</option>
-                                {teas.map(tea => (
-                                    <option key={tea.id} value={tea.id}>{tea.name}</option>
-                                ))}
-                            </select>
-                            <span className="arr-down"></span>
-                        </div>
-                        <input type="text" placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-                        <input
-                            type="number"
-                            placeholder="Rating (1 to 5)"
-                            inputMode="numeric"
-                            min={1}
-                            max={5}
-                            value={form.rating || ''}
-                            onChange={e => setForm({ ...form, rating: e.target.value === '' ? undefined : Number(e.target.value) })}
-                        />
+                        <label>
+                            <span className='basic-label'>Select tea (optional):</span>
+                            <div className='select-wrap'>
+                                <select
+                                    id="tea-select"
+                                    required
+                                    value={form.teaId}
+                                    onChange={e => setForm({ ...form, teaId: e.target.value })}
+                                    style={{ width: "100%", minWidth: 120 }}
+                                >
+                                    <option value="">-</option>
+                                    {teas.map(tea => (
+                                        <option key={tea.id} value={tea.id}>{tea.name}</option>
+                                    ))}
+                                </select>
+                                <span className="arr-down"></span>
+                            </div>
+                        </label>
+                        <label>
+                            <span className="basic-label"><span className="req">* </span>Journal name:</span>
+                            <input type="text" placeholder="e.g. Thoughts on Bai Mu Dan" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                        </label>
+                        <label>
+                            <span className="basic-label">Rating (optional):</span>
+                            <input
+                                type="number"
+                                placeholder="e.g. 3 (1 to 5)"
+                                inputMode="numeric"
+                                min={1}
+                                max={5}
+                                value={form.rating || ''}
+                                onChange={e => setForm({ ...form, rating: e.target.value === '' ? undefined : Number(e.target.value) })}
+                            />
+                        </label>
                         <RichToolbar value={form.content} setValue={v => setForm({ ...form, content: v })} textareaRef={textareaRef} />
-                        <textarea ref={textareaRef} placeholder="Write your thoughts here…" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+                        <label>
+                            <span className="basic-label"><span className="req">* </span>Notes:</span>
+                            <textarea ref={textareaRef} placeholder="Write your thoughts here…" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+                        </label>
                         <div className="journal-actions">
                             <button className="btn btn-quick" onClick={handleAddJournal}><i className="bxr bx-plus" /> add journal</button>
                         </div>
