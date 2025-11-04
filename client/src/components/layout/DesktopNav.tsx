@@ -5,11 +5,11 @@ function DesktopNav() {
         <>
             <header className="main-header">
                 <div className="logo">
-                    <a href="/">🍵 teanote</a>
+                    <a href="/">🍵 Teanote</a>
                 </div>
                 <nav>
-                    <button className="btn btn-action">⏳ start brew</button>
-                    <button className="btn btn-action">📔 journal</button>
+                    <button className="btn btn-action">⏳ Start brew</button>
+                    <button className="btn btn-action">📔 Journal</button>
                 </nav>
             </header>
         </>
