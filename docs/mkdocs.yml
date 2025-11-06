@@ -1,0 +1,23 @@
+site_name: Teanote
+nav:
+  - Home: index.md
+  - About: about.md
+  - Terms: terms.md
+  - Privacy: privacy.md
+  - Cookies: cookies.md
+extra_css:
+  - stylesheets/extra.css
+theme:
+  name: material
+  favicon: img/favicon.ico
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - go
+    - html
+    - css
+    - ts
+    - tsx
+    - js
+    - jsx
+    - md

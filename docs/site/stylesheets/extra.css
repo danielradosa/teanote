@@ -1,0 +1,95 @@
+/* ---------- Fonts & base ---------- */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--md-default-fg-color);
+  background-color: var(--md-default-bg-color);
+}
+
+/* ---------- Colors ---------- */
+:root {
+  --brand-primary: #bdb695;
+  --brand-secondary: #898565;
+  --success-color: #24be33;
+  --danger-color: #ed1244;
+  --info-color: #3239ff;
+  --dark-color: #202121;
+  --text-color-light: rgba(255, 255, 255, 0.88);
+  --text-color-dark: rgba(0, 0, 0, 0.88);
+
+  /* Material theme overrides */
+  --md-default-fg-color: var(--text-color-dark);
+  --md-default-bg-color: #fff;
+  --md-primary-fg-color: var(--brand-primary);
+  --md-primary-bg-color: var(--brand-primary);
+  --md-accent-fg-color: var(--brand-secondary);
+  --md-accent-bg-color: var(--brand-secondary-light);
+}
+
+/* ---------- Navbar / header ---------- */
+.md-header {
+  background: linear-gradient(235deg, var(--brand-primary), var(--brand-secondary));
+  color: var(--text-color-light);
+}
+
+.md-header__button,
+.md-logo svg {
+  fill: var(--text-color-light);
+}
+
+/* ---------- Sidebar navigation ---------- */
+.md-nav__link,
+.md-nav__item {
+  color: var(--text-color-dark);
+}
+
+.md-nav__link--active {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+/* ---------- TOC / secondary sidebar ---------- */
+.md-nav--secondary .md-nav__link {
+  color: var(--text-color-dark);
+}
+
+/* ---------- Main content ---------- */
+.md-content {
+  color: var(--text-color-dark);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  color: var(--brand-primary);
+}
+
+.md-typeset a {
+  color: var(--brand-secondary);
+  text-decoration: none;
+}
+
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Footer ---------- */
+.md-footer {
+  background-color: var(--brand-secondary-light);
+  color: var(--text-color-light);
+}
+
+.md-footer a {
+  color: var(--brand-primary);
+  text-decoration: none;
+}
+
+/* ---------- Dark mode toggle ---------- */
+[data-md-color-scheme="slate"] {
+  --md-default-fg-color: var(--text-color-light);
+  --md-default-bg-color: var(--dark-color);
+}

@@ -650,6 +650,10 @@ a {
     color: #202121;
 }
 
+.home-link {
+    text-decoration: none;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1200px) {
