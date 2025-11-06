@@ -28,7 +28,7 @@ export default function App() {
             <DesktopNav />
             <div className="layout">
                 <DesktopSidebar />
-                <main className="app-main">
+                <main>
                     {!initialized ? (
                         spinner
                     ) : access === 'unknown' ? (
