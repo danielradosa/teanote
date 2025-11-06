@@ -24,9 +24,9 @@ export default function App() {
     )
 
     return (
-        <div className="app-wrapper">
+        <div className="app">
             <DesktopNav />
-            <div className="app-body">
+            <div className="layout">
                 <DesktopSidebar />
                 <main className="app-main">
                     {!initialized ? (

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
 
 function DesktopNav() {
-    const { signOut } = useAuthStore()
+    const { signOut, trialDaysLeft } = useAuthStore()
     const navigate = useNavigate()
 
     const handleLogout = async () => {
@@ -16,6 +16,7 @@ function DesktopNav() {
         <header className="main-header">
             <div className="logo">
                 <Link to="/">🍵 Teanote</Link>
+                <span className='trial-badge'>TRIAL {trialDaysLeft}d left</span>
             </div>
             <nav>
                 <Link to="/brews">

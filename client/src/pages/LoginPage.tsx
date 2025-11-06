@@ -1,28 +1,50 @@
 import { useState } from 'react'
 import { useAuthStore } from '../stores/useAuthStore'
 import { Link } from 'react-router-dom'
+import Loader from '../components/Loader'
 
 export default function LoginPage() {
-    const { signIn, loading } = useAuthStore()
+    const { signIn } = useAuthStore()
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
 
     const handleLogin = async () => {
-        console.log('[LoginPage] handleLogin clicked –', email)
-        const error = await signIn(email, password)
-        if (error) console.error('[LoginPage] login error', error)
-        else console.log('[LoginPage] login successful')
-    }
+        setError('')
+        setSuccess('')
+        setIsSubmitting(true)
 
-    if (loading) return null
+        const err = await signIn(email, password)
+        setIsSubmitting(false)
+
+        if (err) {
+            console.error('[LoginPage] login error', err)
+            setError(err.message || 'Invalid e-mail or password')
+        } else {
+            console.log('[LoginPage] login successful')
+            setSuccess('Welcome back! Redirecting...')
+        }
+    }
 
     return (
         <section className="login">
-            <div className='login-form'>
-                <div className='logo-login'>🍵</div>
+            <div className="login-form">
+                <div className="logo-login">🍵</div>
+
+                {isSubmitting && <Loader />}
+
                 <h2>Hey there, traveller.</h2>
+
+                {error && <div className="msg error">{error}</div>}
+                {success && <div className="msg success">{success}</div>}
+
                 <label>
-                    <span className="basic-label"><span className="req">* </span>E-mail:</span>
+                    <span className="basic-label">
+                        <span className="req">* </span>E-mail:
+                    </span>
                     <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -30,8 +52,11 @@ export default function LoginPage() {
                         required
                     />
                 </label>
+
                 <label>
-                    <span className="basic-label"><span className="req">* </span>Password:</span>
+                    <span className="basic-label">
+                        <span className="req">* </span>Password:
+                    </span>
                     <input
                         type="password"
                         value={password}
@@ -40,11 +65,22 @@ export default function LoginPage() {
                         required
                     />
                 </label>
-                <a href="#" className='forgot-pwd'>Forgot your password?</a>
-                <button onClick={handleLogin} className='btn btn-quick'>
-                    Log in to your account
+
+                <a href="#" className="forgot-pwd">
+                    Forgot your password?
+                </a>
+
+                <button
+                    onClick={handleLogin}
+                    className="btn btn-quick"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? 'Logging in...' : 'Log in to your account'}
                 </button>
-                <span className='new-account'>No account yet? <Link to={"/signup"}>Create one</Link>.</span>
+
+                <span className="new-account">
+                    No account yet? <Link to="/signup">Create one</Link>.
+                </span>
             </div>
         </section>
     )

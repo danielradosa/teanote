@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useAuthStore } from '../stores/useAuthStore'
 import { Link, Navigate } from 'react-router-dom'
-import { MoonLoader } from 'react-spinners'
+import Loader from '../components/Loader'
 
 export default function SignupPage() {
-  const { signUp, user, loading } = useAuthStore()
+  const { signUp, user } = useAuthStore()
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -15,23 +15,8 @@ export default function SignupPage() {
   const [agreePrivacy, setAgreePrivacy] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const spinner = (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%',
-      width: '100%',
-      position: 'absolute',
-      left: 0,
-      top: 0
-    }}>
-      <MoonLoader size={30} color="#202121" />
-    </div>
-  )
-
-  if (loading) return spinner
   if (user) return <Navigate to="/" replace />
 
   const handleSignup = async () => {
@@ -39,21 +24,24 @@ export default function SignupPage() {
     setSuccess('')
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError('Please fill in all required fields.')
+      setError('Please fill in all required fields')
       return
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Passwords do not match')
       return
     }
 
     if (!agreeTerms || !agreePrivacy) {
-      setError('You must agree to the Terms of Use and Privacy Policy.')
+      setError('You must agree to the Terms of Use and Privacy Policy')
       return
     }
 
+    setIsSubmitting(true)
     const err = await signUp(email, password)
+    setIsSubmitting(false)
+
     if (err) setError(err.message || 'Something went wrong.')
     else setSuccess('Check your email for account verification.')
   }
@@ -62,10 +50,15 @@ export default function SignupPage() {
     <section className="signup">
       <div className="signup-form">
         <div className="logo-signup">🍵</div>
+
+        {isSubmitting && (
+          <Loader />
+        )}
+
         <h2>Sign up for Teanote</h2>
 
-        {error && <div className="error" style={{ marginBottom: 10 }}>{error}</div>}
-        {success && <div className="success" style={{ marginBottom: 10 }}>{success}</div>}
+        {error && <div className="msg error">{error}</div>}
+        {success && <div className="msg success">{success}</div>}
 
         <div className="name-row">
           <label>
@@ -111,7 +104,7 @@ export default function SignupPage() {
           />
         </label>
 
-        <label className="checkbox-label" style={{ marginTop: "16px" }}>
+        <label className="checkbox-label" style={{ marginTop: '16px' }}>
           <input
             type="checkbox"
             checked={agreeTerms}
@@ -131,8 +124,12 @@ export default function SignupPage() {
           <span>I agree to the <Link to="https://docs.teanote.xyz/privacy" target="_blank">Privacy Policy</Link></span>
         </label>
 
-        <button onClick={handleSignup} className="btn btn-quick signup-btn">
-          Create your account
+        <button
+          onClick={handleSignup}
+          className="btn btn-quick signup-btn"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Creating account...' : 'Create your account'}
         </button>
 
         <span className="existing-account">

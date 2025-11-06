@@ -79,6 +79,11 @@ header nav {
   }
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+}
+
 header .logo a {
   font-weight: 600;
   color: var(--text-color-light);
@@ -127,7 +132,8 @@ header .logo a {
 .brew-content,
 .journal-content,
 .tea-content,
-.settings-content {
+.settings-content,
+.account-content {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -138,7 +144,8 @@ header .logo a {
 .brew-content section,
 .journal-content section,
 .tea-content section,
-.settings-content section {
+.settings-content section,
+.account-content section {
   background: #f9f7f3;
   padding: 16px;
   border-radius: 8px;
@@ -407,4 +414,12 @@ input[type="checkbox"] {
 
 .signup-btn {
   margin-top: 16px !important;
+}
+
+.loader {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }

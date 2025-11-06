@@ -241,7 +241,7 @@ small {
 }
 
 .req {
-    color: crimson;
+    color: var(--danger-color);
 }
 
 .basic-label {
@@ -256,4 +256,36 @@ small {
     display: flex;
     align-items: center;
     max-width: max-content;
+}
+
+.msg {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 12px;
+    
+    &:first-letter {
+        text-transform: capitalize;
+    }
+}
+
+.msg.error {
+    color: var(--danger-color);
+    border-left: 8px solid var(--danger-color);
+    padding-left: 8px;
+}
+
+.msg.success {
+    color: var(--success-color);
+    border-left: 8px solid var(--success-color);
+    padding-left: 8px;
+}
+
+.trial-badge {
+    border: 1px solid var(--brand-secondary);
+    padding: 4px 12px;
+    border-radius: 22px;
+    background-color: white;
+    color: var(--brand-secondary);
+    margin-left: 32px;
+    font-size: 13px;
 }
