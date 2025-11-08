@@ -423,3 +423,19 @@ input[type="checkbox"] {
   align-items: center;
   position: relative;
 }
+
+.subscription-wrap {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+
+  .btn {
+    width: max-content;
+  }
+}
+
+.manage-account {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

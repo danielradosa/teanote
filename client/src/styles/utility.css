@@ -289,3 +289,14 @@ small {
     margin-left: 32px;
     font-size: 13px;
 }
+
+.sub-status {
+    border-radius: 22px;
+    border: 1px solid #202121;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+.btn-subscribe {
+    background-color: var(--success-color);
+}
