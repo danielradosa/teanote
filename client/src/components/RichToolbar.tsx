@@ -50,7 +50,7 @@ const RichToolbar: React.FC<RichToolbarProps> = ({ setValue, textareaRef }) => {
             <button type="button" onClick={() => insertAround("*", "*")} className='btn btn-action' style={{ fontStyle: 'italic' }}>i</button>
             <button type="button" onClick={() => insertAround("## ", "")} className='btn btn-action'>Heading</button>
             <button type="button" onClick={() => insertLines("- ")} className='btn btn-action'><i className="bxr bx-list-ul" /> List</button>
-            <small>use of markdown is recommended</small>
+            <small className='hide-mobile'>use of markdown is recommended</small>
         </div>
     )
 }

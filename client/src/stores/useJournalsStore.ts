@@ -5,6 +5,7 @@ import type { Journal } from '../types/Journal'
 import { v4 as uuid } from 'uuid'
 import { useAuthStore } from './useAuthStore'
 import { useSyncStore } from './useSyncStore'
+import { mergeRecords } from '../helpers/merge'
 
 interface JournalsState {
     journals: Journal[]
@@ -23,18 +24,29 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
         const { user } = useAuthStore.getState()
         if (!user) return
 
-        const newJournal: Journal = { ...journal, id: uuid(), user_id: user.id, dateAdded: new Date().toISOString() }
+        const newJournal: Journal = {
+            ...journal,
+            id: uuid(),
+            user_id: user.id,
+            dateAdded: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        }
+
         const updated = [...get().journals, newJournal]
         storage.set('journals', updated)
         set({ journals: updated })
-        get().syncJournals()
+
+        if (navigator.onLine) get().syncJournals()
     },
 
     updateJournal: (id, updates) => {
-        const updated = get().journals.map(j => j.id === id ? { ...j, ...updates } : j)
+        const updated = get().journals.map(j =>
+            j.id === id ? { ...j, ...updates, updated_at: new Date().toISOString() } : j
+        )
         storage.set('journals', updated)
         set({ journals: updated })
-        get().syncJournals()
+
+        if (navigator.onLine) get().syncJournals()
     },
 
     deleteJournal: async (id) => {
@@ -43,7 +55,7 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
         set({ journals: updated })
 
         const { user } = useAuthStore.getState()
-        if (!user) return
+        if (!user || !navigator.onLine) return
 
         const { error } = await supabase.from('journals').delete().eq('id', id).eq('user_id', user.id)
         if (error) console.error('❌ Failed to delete journal from DB:', error)
@@ -57,13 +69,11 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
 
         startSync()
         try {
-            const localJournals = storage.get<Journal[]>('journals') || []
+            const raw = storage.get<unknown>('journals')
+            const localJournals = Array.isArray(raw) ? raw as Journal[] : []
 
             for (const journal of localJournals) {
-                const { error } = await supabase
-                    .from('journals')
-                    .upsert([{ ...journal, user_id: user.id }], { onConflict: 'id' })
-                if (error) console.error('❌ Failed to upsert journal:', journal, error)
+                await supabase.from('journals').upsert([{ ...journal, user_id: user.id }], { onConflict: 'id' })
             }
 
             const { data: dbJournals, error: fetchError } = await supabase
@@ -77,14 +87,14 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
                 return
             }
 
-            const merged = [...new Map([...localJournals, ...(dbJournals || [])].map(j => [j.id, j])).values()]
+            const merged = mergeRecords(localJournals, dbJournals || [])
             storage.set('journals', merged)
-            const timestamp = new Date().toISOString()
-            set({ journals: merged, lastSync: timestamp })
+            set({ journals: merged, lastSync: new Date().toISOString() })
+
             finishSync(true)
         } catch (err) {
             console.error('❌ Unexpected error during syncJournals:', err)
-            useSyncStore.getState().finishSync(false)
+            finishSync(false)
         }
     }
 }))

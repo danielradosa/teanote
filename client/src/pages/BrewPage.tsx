@@ -324,7 +324,7 @@ function BrewPage() {
                         <p style={{ marginTop: 8 }}>no brews yet — start a new session</p>
                     )}
                 </section>
-                <section className="stats">
+                <section className="new-preset">
                     <div>
                         <h2>New preset</h2>
                         <div className="brew-main-actions">
@@ -567,7 +567,7 @@ function BrewPage() {
 
                     </section>
                 )}
-                <section className="quick-actions">
+                <section className="quick-actions new-sesion">
                     <div>
                         <h2>Start brew session</h2>
                         <div className='brew-main-actions'>
@@ -608,7 +608,9 @@ function BrewPage() {
                                 onClick={() => {
                                     if (!selectedTeaId) return alert('Select a tea first');
                                     const newId = addBrew({ teaId: selectedTeaId });
-                                    setActiveBrewId(newId);
+                                    if (typeof newId === 'string') {
+                                        setActiveBrewId(newId);
+                                    }
                                 }}
                             >
                                 <i className="bxr bx-alarm-plus" /> start brew

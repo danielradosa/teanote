@@ -9,7 +9,8 @@ textarea {
     border: 1px solid #ccc;
 }
 
-input, select{
+input,
+select {
     min-width: 0;
 }
 
@@ -184,7 +185,8 @@ small {
 }
 
 .tea-tag-generic,
-.tea-tag-undefined {
+.tea-tag-undefined,
+.tea-tag-any {
     background: #ccc !important;
     color: #474747 !important;
 }
@@ -252,7 +254,7 @@ small {
     color: #202121;
 }
 
-.filter-label{
+.filter-label {
     display: flex;
     align-items: center;
     max-width: max-content;
@@ -262,7 +264,7 @@ small {
     width: 100%;
     text-align: left;
     margin-bottom: 12px;
-    
+
     &:first-letter {
         text-transform: capitalize;
     }
@@ -299,4 +301,10 @@ small {
 
 .btn-subscribe {
     background-color: var(--success-color);
+}
+
+@media(max-width: 860px) {
+    .hide-mobile {
+        display: none;
+    }
 }

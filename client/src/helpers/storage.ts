@@ -1,10 +1,10 @@
 export const storage = {
-    get<T>(key: string): T | null {
+    get<T>(key: string, fallback?: T): T {
         try {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : null;
+            const data = localStorage.getItem(key)
+            return data ? JSON.parse(data) : (fallback as T)
         } catch {
-            return null;
+            return fallback as T
         }
     },
 

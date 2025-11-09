@@ -7,4 +7,5 @@ export interface Journal {
     rating?: number
     content: string
     dateAdded: string
+    updated_at?: string
 }

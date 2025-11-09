@@ -5,6 +5,7 @@ import type { Tea } from '../types/Tea'
 import { v4 as uuid } from 'uuid'
 import { useAuthStore } from './useAuthStore'
 import { useSyncStore } from './useSyncStore'
+import { mergeRecords } from '../helpers/merge'
 
 interface TeasState {
     teas: Tea[]
@@ -23,18 +24,29 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         const { user } = useAuthStore.getState()
         if (!user) return
 
-        const newTea: Tea = { ...tea, id: uuid(), user_id: user.id, dateAdded: new Date().toISOString() }
+        const newTea: Tea = {
+            ...tea,
+            id: uuid(),
+            user_id: user.id,
+            dateAdded: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        }
+
         const updated = [...get().teas, newTea]
         storage.set('teas', updated)
         set({ teas: updated })
-        get().syncTeas()
+
+        if (navigator.onLine) get().syncTeas()
     },
 
     updateTea: (id, updates) => {
-        const updated = get().teas.map(t => t.id === id ? { ...t, ...updates } : t)
+        const updated = get().teas.map(t =>
+            t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
+        )
         storage.set('teas', updated)
         set({ teas: updated })
-        get().syncTeas()
+
+        if (navigator.onLine) get().syncTeas()
     },
 
     deleteTea: async (id) => {
@@ -43,7 +55,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         set({ teas: updated })
 
         const { user } = useAuthStore.getState()
-        if (!user) return
+        if (!user || !navigator.onLine) return
 
         const { error } = await supabase.from('teas').delete().eq('id', id).eq('user_id', user.id)
         if (error) console.error('❌ Failed to delete tea from DB:', error)
@@ -59,13 +71,12 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         try {
             const localTeas = storage.get<Tea[]>('teas') || []
 
+            // Push all local items to DB (upsert)
             for (const tea of localTeas) {
-                const { error } = await supabase
-                    .from('teas')
-                    .upsert([{ ...tea, user_id: user.id }], { onConflict: 'id' })
-                if (error) console.error('❌ Failed to upsert tea:', tea, error)
+                await supabase.from('teas').upsert([{ ...tea, user_id: user.id }], { onConflict: 'id' })
             }
 
+            // Pull everything from DB
             const { data: dbTeas, error: fetchError } = await supabase
                 .from('teas')
                 .select('*')
@@ -77,14 +88,14 @@ export const useTeasStore = create<TeasState>((set, get) => ({
                 return
             }
 
-            const merged = [...new Map([...localTeas, ...(dbTeas || [])].map(t => [t.id, t])).values()]
+            const merged = mergeRecords(localTeas, dbTeas || [])
             storage.set('teas', merged)
-            const timestamp = new Date().toISOString()
-            set({ teas: merged, lastSync: timestamp })
+            set({ teas: merged, lastSync: new Date().toISOString() })
+
             finishSync(true)
         } catch (err) {
             console.error('❌ Unexpected error during syncTeas:', err)
-            useSyncStore.getState().finishSync(false)
+            finishSync(false)
         }
     }
 }))
