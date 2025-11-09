@@ -29,12 +29,10 @@ export default function App() {
             <div className="layout">
                 <DesktopSidebar />
                 <main>
-                    {!initialized ? (
-                        spinner
-                    ) : access === 'unknown' ? (
+                    {!initialized || access === 'unknown' ? (
                         spinner
                     ) : access === 'denied' ? (
-                        <div>
+                        <div style={{ padding: 16 }}>
                             <h2>Your trial has expired</h2>
                             <p>Please subscribe to continue.</p>
                         </div>

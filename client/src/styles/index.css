@@ -439,3 +439,11 @@ input[type="checkbox"] {
   flex-direction: column;
   gap: 10px;
 }
+
+.sidebar-footer {
+  text-align: center;
+
+  small {
+    text-align: center;
+  }
+}

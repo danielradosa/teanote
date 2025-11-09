@@ -1,22 +1,26 @@
 import { MoonLoader } from 'react-spinners'
 
-function Loader() {
-    const spinner = (
-        <div style={{
+interface LoaderProps {
+    size?: number
+    color?: string
+    inline?: boolean
+}
+
+function Loader({ size = 30, color = '#202121', inline = false }: LoaderProps) {
+    const style: React.CSSProperties = inline
+        ? { display: 'inline-flex', alignItems: 'center' }
+        : {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
             width: '100%',
             marginBottom: 16,
-        }}>
-            <MoonLoader size={30} color="#202121" />
-        </div>
-    )
+        }
 
     return (
-        <div className="loader">
-            {spinner}
+        <div style={style}>
+            <MoonLoader size={size} color={color} />
         </div>
     )
 }

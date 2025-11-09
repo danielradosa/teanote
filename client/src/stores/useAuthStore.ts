@@ -9,6 +9,8 @@ interface AuthState {
     initialized: boolean
     loading: boolean
     trialDaysLeft: number | null
+    isSubscribed: boolean
+    subscriptionEnd: string | null
     initAuth: () => Promise<void>
     checkAccess: (userId: string) => Promise<void>
     signUp: (email: string, password: string) => Promise<AuthError | null>
@@ -17,7 +19,7 @@ interface AuthState {
     signOut: () => Promise<void>
 }
 
-// Synchronously read session from localStorage for instant initial state
+// read cached session for instant initial state
 function getCachedSession(): Session | null {
     try {
         const key = Object.keys(localStorage).find((k) => k.includes('auth-token'))
@@ -34,6 +36,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     session: getCachedSession(),
     access: getCachedSession()?.user ? 'unknown' : 'denied',
     trialDaysLeft: null,
+    isSubscribed: false,
+    subscriptionEnd: null,
     initialized: false,
     loading: !getCachedSession(),
 
@@ -43,6 +47,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             user: cached?.user ?? null,
             session: cached ?? null,
             access: cached?.user ? 'unknown' : 'denied',
+            isSubscribed: false,
+            subscriptionEnd: null,
             initialized: true,
             loading: false,
         })
@@ -61,7 +67,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 
     checkAccess: async (userId: string) => {
-        if (!userId) return set({ access: 'denied', trialDaysLeft: null })
+        if (!userId) return set({ access: 'allowed', trialDaysLeft: null, isSubscribed: false, subscriptionEnd: null })
 
         const { data, error } = await supabase
             .from('profiles')
@@ -69,38 +75,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             .eq('id', userId)
             .maybeSingle()
 
-        if (error || !data) return set({ access: 'denied', trialDaysLeft: null })
+        if (error || !data) return set({ access: 'allowed', trialDaysLeft: null, isSubscribed: false, subscriptionEnd: null })
 
         const now = new Date()
-        let endDate: Date | null = null
-        let daysLeft = 0
+        const subscriptionEndDate: Date | null = data.subscription_end ? new Date(data.subscription_end) : null
+        const trialStartDate: Date | null = data.trial_start ? new Date(data.trial_start) : null
 
-        if (data.is_subscribed && data.subscription_end) {
-            endDate = new Date(data.subscription_end)
-        } else if (data.trial_start) {
-            endDate = new Date(data.trial_start)
-            endDate.setDate(endDate.getDate() + 30)
+        const isSubActive = data.is_subscribed
+
+        let trialDaysLeft = 0
+        if (!isSubActive && trialStartDate) {
+            trialDaysLeft = 30 - Math.floor((now.getTime() - trialStartDate.getTime()) / (1000 * 60 * 60 * 24))
+            if (trialDaysLeft < 0) trialDaysLeft = 0
         }
 
-        if (endDate) {
-            daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-            set({
-                access: daysLeft > 0 ? 'allowed' : 'denied',
-                trialDaysLeft: daysLeft > 0 ? daysLeft : 0,
-            })
-        } else {
-            set({ access: 'denied', trialDaysLeft: 0 })
-        }
+        set({
+            isSubscribed: isSubActive,
+            subscriptionEnd: subscriptionEndDate?.toISOString() ?? null,
+            trialDaysLeft: !isSubActive ? trialDaysLeft : null,
+            access: 'allowed',
+        })
     },
 
     signUp: async (email, password) => {
         const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) return error
-
-        const user = data.user
-        if (!user) return null
-
-        await get().checkAccess(user.id)
+        if (!data.user) return null
+        await get().checkAccess(data.user.id)
         return null
     },
 
@@ -122,6 +123,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     signOut: async () => {
         await supabase.auth.signOut()
-        set({ user: null, session: null, access: 'denied', trialDaysLeft: null })
+        set({ user: null, session: null, access: 'denied', trialDaysLeft: null, isSubscribed: false, subscriptionEnd: null })
     },
 }))
