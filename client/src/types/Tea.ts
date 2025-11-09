@@ -1,5 +1,6 @@
 export interface Tea {
     id: string
+    user_id?: string
     name: string
     type: 'green' | 'purple' | 'red' | 'white' | 'yellow' | 'puerh' | 'oolong'
     origin?: string
