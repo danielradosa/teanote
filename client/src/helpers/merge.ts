@@ -1,9 +1,6 @@
 export function mergeRecords<
     T extends { id: string; updated_at?: string; deleted_at?: string | null }
->(
-    local: T[],
-    remote: T[]
-): T[] {
+>(local: T[], remote: T[]): T[] {
     const merged = new Map<string, T>();
 
     for (const r of remote) merged.set(r.id, r);
@@ -16,15 +13,20 @@ export function mergeRecords<
             continue;
         }
 
-        const localTime = new Date(l.updated_at ?? 0).getTime();
-        const remoteTime = new Date(remoteItem.updated_at ?? 0).getTime();
+        const localTime = l.updated_at ? new Date(l.updated_at).getTime() : 0;
+        const remoteTime = remoteItem.updated_at ? new Date(remoteItem.updated_at).getTime() : 0;
 
-        if (l.deleted_at || remoteItem.deleted_at) {
-            const localDel = l.deleted_at ? new Date(l.deleted_at).getTime() : 0;
-            const remoteDel = remoteItem.deleted_at ? new Date(remoteItem.deleted_at).getTime() : 0;
-            merged.set(l.id, localDel > remoteDel ? l : remoteItem);
+        const localDel = l.deleted_at ? new Date(l.deleted_at).getTime() : 0;
+        const remoteDel = remoteItem.deleted_at ? new Date(remoteItem.deleted_at).getTime() : 0;
+
+        if (remoteDel && !l.deleted_at) {
+            merged.set(l.id, remoteItem);
+        } else if (localDel && (!remoteItem.deleted_at || localDel > remoteDel)) {
+            merged.set(l.id, l);
+        } else if (localTime > remoteTime) {
+            merged.set(l.id, l);
         } else {
-            merged.set(l.id, localTime > remoteTime ? l : remoteItem);
+            merged.set(l.id, remoteItem);
         }
     }
 
