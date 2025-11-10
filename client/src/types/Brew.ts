@@ -15,6 +15,7 @@ export interface Brew {
     created_at: string
     updated_at: string
     user_id?: string
+    deleted_at: string | null
 }
 
 export interface Preset {
@@ -27,4 +28,5 @@ export interface Preset {
     created_at: string
     updated_at: string
     user_id?: string
+    deleted_at: string | null
 }

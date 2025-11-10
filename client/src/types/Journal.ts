@@ -7,5 +7,6 @@ export interface Journal {
     rating?: number
     content: string
     dateAdded: string
-    updated_at?: string
+    updated_at: string
+    deleted_at: string | null
 }

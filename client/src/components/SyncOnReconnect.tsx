@@ -14,42 +14,29 @@ function SyncOnReconnect() {
     useEffect(() => {
         if (!user) return
 
-        const initialSync = async () => {
+        const doSync = async () => {
             setStatus('syncing')
             try {
-                await syncTeas()
-                await syncJournals()
-                await syncBrews()
-                await syncPresets()
-                await checkAccess(user.id)
+                await Promise.all([
+                    syncTeas(),
+                    syncJournals(),
+                    syncBrews(),
+                    syncPresets(),
+                    checkAccess(user.id),
+                ])
                 setStatus('online')
             } catch (err) {
-                console.error('❌ Initial sync error:', err)
+                console.error('❌ Sync error:', err)
                 setStatus('offline')
             } finally {
                 setTimeout(() => setStatus(null), 2000)
             }
         }
 
-        initialSync()
+        doSync()
 
-        async function handleOnline() {
-            setStatus('syncing')
-            try {
-                if (!user) return
-                const { id } = user
-                await syncTeas()
-                await syncJournals()
-                await syncBrews()
-                await syncPresets()
-                await checkAccess(id)
-                setStatus('online')
-            } catch (err) {
-                console.error('❌ Sync error on reconnect:', err)
-                setStatus('offline')
-            } finally {
-                setTimeout(() => setStatus(null), 2000)
-            }
+        function handleOnline() {
+            doSync()
         }
 
         function handleOffline() {
@@ -60,7 +47,7 @@ function SyncOnReconnect() {
         window.addEventListener('offline', handleOffline)
 
         const interval = setInterval(() => {
-            if (navigator.onLine) handleOnline()
+            if (navigator.onLine) doSync()
         }, 5 * 60 * 1000)
 
         if (!navigator.onLine) handleOffline()
@@ -84,7 +71,7 @@ function SyncOnReconnect() {
         }}>
             <small>
                 {status === 'offline' && '❌ Connection lost'}
-                {status === 'syncing' && '🌐 Back online'}
+                {status === 'online' && '🌐 Back online'}
             </small>
         </div>
     )
