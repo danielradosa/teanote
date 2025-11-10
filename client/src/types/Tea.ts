@@ -9,8 +9,8 @@ export interface Tea {
     notes?: string
     image?: string
     link?: string
-    dateAdded: string
+    dateAdded?: string
     created_at?: string
-    updated_at: string
-    deleted_at: string | null
+    updated_at?: string
+    deleted_at?: string | null
 }

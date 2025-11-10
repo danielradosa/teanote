@@ -12,10 +12,10 @@ export interface Brew {
     infusions: Infusion[]
     notes?: string
     rating?: number
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
     user_id?: string
-    deleted_at: string | null
+    deleted_at?: string | null
 }
 
 export interface Preset {
@@ -25,8 +25,8 @@ export interface Preset {
     teaType?: string
     infusionsAmount: number
     infusionTimes: number[]
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
     user_id?: string
-    deleted_at: string | null
+    deleted_at?: string | null
 }

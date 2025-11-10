@@ -6,7 +6,7 @@ export interface Journal {
     title: string
     rating?: number
     content: string
-    dateAdded: string
-    updated_at: string
-    deleted_at: string | null
+    dateAdded?: string
+    updated_at?: string
+    deleted_at?: string | null
 }
