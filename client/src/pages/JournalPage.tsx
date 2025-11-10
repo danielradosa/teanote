@@ -8,6 +8,7 @@ import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import SearchBar from '../components/SearchBar'
+import { useToggleFilters } from '../hooks/toggleFilters';
 
 function JournalPage() {
     const { visibleTeas } = useTeasStore()
@@ -21,12 +22,23 @@ function JournalPage() {
     const [typeFilter, setTypeFilter] = useState<string>('')
     const [ratingFilter, setRatingFilter] = useState<number | ''>('')
     const [search, setSearch] = useState('')
+    const { showFilters, toggleFilters } = useToggleFilters();
 
     const batchSize = 6;
     const [journalItemsToShow, setJournalItemsToShow] = useState(batchSize)
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+    useEffect(() => {
+        if (editingJournal) {
+            const el = document.querySelector('.edit-panel') as HTMLElement | null;
+            if (el) {
+                const y = el.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        }
+    }, [editingJournal]);
 
     const handleAddJournal = () => {
         if (!form.title.trim() || !form.content.trim()) return alert('Title and content required')
@@ -84,9 +96,13 @@ function JournalPage() {
             <div className="journal-content">
                 {/* Journal Filters */}
                 <section className="journal-filters" style={{ flex: '1 1 100%' }}>
-                    <h2>Filter journals</h2>
-                    <div className='filter-wrap'>
-                        {/* Tea type dropdown */}
+                    <h2 onClick={toggleFilters}>
+                        Filter journals
+                        <span className="toggle-label">
+                            {showFilters ? '– hide filters' : '+ show filters'}
+                        </span>
+                    </h2>
+                    {showFilters && <div className='filter-wrap'>
                         <label className='filter-label'>
                             Type:&nbsp;
                             <div className="select-wrap">
@@ -122,7 +138,7 @@ function JournalPage() {
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>
+                    </div>}
                 </section>
                 {/* Journal List */}
                 <section className="journal-table">

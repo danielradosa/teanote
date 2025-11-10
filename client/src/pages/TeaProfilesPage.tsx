@@ -7,10 +7,13 @@ import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
 import SearchBar from '../components/SearchBar'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { useToggleFilters } from '../hooks/toggleFilters';
 
 function TeaProfilesPage() {
     const { addTea, deleteTea, updateTea, visibleTeas } = useTeasStore()
     const teas = visibleTeas()
+
+    const { showFilters, toggleFilters } = useToggleFilters();
 
     const emptyForm: Omit<Tea, 'id' | 'dateAdded'> = {
         name: '',
@@ -37,6 +40,16 @@ function TeaProfilesPage() {
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+    useEffect(() => {
+        if (editingTea) {
+            const el = document.querySelector('.edit-panel') as HTMLElement | null;
+            if (el) {
+                const y = el.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        }
+    }, [editingTea]);
 
     const handleAddTea = () => {
         if (!form.name.trim()) return alert('A tea name is required')
@@ -89,8 +102,13 @@ function TeaProfilesPage() {
             </header>
             <div className="tea-content">
                 <section className="tea-filters" style={{ flex: '1 1 100%' }}>
-                    <h2>Filter teas</h2>
-                    <div className='filter-wrap'>
+                    <h2 onClick={toggleFilters}>
+                        Filter teas
+                        <span className="toggle-label">
+                            {showFilters ? '– hide filters' : '+ show filters'}
+                        </span>
+                    </h2>
+                    {showFilters && <div className='filter-wrap'>
                         <label className='filter-label'>
                             Type:&nbsp;
                             <div className="select-wrap">
@@ -122,7 +140,7 @@ function TeaProfilesPage() {
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setYearFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>
+                    </div>}
                 </section>
                 <section className="tea-table">
                     <h2>All teas</h2>

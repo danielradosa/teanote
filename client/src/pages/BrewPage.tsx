@@ -7,6 +7,7 @@ import BrewTimer from '../components/brew/BrewTimer'
 import SearchBar from '../components/SearchBar'
 import type { Brew, Preset } from '../types/Brew'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { useToggleFilters } from '../hooks/toggleFilters';
 
 function BrewPage() {
     const {
@@ -49,6 +50,17 @@ function BrewPage() {
     const [editTeaType, setEditTeaType] = useState('');
     const [editInfusionsAmount, setEditInfusionsAmount] = useState<number>(1);
     const [editInfusionTimes, setEditInfusionTimes] = useState('');
+    const { showFilters, toggleFilters } = useToggleFilters();
+
+    useEffect(() => {
+        if (editingPresetId) {
+            const el = document.querySelector('.edit-preset-container') as HTMLElement | null;
+            if (el) {
+                const y = el.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        }
+    }, [editingPresetId]);
 
     const beginEditPreset = (preset: Preset) => {
         setEditingPresetId(preset.id);
@@ -211,8 +223,13 @@ function BrewPage() {
             <div className="brew-content">
                 {/* Brew Filters */}
                 <section className="brew-filters" style={{ flex: '1 1 100%' }}>
-                    <h2>Filter brews</h2>
-                    <div className='filter-wrap'>
+                    <h2 onClick={toggleFilters}>
+                        Filter brews
+                        <span className="toggle-label">
+                            {showFilters ? '– hide filters' : '+ show filters'}
+                        </span>
+                    </h2>
+                    {showFilters && <div className='filter-wrap'>
                         <label className='filter-label'>
                             # of infusions/steeps:&nbsp;
                             <div className="select-wrap">
@@ -252,7 +269,7 @@ function BrewPage() {
                             onClick={() => { setSelectedInfusions(null); setSelectedLength(null); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>
+                    </div>}
                 </section>
                 {/* Brews list */}
                 <section className="recent-sessions">
@@ -384,9 +401,11 @@ function BrewPage() {
                                     style={{ width: '100%' }}
                                 />
                             </label>
-                            <button className="btn btn-quick" onClick={handleAddPreset}>
-                                <i className="bxr bx-plus" /> add preset
-                            </button>
+                            <div className="brew-actions">
+                                <button className="btn btn-quick" onClick={handleAddPreset}>
+                                    <i className="bxr bx-plus" /> add preset
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div style={{ marginTop: '16px' }}>
@@ -542,7 +561,7 @@ function BrewPage() {
                                         style={{ width: '100%' }}
                                     />
                                 </label>
-                                <div style={{ display: 'flex', gap: 8 }}>
+                                <div style={{ display: 'flex', gap: 8 }} className='brew-actions'>
                                     <button className="btn btn-quick" type="submit">
                                         <i className="bxr bx-save" /> save
                                     </button>
@@ -591,18 +610,20 @@ function BrewPage() {
                                     <span className='arr-down'></span>
                                 </div>
                             </label>
-                            <button
-                                className="btn btn-quick"
-                                onClick={() => {
-                                    if (!selectedTeaId) return alert('Select a tea first');
-                                    const newId = addBrew({ teaId: selectedTeaId, presetId: selectedPresetId || undefined });
-                                    if (typeof newId === 'string') {
-                                        setActiveBrewId(newId);
-                                    }
-                                }}
-                            >
-                                <i className="bxr bx-alarm-plus" /> start brew
-                            </button>
+                            <div className="brew-actions">
+                                <button
+                                    className="btn btn-quick"
+                                    onClick={() => {
+                                        if (!selectedTeaId) return alert('Select a tea first');
+                                        const newId = addBrew({ teaId: selectedTeaId, presetId: selectedPresetId || undefined });
+                                        if (typeof newId === 'string') {
+                                            setActiveBrewId(newId);
+                                        }
+                                    }}
+                                >
+                                    <i className="bxr bx-alarm-plus" /> start brew
+                                </button>
+                            </div>
                         </div>
                         {activeBrewId && (
                             <BrewTimer

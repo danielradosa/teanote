@@ -3,6 +3,24 @@
         flex-direction: column;
     }
 
+    .app {
+        height: max-content !important;
+    }
+
+    header.main-header {
+        padding: 20px 10px;
+    }
+
+    .main-header .logo {
+         justify-content: space-between;
+         width: 100%;
+         padding: 0 14px;
+    }
+
+    header nav {
+        display: none !important;
+    }
+
     .main-header nav a {
         display: none;
     }
@@ -22,7 +40,7 @@
         a {
             align-items: center !important;
             text-align: center;
-            font-size: 13px;
+            font-size: 16px;
         }
     }
 
@@ -54,12 +72,14 @@
     }
 
     .new-tea,
-    .new-preset {
+    .new-preset,
+    .new-journal {
         order: 1;
     }
 
     .tea-table,
-    .new-session {
+    .new-session,
+    .journal-table {
         order: 2;
     }
 
@@ -70,5 +90,30 @@
     .edit-panel,
     .new-tea {
         width: 100%;
+    }
+
+    .tea-actions, .journal-actions, .brew-actions {
+        position: sticky;
+        bottom: 80px;
+    }
+
+    .tea-filters, .brew-filters, .journal-filters {
+        position: sticky;
+        top: 85px;
+        z-index: 3;
+        background-color: transparent !important;
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow-container);
+    }
+
+    .toggle-label {
+        font-size: 16px;
+        color: var(--brand-secondary-light);
+    }
+
+    .tea-filters h2, .brew-filters h2, .journal-filters h2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 }

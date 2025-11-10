@@ -24,10 +24,10 @@ function DesktopNav() {
                 <Link to="/">🍵 Teanote</Link>
                 <span className='trial-badge'>
                     {hasActiveSubscription
-                        ? 'ACTIVE SUBSCRIPTION ✅'
+                        ? '🍃 subscription: active'
                         : hasTrial
-                            ? `TRIAL ${trialDaysLeft}d left ⏳`
-                            : 'TRIAL / SUBSCRIPTION EXPIRED ⚠️'}
+                            ? `⏳ trial: ${trialDaysLeft}d left`
+                            : '⚠️ subscription: expired'}
                 </span>
             </div>
             <nav>
