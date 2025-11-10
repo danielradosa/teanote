@@ -41,13 +41,20 @@ function TeaProfilesPage() {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
+    const firstOpenRef = useRef(false);
+
     useEffect(() => {
-        if (editingTea && window.innerWidth < 860) {
+        if (editingTea && window.innerWidth < 860 && !firstOpenRef.current) {
+            firstOpenRef.current = true;
             const el = document.querySelector('.edit-panel') as HTMLElement | null;
             if (el) {
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });
             }
+        }
+
+        if (!editingTea) {
+            firstOpenRef.current = false;
         }
     }, [editingTea]);
 

@@ -30,13 +30,20 @@ function JournalPage() {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
+    const firstOpenRef = useRef(false);
+
     useEffect(() => {
-        if (editingJournal && window.innerWidth < 860) {
+        if (editingJournal && window.innerWidth < 860 && !firstOpenRef.current) {
+            firstOpenRef.current = true;
             const el = document.querySelector('.edit-panel') as HTMLElement | null;
             if (el) {
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });
             }
+        }
+
+        if (!editingJournal) {
+            firstOpenRef.current = false;
         }
     }, [editingJournal]);
 

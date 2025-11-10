@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useBrewsStore } from '../stores/useBrewsStore'
 import { useTeasStore } from '../stores/useTeasStore'
 import BrewTimer from '../components/brew/BrewTimer'
@@ -52,13 +52,20 @@ function BrewPage() {
     const [editInfusionTimes, setEditInfusionTimes] = useState('');
     const { showFilters, toggleFilters } = useToggleFilters();
 
+    const firstOpenRef = useRef(false);
+
     useEffect(() => {
-        if (editingPresetId && window.innerWidth < 860) {
+        if (editingPresetId && window.innerWidth < 860 && !firstOpenRef.current) {
+            firstOpenRef.current = true;
             const el = document.querySelector('.edit-panel') as HTMLElement | null;
             if (el) {
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });
             }
+        }
+
+        if (!editingPresetId) {
+            firstOpenRef.current = false;
         }
     }, [editingPresetId]);
 
