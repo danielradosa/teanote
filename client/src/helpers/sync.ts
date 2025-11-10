@@ -28,6 +28,11 @@ export async function syncData<T extends { id: string; updated_at: string; delet
 
         for (const item of merged) {
             const remoteItem = remoteData.find(r => r.id === item.id);
+
+            if (remoteItem?.deleted_at && !item.deleted_at) {
+                continue; 
+            }
+
             if (!remoteItem || new Date(item.updated_at).getTime() > new Date(remoteItem.updated_at).getTime()) {
                 await supabase.from(table).upsert([{ ...item, user_id: user.id }], { onConflict: 'id' });
             }
