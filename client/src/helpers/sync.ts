@@ -29,10 +29,16 @@ export async function syncData<T extends { id: string; updated_at: string; delet
         for (const item of merged) {
             const remoteItem = remoteData.find(r => r.id === item.id);
 
-            if (remoteItem?.deleted_at && !item.deleted_at) {
-                continue; 
+            // If remote has deleted_at set, never overwrite with local null
+            if (remoteItem?.deleted_at && !item.deleted_at) continue;
+
+            // If local has deleted_at set and remote doesn't → push deletion
+            if (item.deleted_at && (!remoteItem?.deleted_at || new Date(item.deleted_at).getTime() > new Date(remoteItem.deleted_at || 0).getTime())) {
+                await supabase.from(table).upsert([{ ...item, user_id: user.id }], { onConflict: 'id' });
+                continue;
             }
 
+            // Otherwise, push if local updated_at is newer
             if (!remoteItem || new Date(item.updated_at).getTime() > new Date(remoteItem.updated_at).getTime()) {
                 await supabase.from(table).upsert([{ ...item, user_id: user.id }], { onConflict: 'id' });
             }

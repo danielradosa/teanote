@@ -19,16 +19,16 @@ export function mergeRecords<
         const localDel = l.deleted_at ? new Date(l.deleted_at).getTime() : 0;
         const remoteDel = remoteItem.deleted_at ? new Date(remoteItem.deleted_at).getTime() : 0;
 
-        if (remoteDel && !l.deleted_at) {
-            merged.set(l.id, remoteItem);
-        } else if (localDel && (!remoteItem.deleted_at || localDel > remoteDel)) {
-            merged.set(l.id, l);
-        } else if (localTime > remoteTime) {
-            merged.set(l.id, l);
+        // If one is deleted, pick the most recent deleted_at or updated_at
+        if (localDel || remoteDel) {
+            if (localDel > remoteDel) merged.set(l.id, l);
+            else merged.set(l.id, remoteItem);
         } else {
-            merged.set(l.id, remoteItem);
+            // Neither deleted → pick the most recently updated
+            if (localTime > remoteTime) merged.set(l.id, l);
+            else merged.set(l.id, remoteItem);
         }
     }
 
-    return Array.from(merged.values()).filter(item => !item.deleted_at);
+    return Array.from(merged.values());
 }
