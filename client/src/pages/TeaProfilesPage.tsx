@@ -9,7 +9,8 @@ import SearchBar from '../components/SearchBar'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 function TeaProfilesPage() {
-    const { teas, addTea, deleteTea, updateTea } = useTeasStore()
+    const { addTea, deleteTea, updateTea, visibleTeas } = useTeasStore()
+    const teas = visibleTeas()
 
     const emptyForm: Omit<Tea, 'id' | 'dateAdded'> = {
         name: '',
@@ -19,7 +20,8 @@ function TeaProfilesPage() {
         vendor: '',
         notes: '',
         image: '',
-        link: ''
+        link: '',
+        updated_at: ''
     }
 
     const [form, setForm] = useState(emptyForm)

@@ -1,17 +1,30 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useBrewsStore } from '../stores/useBrewsStore'
 import { useTeasStore } from '../stores/useTeasStore'
 import BrewTimer from '../components/brew/BrewTimer'
 import SearchBar from '../components/SearchBar'
-import { useState } from 'react'
 import type { Brew, Preset } from '../types/Brew'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 function BrewPage() {
-    const { brews, addBrew, deleteBrew, addPreset, updatePreset, deletePreset, presets } = useBrewsStore()
-    const { teas } = useTeasStore()
+    const {
+        visibleBrews,
+        addBrew,
+        deleteBrew,
+        addPreset,
+        updatePreset,
+        deletePreset,
+        visiblePresets
+    } = useBrewsStore()
+
+    const { visibleTeas } = useTeasStore()
+    const teas = visibleTeas()
+
+    const brews = visibleBrews()
+    const presets = visiblePresets()
+
     const [activeBrewId, setActiveBrewId] = useState<string | null>(null)
     const [selectedTeaId, setSelectedTeaId] = useState<string>('')
     const [selectedInfusions, setSelectedInfusions] = useState<number | null>(null)
@@ -135,12 +148,7 @@ function BrewPage() {
             infusionTimes: timesArr
         });
 
-        setEditingPresetId(null);
-        setEditName('');
-        setEditTeaId('');
-        setEditTeaType('');
-        setEditInfusionsAmount(1);
-        setEditInfusionTimes('');
+        cancelEdit();
     };
 
     const cancelEdit = () => {
@@ -152,53 +160,29 @@ function BrewPage() {
         setEditInfusionTimes('');
     };
 
-    const actualInfusionCounts = Array.from(
-        new Set(brews.map(brew => brew.infusions.length).filter(count => count > 0))
-    );
+    // Prepare options for filters
+    const actualInfusionCounts = Array.from(new Set(brews.map(b => b.infusions.length).filter(c => c > 0)));
+    const infusionOptions = actualInfusionCounts.sort((a, b) => a - b).map(c => <option key={c} value={c}>{c}</option>);
 
-    const infusionOptions = actualInfusionCounts
-        .sort((a, b) => a - b)
-        .map(count => (
-            <option key={count} value={count}>{count}</option>
-        ));
+    const actualBrewLengths = Array.from(new Set(brews.filter(b => b.infusions.length > 0).map(b => b.infusions.reduce((sum, i) => sum + i.actualTime, 0))));
+    const brewLengthOptions = actualBrewLengths.sort((a, b) => a - b).map(l => <option key={l} value={l}>{l}s</option>);
 
-    const actualBrewLengths = Array.from(
-        new Set(
-            brews
-                .filter(brew => brew.infusions.length > 0)
-                .map(brew => brew.infusions.reduce((sum, inf) => sum + inf.actualTime, 0))
-        )
-    );
-
-    const brewLengthOptions = actualBrewLengths
-        .sort((a, b) => a - b)
-        .map(len => (
-            <option key={len} value={len}>{len}s</option>
-        ));
-
-    const filteredBrews = brews.filter(brew => {
-        const infusionCount = brew.infusions.length;
-        const totalLength = brew.infusions.reduce((sum, inf) => sum + inf.actualTime, 0);
-
-        const tea = teas.find(t => t.id === brew.teaId);
+    const filteredBrews = brews.filter(b => {
+        const infusionCount = b.infusions.length;
+        const totalLength = b.infusions.reduce((sum, inf) => sum + inf.actualTime, 0);
+        const tea = teas.find(t => t.id === b.teaId);
         const matchesSearch = !search || (tea && tea.name.toLowerCase().includes(search.toLowerCase()));
-
         if ((selectedInfusions || selectedLength) && infusionCount === 0) return false;
-
-        return (
-            (!selectedInfusions || infusionCount === selectedInfusions) &&
+        return (!selectedInfusions || infusionCount === selectedInfusions) &&
             (!selectedLength || totalLength === selectedLength) &&
-            matchesSearch
-        );
+            matchesSearch;
     });
 
-    const filteredPresets = presets.filter(p =>
-    (!search
+    const filteredPresets = presets.filter(p => !search
         || p.name.toLowerCase().includes(search.toLowerCase())
         || (p.teaId && teas.find(t => t.id === p.teaId)?.name?.toLowerCase().includes(search.toLowerCase()))
         || (p.teaType && p.teaType.toLowerCase().includes(search.toLowerCase()))
-    )
-    )
+    );
 
     const orderedBrews = [...filteredBrews].reverse();
 
@@ -213,10 +197,9 @@ function BrewPage() {
             }
         };
         requestAnimationFrame(ensureScrollable);
-        // eslint-disable-next-line
-    }, [brews]);
+    }, [brewItemsToShow, brews, orderedBrews.length]);
 
-    const fetchMoreBrews = () => setBrewItemsToShow(prev => prev + 6);
+    const fetchMoreBrews = () => setBrewItemsToShow(prev => prev + batchSize);
 
     return (
         <section className="page-wrap brew-page">
@@ -302,6 +285,11 @@ function BrewPage() {
                                                     }
                                                 </div>
                                                 <div className="brew-meta">
+                                                    {brew.presetId && (
+                                                        <div style={{ fontStyle: 'italic', color: '#555' }}>
+                                                            Preset used: {presets.find(p => p.id === brew.presetId)?.name}
+                                                        </div>
+                                                    )}
                                                     <span>
                                                         {totalTime}s total • Infusions:&nbsp;
                                                         {infusionTimes.length > 0
@@ -607,7 +595,7 @@ function BrewPage() {
                                 className="btn btn-quick"
                                 onClick={() => {
                                     if (!selectedTeaId) return alert('Select a tea first');
-                                    const newId = addBrew({ teaId: selectedTeaId });
+                                    const newId = addBrew({ teaId: selectedTeaId, presetId: selectedPresetId || undefined });
                                     if (typeof newId === 'string') {
                                         setActiveBrewId(newId);
                                     }

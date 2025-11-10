@@ -1,11 +1,9 @@
 import { create } from 'zustand';
 import { storage } from '../helpers/storage';
-import supabase from '../utils/supa';
-import type { Tea } from '../types/Tea';
 import { v4 as uuid } from 'uuid';
 import { useAuthStore } from './useAuthStore';
-import { useSyncStore } from './useSyncStore';
-import { mergeRecords } from '../helpers/merge';
+import { syncData } from '../helpers/sync';
+import type { Tea } from '../types/Tea';
 
 interface TeasState {
     teas: Tea[];
@@ -14,6 +12,7 @@ interface TeasState {
     updateTea: (id: string, updates: Partial<Tea>) => void;
     deleteTea: (id: string) => void;
     syncTeas: () => Promise<void>;
+    visibleTeas: () => Tea[];
 }
 
 export const useTeasStore = create<TeasState>((set, get) => ({
@@ -25,14 +24,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         if (!user) return;
 
         const now = new Date().toISOString();
-
-        const newTea: Tea = {
-            ...tea,
-            id: uuid(),
-            user_id: user.id,
-            updated_at: now,
-            deleted_at: null,
-        };
+        const newTea: Tea = { ...tea, id: uuid(), user_id: user.id, updated_at: now, deleted_at: null };
 
         const updated = [...get().teas, newTea];
         storage.set('teas', updated);
@@ -43,9 +35,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
 
     updateTea: (id, updates) => {
         const now = new Date().toISOString();
-        const updated = get().teas.map(t =>
-            t.id === id ? { ...t, ...updates, updated_at: now } : t
-        );
+        const updated = get().teas.map(t => t.id === id ? { ...t, ...updates, updated_at: now } : t);
         storage.set('teas', updated);
         set({ teas: updated });
 
@@ -54,9 +44,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
 
     deleteTea: (id) => {
         const now = new Date().toISOString();
-        const updated = get().teas.map(t =>
-            t.id === id ? { ...t, deleted_at: now, updated_at: now } : t
-        );
+        const updated = get().teas.map(t => t.id === id ? { ...t, deleted_at: now, updated_at: now } : t);
         storage.set('teas', updated);
         set({ teas: updated });
 
@@ -64,34 +52,9 @@ export const useTeasStore = create<TeasState>((set, get) => ({
     },
 
     syncTeas: async () => {
-        const { user } = useAuthStore.getState();
-        const { startSync, finishSync } = useSyncStore.getState();
-        if (!user) return;
-
-        startSync();
-        try {
-            const localTeas = storage.get<Tea[]>('teas') || [];
-
-            for (const tea of localTeas) {
-                await supabase.from('teas').upsert([{ ...tea, user_id: user.id }], { onConflict: 'id' });
-            }
-
-            const { data: dbTeas, error: fetchError } = await supabase
-                .from('teas')
-                .select('*')
-                .eq('user_id', user.id);
-
-            if (fetchError) throw fetchError;
-
-            const merged = mergeRecords(localTeas, dbTeas || []);
-
-            storage.set('teas', merged);
-            set({ teas: merged, lastSync: new Date().toISOString() });
-
-            finishSync(true);
-        } catch (err) {
-            console.error('❌ Sync failed:', err);
-            finishSync(false);
-        }
+        const merged = await syncData<Tea>('teas', 'teas');
+        if (merged) set({ teas: merged, lastSync: new Date().toISOString() });
     },
+
+    visibleTeas: () => get().teas.filter(t => !t.deleted_at),
 }));

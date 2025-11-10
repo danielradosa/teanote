@@ -10,9 +10,11 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import SearchBar from '../components/SearchBar'
 
 function JournalPage() {
-    const { teas } = useTeasStore()
-    const { journals, addJournal, deleteJournal, updateJournal } = useJournalsStore()
-    const emptyForm: Omit<Journal, 'id' | 'dateAdded'> = { teaId: '', title: '', content: '', rating: undefined }
+    const { visibleTeas } = useTeasStore()
+    const teas = visibleTeas()
+    const { addJournal, deleteJournal, updateJournal, visibleJournals } = useJournalsStore()
+    const journals = visibleJournals()
+    const emptyForm: Omit<Journal, 'id' | 'dateAdded'> = { teaId: '', title: '', content: '', rating: undefined, updated_at: '' }
     const [form, setForm] = useState(emptyForm)
     const [editingJournal, setEditingJournal] = useState<Journal | null>(null)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
