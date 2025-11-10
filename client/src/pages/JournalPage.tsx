@@ -132,8 +132,8 @@ function JournalPage() {
                             dataLength={Math.min(journalItemsToShow, orderedJournals.length)}
                             next={fetchMoreJournals}
                             hasMore={journalItemsToShow < orderedJournals.length}
-                            loader={<div style={{ paddingTop: '16px', textAlign: 'center' }}>loading more...</div>}
-                            endMessage={<div style={{ paddingTop: '16px', textAlign: 'center' }}>no more teas</div>}
+                            loader={<div>loading more...</div>}
+                            endMessage={<div>no more journals</div>}
                         >
                             <ul className="journal-list">
                                 {orderedJournals.slice(0, journalItemsToShow).map(journal => {
