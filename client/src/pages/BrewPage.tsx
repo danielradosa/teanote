@@ -53,8 +53,8 @@ function BrewPage() {
     const { showFilters, toggleFilters } = useToggleFilters();
 
     useEffect(() => {
-        if (editingPresetId) {
-            const el = document.querySelector('.edit-preset-container') as HTMLElement | null;
+        if (editingPresetId && window.innerWidth < 860) {
+            const el = document.querySelector('.edit-panel') as HTMLElement | null;
             if (el) {
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });

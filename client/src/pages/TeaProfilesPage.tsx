@@ -42,7 +42,7 @@ function TeaProfilesPage() {
     const editTextareaRef = useRef<HTMLTextAreaElement>(null)
 
     useEffect(() => {
-        if (editingTea) {
+        if (editingTea && window.innerWidth < 860) {
             const el = document.querySelector('.edit-panel') as HTMLElement | null;
             if (el) {
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
