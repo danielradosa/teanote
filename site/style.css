@@ -27,6 +27,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .inner-main,
 .inner-footer {
     width: 100%;
@@ -317,6 +321,11 @@ footer {
     h2 {
         font-size: 36px;
         margin-bottom: 64px;
+    }
+
+    .testimonial-scroll {
+        display: flex;
+        gap: 32px;
     }
 
     .testimonial-wrap {
