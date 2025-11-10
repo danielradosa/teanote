@@ -102,7 +102,7 @@ function JournalPage() {
                             {showFilters ? '– hide filters' : '+ show filters'}
                         </span>
                     </h2>
-                    {showFilters && <div className='filter-wrap'>
+                    <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                         <label className='filter-label'>
                             Type:&nbsp;
                             <div className="select-wrap">
@@ -138,7 +138,7 @@ function JournalPage() {
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>}
+                    </div>
                 </section>
                 {/* Journal List */}
                 <section className="journal-table">

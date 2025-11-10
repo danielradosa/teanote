@@ -108,7 +108,7 @@ function TeaProfilesPage() {
                             {showFilters ? '– hide filters' : '+ show filters'}
                         </span>
                     </h2>
-                    {showFilters && <div className='filter-wrap'>
+                    <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                         <label className='filter-label'>
                             Type:&nbsp;
                             <div className="select-wrap">
@@ -140,7 +140,7 @@ function TeaProfilesPage() {
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setYearFilter(''); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>}
+                    </div>
                 </section>
                 <section className="tea-table">
                     <h2>All teas</h2>

@@ -229,7 +229,7 @@ function BrewPage() {
                             {showFilters ? '– hide filters' : '+ show filters'}
                         </span>
                     </h2>
-                    {showFilters && <div className='filter-wrap'>
+                    <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                         <label className='filter-label'>
                             # of infusions/steeps:&nbsp;
                             <div className="select-wrap">
@@ -269,7 +269,7 @@ function BrewPage() {
                             onClick={() => { setSelectedInfusions(null); setSelectedLength(null); setSearch(''); }}>
                             <i className="bxr bx-eraser" /> clear filters
                         </button>
-                    </div>}
+                    </div>
                 </section>
                 {/* Brews list */}
                 <section className="recent-sessions">

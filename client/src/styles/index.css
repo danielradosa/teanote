@@ -454,5 +454,14 @@ input[type="checkbox"] {
 .journal-actions,
 .brew-actions {
   position: sticky;
+  position: -webkit-sticky;
   bottom: 16px;
+}
+
+@supports (position: -webkit-sticky) {
+  .tea-actions,
+  .journal-actions,
+  .brew-actions {
+    position: -webkit-sticky;
+  }
 }
