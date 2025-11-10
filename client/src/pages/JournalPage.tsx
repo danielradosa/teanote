@@ -177,7 +177,7 @@ function JournalPage() {
                                                         </span>
                                                     )}
                                                     <span className="journal-date" style={{ fontSize: '10px', marginLeft: 8 }}>
-                                                        ({new Date(journal.dateAdded).toLocaleDateString()})
+                                                        ({new Date(journal.dateAdded ?? Date.now()).toLocaleDateString()})
                                                     </span>
                                                 </span>
                                                 {openDetailsId === journal.id && (
