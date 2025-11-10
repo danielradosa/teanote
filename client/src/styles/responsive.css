@@ -113,8 +113,6 @@
 
     .filter-wrap.visible {
         display: flex;
-        position: absolute;
-        height: 300px;
     }
 
     .tea-filters,
