@@ -67,7 +67,7 @@ export default function LoginPage() {
                 </label>
 
                 <a href="#" className="forgot-pwd">
-                    Forgot your password?
+                    Forgot password?
                 </a>
 
                 <button
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     className="btn btn-quick"
                     disabled={isSubmitting}
                 >
-                    {isSubmitting ? 'Logging in...' : 'Log in to your account'}
+                    {isSubmitting ? 'Logging in...' : <span>Log in &rarr;</span>}
                 </button>
 
                 <span className="new-account">

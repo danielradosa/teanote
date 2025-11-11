@@ -129,7 +129,7 @@ export default function SignupPage() {
           className="btn btn-quick signup-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Creating account...' : 'Create your account'}
+          {isSubmitting ? 'Creating account...' : <span>Create your account &rarr;</span>}
         </button>
 
         <span className="existing-account">
