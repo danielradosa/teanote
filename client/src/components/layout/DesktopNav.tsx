@@ -42,7 +42,7 @@ function DesktopNav() {
                     </>
                 )}
                 <button className="btn btn-action logout-btn" onClick={handleLogout}>
-                    Log out
+                    &larr; Log out
                 </button>
             </nav>
         </header>

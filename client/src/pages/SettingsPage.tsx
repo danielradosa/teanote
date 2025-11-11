@@ -1,7 +1,9 @@
 'use client'
 
+import { useAuthStore } from '../stores/useAuthStore'
+
 function SettingsPage() {
-    const isSubscribed = false;
+    const { isSubscribed } = useAuthStore()
 
     if (isSubscribed) {
         return (
@@ -12,25 +14,13 @@ function SettingsPage() {
                 </header>
 
                 <div className="settings-content">
-                    <section className="subscription">
-                        <h2>Manage your subscription</h2>
-                        <p>You have no subscription at the moment.</p>
-                        <button className="btn btn-quick">Switch to <strong>PRO</strong> for $2 a month</button>
-                        <details>
-                            <summary>
-                                See PRO benefits
-                            </summary>
-                            <p>- cloud sync across all devices</p>
-                            <p>- recommendations from AI</p>
-                            <p>- themes</p>
-                        </details>
-                    </section>
-
                     <section className="quick-actions">
-                        <h2>Quick actions</h2>
+                        <h2>Preferences</h2>
+                        <p>These feauters are being worked on.</p>
                         <div className="quick-action-btns">
-                            <button className="btn btn-dark">choose theme</button>
-                            <button className="btn btn-danger">delete account</button>
+                            <button className="btn btn-dark disabled">choose a theme</button>
+                            <button className='btn btn-dark disabled'>enable AI features</button>
+                            <button className="btn btn-dark disabled">change language</button>
                         </div>
                     </section>
                 </div>

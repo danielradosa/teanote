@@ -20,9 +20,9 @@ function DesktopSidebar() {
             {hasActiveSubscription || hasTrial ? (
                 <>
                     <Link to="/" className="btn btn-sidebar hide-mobile">🏠 Home</Link>
-                    <Link to="/brews" className="btn btn-sidebar">⏱️ Brews</Link>
                     <Link to="/teas" className="btn btn-sidebar">🍃 Teas</Link>
                     <Link to="/journal" className="btn btn-sidebar">📔 Journal</Link>
+                    <Link to="/brews" className="btn btn-sidebar">⏱️ Brews</Link>
                     <Link to="/settings" className="btn btn-sidebar hide-mobile">⚙️ Settings</Link>
                 </>
             ) : null}
@@ -35,7 +35,7 @@ function DesktopSidebar() {
                         <small>Syncing…</small>
                     </div>
                 ) : justSynced ? (
-                    <small className="text-green-500">✅ Synced!</small>
+                    <small className="text-green-500">✅ Synced</small>
                 ) : (
                     lastSync && <small>Synced at {new Date(lastSync).toLocaleTimeString()}</small>
                 )}

@@ -16,6 +16,7 @@ function SyncOnReconnect() {
 
         const doSync = async () => {
             setStatus('syncing')
+            setStatus('online')
             try {
                 await Promise.all([
                     syncTeas(),
@@ -24,7 +25,6 @@ function SyncOnReconnect() {
                     syncPresets(),
                     checkAccess(user.id),
                 ])
-                setStatus('online')
             } catch (err) {
                 console.error('❌ Sync error:', err)
                 setStatus('offline')

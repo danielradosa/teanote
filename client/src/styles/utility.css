@@ -112,8 +112,10 @@ small {
 }
 
 .disabled {
-    filter: blur(2px) grayscale(100%);
+    filter: blur(1px) grayscale(100%);
     cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .modal-overlay {
@@ -293,10 +295,7 @@ small {
 }
 
 .sub-status {
-    border-radius: 22px;
-    border: 1px solid #202121;
-    padding: 4px 8px;
-    font-size: 13px;
+    font-weight: bold;
 }
 
 .btn-subscribe {

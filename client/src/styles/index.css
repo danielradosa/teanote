@@ -15,6 +15,7 @@
   --brand-primary-light: #bdb6958e;
   --brand-secondary: #898565;
   --brand-secondary-light: #8985658e;
+  --surface-color: #f9f7f3;
   --success-color: #24be33;
   --danger-color: #ed1244;
   --info-color: #3239ff;
@@ -22,6 +23,8 @@
   --text-color-light: rgba(255, 255, 255, 0.88);
   --text-color: rgba(0, 0, 0, 0.88);
   --shadow-container: -2px 4px 16px #20212128;
+  --color: #202121;
+  --bg-color: #fff;
 }
 
 * {
@@ -43,6 +46,7 @@ summary {
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-color);
 }
 
 .layout {
@@ -148,13 +152,14 @@ header .logo a {
 .tea-content section,
 .settings-content section,
 .account-content section {
-  background: #f9f7f3;
+  background: var(--surface-color);
   padding: 16px;
   border-radius: 8px;
   flex: 1 1 330px;
 
   h2 {
     font-size: 18px;
+    color: var(--color);
   }
 }
 
@@ -426,6 +431,10 @@ input[type="checkbox"] {
   position: relative;
 }
 
+.toggle-label {
+  display: none;
+}
+
 .subscription-wrap {
   display: flex;
   gap: 10px;
@@ -459,6 +468,7 @@ input[type="checkbox"] {
 }
 
 @supports (position: -webkit-sticky) {
+
   .tea-actions,
   .journal-actions,
   .brew-actions {
