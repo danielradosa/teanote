@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://teanote.xyz/sitemap.xml
