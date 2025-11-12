@@ -2,7 +2,7 @@ export interface Journal {
     id: string
     user_id?: string
     teaId: string
-    brewPresetId?: string
+    brew_preset_id?: string
     title: string
     rating?: number
     content: string

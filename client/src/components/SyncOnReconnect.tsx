@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { useTeasStore } from '../stores/useTeasStore'
 import { useJournalsStore } from '../stores/useJournalsStore'
 import { useBrewsStore } from '../stores/useBrewsStore'
+import { useSettingsStore } from '../stores/useSettingsStore'
 import { useAuthStore } from '../stores/useAuthStore'
+import { initAllRealtime, stopAllRealtime } from '../helpers/realtimeStores'
 
 function SyncOnReconnect() {
     const { syncTeas } = useTeasStore()
     const { syncJournals } = useJournalsStore()
     const { syncBrews, syncPresets } = useBrewsStore()
+    const { syncSettings } = useSettingsStore()
     const { user, checkAccess } = useAuthStore()
     const [status, setStatus] = useState<'offline' | 'syncing' | 'online' | null>(null)
 
@@ -23,6 +26,7 @@ function SyncOnReconnect() {
                     syncJournals(),
                     syncBrews(),
                     syncPresets(),
+                    syncSettings(),
                     checkAccess(user.id),
                 ])
             } catch (err) {
@@ -34,6 +38,7 @@ function SyncOnReconnect() {
         }
 
         doSync()
+        initAllRealtime()
 
         function handleOnline() {
             doSync()
@@ -56,8 +61,9 @@ function SyncOnReconnect() {
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
             clearInterval(interval)
+            stopAllRealtime()
         }
-    }, [user, syncTeas, syncJournals, syncBrews, syncPresets, checkAccess])
+    }, [user, syncTeas, syncJournals, syncBrews, syncPresets, checkAccess, syncSettings])
 
     if (!status) return null
 

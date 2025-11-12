@@ -1,34 +1,59 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
+import { useEffect } from 'react'
 import { useAuthStore } from '../stores/useAuthStore'
+import { useSettingsStore } from '../stores/useSettingsStore'
 
 function SettingsPage() {
-    const { isSubscribed } = useAuthStore()
+    const { user, isSubscribed } = useAuthStore()
+    const { settings, loading, toggleAI, setTheme, setLanguage, loadSettings } = useSettingsStore()
 
-    if (isSubscribed) {
-        return (
-            <section className="page-wrap settings-page">
-                <header className="page-header">
-                    <h1>Settings</h1>
-                    <p className="subtitle">Edit your settings 🍵</p>
-                </header>
+    useEffect(() => {
+        if (user) loadSettings()
+    }, [user, loadSettings])
 
-                <div className="settings-content">
+    if (!isSubscribed) return null
+
+    return (
+        <section className="page-wrap settings-page">
+            <header className="page-header">
+                <h1>Settings</h1>
+                <p className="subtitle">Edit your settings 🍵</p>
+            </header>
+
+            <div className="settings-content">
+                {loading ? (
+                    <p>Loading…</p>
+                ) : settings ? (
                     <section className="quick-actions">
                         <h2>Preferences</h2>
-                        <p>These feauters are being worked on.</p>
                         <div className="quick-action-btns">
-                            <button className="btn btn-dark disabled">choose a theme</button>
-                            <button className='btn btn-dark disabled'>enable AI features</button>
-                            <button className="btn btn-dark disabled">change language</button>
+                            <select value={settings.theme} onChange={e => setTheme(e.target.value as any)}>
+                                <option>Teanote Default</option>
+                                <option>Teanote Cozy</option>
+                                <option>Teanote Night</option>
+                            </select>
+
+                            <button onClick={toggleAI}>
+                                AI: {settings.ai_enabled ? 'On' : 'Off'}
+                            </button>
+
+                            <select value={settings.language} onChange={e => setLanguage(e.target.value as any)}>
+                                <option value="en">English</option>
+                                <option value="sk">Slovak</option>
+                                <option value="jp">Japanese</option>
+                                <option value="chinese">Chinese</option>
+                                <option value="korean">Korean</option>
+                            </select>
                         </div>
                     </section>
-                </div>
-            </section>
-        )
-    } else {
-        return;
-    }
+                ) : (
+                    <p>Error loading settings</p>
+                )}
+            </div>
+        </section>
+    )
 }
 
 export default SettingsPage

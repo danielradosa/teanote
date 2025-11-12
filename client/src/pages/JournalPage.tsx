@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { useJournalsStore } from '../stores/useJournalsStore'
+import { useBrewsStore } from '../stores/useBrewsStore'
 import { useTeasStore } from '../stores/useTeasStore'
 import type { Journal } from '../types/Journal'
 import RichToolbar from '../components/RichToolbar'
@@ -13,9 +14,12 @@ import { useToggleFilters } from '../hooks/toggleFilters';
 function JournalPage() {
     const { visibleTeas } = useTeasStore()
     const teas = visibleTeas()
+    const { visibleBrews, visiblePresets, getBrewName } = useBrewsStore()
+    const brews = visibleBrews()
+    const presets = visiblePresets()
     const { addJournal, deleteJournal, updateJournal, visibleJournals } = useJournalsStore()
     const journals = visibleJournals()
-    const emptyForm: Omit<Journal, 'id' | 'dateAdded'> = { teaId: '', title: '', content: '', rating: undefined, updated_at: '' }
+    const emptyForm: Omit<Journal, 'id' | 'dateAdded'> = { teaId: '', title: '', content: '', rating: undefined, updated_at: '', brew_preset_id: '' }
     const [form, setForm] = useState(emptyForm)
     const [editingJournal, setEditingJournal] = useState<Journal | null>(null)
     const [openDetailsId, setOpenDetailsId] = useState<string | null>(null)
@@ -207,6 +211,10 @@ function JournalPage() {
                                                 </span>
                                                 {openDetailsId === journal.id && (
                                                     <div className="journal-extra">
+                                                        <p style={{ fontSize: '13px' }}>
+                                                            Brew & preset:{' '}
+                                                            <strong>{getBrewName(journal.brew_preset_id ?? '') || 'none'}</strong>
+                                                        </p>
                                                         <MdDisplay content={journal.content} />
                                                     </div>
                                                 )}
@@ -234,6 +242,39 @@ function JournalPage() {
                         <h2>Edit journal — {editingJournal.title}</h2>
                         <div className="journal-form">
                             <label>
+                                <span className="basic-label"><span className="req">* </span>Journal name:</span>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Thoughts on Duck Shit"
+                                    value={editingJournal.title}
+                                    onChange={e => setEditingJournal(j => j ? { ...j, title: e.target.value } : null)}
+                                />
+                            </label>
+                            <label>
+                                <span className="basic-label">Link a brew/preset (optional):</span>
+                                <div className="select-wrap">
+                                    <select
+                                        value={editingJournal.brew_preset_id || ''}
+                                        onChange={e => setEditingJournal(j => j ? { ...j, brew_preset_id: e.target.value } : null)}
+                                    >
+                                        <option value="">-</option>
+                                        {brews.map(b => {
+                                            const tea = teas.find(t => t.id === b.teaId)
+                                            const teaName = tea?.name || 'Unknown Tea'
+                                            const preset = presets.find(p => p.id === b.presetId)
+                                            const presetName = preset?.name ? ` [${preset.name}]` : ''
+                                            const date = new Date(b.startedAt).toLocaleDateString()
+                                            return (
+                                                <option key={b.id} value={b.id}>
+                                                    {`${teaName}${presetName} – brewed on ${date}`}
+                                                </option>
+                                            )
+                                        })}
+                                    </select>
+                                    <span className="arr-down"></span>
+                                </div>
+                            </label>
+                            <label>
                                 <span className='basic-label'>Select tea (optional):</span>
                                 <div className="select-wrap">
                                     <select
@@ -250,15 +291,6 @@ function JournalPage() {
                                     </select>
                                     <span className="arr-down"></span>
                                 </div>
-                            </label>
-                            <label>
-                                <span className="basic-label"><span className="req">* </span>Journal name:</span>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Thoughts on Duck Shit"
-                                    value={editingJournal.title}
-                                    onChange={e => setEditingJournal(j => j ? { ...j, title: e.target.value } : null)}
-                                />
                             </label>
                             <label>
                                 <span className="basic-label">Rating (optional):</span>
@@ -306,6 +338,36 @@ function JournalPage() {
                     <h2>Add new journal</h2>
                     <div className="journal-form">
                         <label>
+                            <span className="basic-label"><span className="req">* </span>Journal name:</span>
+                            <input type="text" placeholder="e.g. Thoughts on Bai Mu Dan" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                        </label>
+                        <label>
+                            <span className='basic-label'>Link a brew/preset (optional):</span>
+                            <div className='select-wrap'>
+                                <select
+                                    id="brew-select"
+                                    value={form.brew_preset_id || ''}
+                                    onChange={e => setForm({ ...form, brew_preset_id: e.target.value })}
+                                    style={{ width: "100%", minWidth: 120 }}
+                                >
+                                    <option value="">-</option>
+                                    {brews.map(b => {
+                                        const tea = teas.find(t => t.id === b.teaId)
+                                        const teaName = tea?.name || 'Unknown Tea'
+                                        const preset = presets.find(p => p.id === b.presetId)
+                                        const presetName = preset?.name ? ` [${preset.name}]` : ''
+                                        const date = new Date(b.startedAt).toLocaleDateString()
+                                        return (
+                                            <option key={b.id} value={b.id}>
+                                                {`${teaName}${presetName} – brewed on ${date}`}
+                                            </option>
+                                        )
+                                    })}
+                                </select>
+                                <span className="arr-down"></span>
+                            </div>
+                        </label>
+                        <label>
                             <span className='basic-label'>Select tea (optional):</span>
                             <div className='select-wrap'>
                                 <select
@@ -322,10 +384,6 @@ function JournalPage() {
                                 </select>
                                 <span className="arr-down"></span>
                             </div>
-                        </label>
-                        <label>
-                            <span className="basic-label"><span className="req">* </span>Journal name:</span>
-                            <input type="text" placeholder="e.g. Thoughts on Bai Mu Dan" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
                         </label>
                         <label>
                             <span className="basic-label">Rating (optional):</span>

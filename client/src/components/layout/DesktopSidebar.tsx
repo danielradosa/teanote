@@ -35,7 +35,7 @@ function DesktopSidebar() {
                         <small>Syncing…</small>
                     </div>
                 ) : justSynced ? (
-                    <small className="text-green-500">✅ Synced</small>
+                    <small className="text-green-500">✅ Just synced</small>
                 ) : (
                     lastSync && <small>Synced at {new Date(lastSync).toLocaleTimeString()}</small>
                 )}

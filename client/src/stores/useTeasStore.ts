@@ -4,6 +4,8 @@ import { v4 as uuid } from 'uuid'
 import { useAuthStore } from './useAuthStore'
 import { syncData } from '../helpers/sync'
 import type { Tea } from '../types/Tea'
+import { subscribeTable } from '../helpers/realtime'
+import { useSyncStore } from './useSyncStore'
 
 interface TeasState {
     teas: Tea[]
@@ -13,6 +15,9 @@ interface TeasState {
     deleteTea: (id: string) => void
     syncTeas: () => Promise<void>
     visibleTeas: () => Tea[]
+    initRealtime: () => void
+    stopRealtime: () => void
+    teasRealtimeUnsub?: () => void
 }
 
 export const useTeasStore = create<TeasState>((set, get) => ({
@@ -64,6 +69,34 @@ export const useTeasStore = create<TeasState>((set, get) => ({
     syncTeas: async () => {
         const merged = await syncData<Tea>('teas', 'teas')
         if (merged) set({ teas: merged, lastSync: new Date().toISOString() })
+    },
+
+    initRealtime: () => {
+        const { user } = useAuthStore.getState()
+        if (!user) return
+
+        const { startSync, finishSync } = useSyncStore.getState()
+
+        const unsubscribe = subscribeTable<Tea>('teas', user.id, async(updatedTea) => {
+            startSync()
+            await new Promise(r => setTimeout(r, 1000))
+            set((state) => {
+                const exists = state.teas.find(t => t.id === updatedTea.id)
+                if (exists) {
+                    return { teas: state.teas.map(t => t.id === updatedTea.id ? updatedTea : t) }
+                } else {
+                    return { teas: [...state.teas, updatedTea] }
+                }
+            })
+            finishSync(true)
+        })
+        set({ teasRealtimeUnsub: unsubscribe })
+    },
+
+    stopRealtime: () => {
+        const unsub = get().teasRealtimeUnsub
+        if (unsub) unsub()
+        set({ teasRealtimeUnsub: undefined })
     },
 
     visibleTeas: () => get().teas.filter(t => !t.deleted_at),

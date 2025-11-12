@@ -4,6 +4,8 @@ import { v4 as uuid } from 'uuid'
 import { useAuthStore } from './useAuthStore'
 import { syncData } from '../helpers/sync'
 import type { Journal } from '../types/Journal'
+import { subscribeTable } from '../helpers/realtime'
+import { useSyncStore } from './useSyncStore'
 
 interface JournalsState {
     journals: Journal[]
@@ -13,6 +15,9 @@ interface JournalsState {
     deleteJournal: (id: string) => void
     syncJournals: () => Promise<void>
     visibleJournals: () => Journal[]
+    initRealtime: () => void
+    stopRealtime: () => void
+    journalsRealtimeUnsub?: () => void
 }
 
 export const useJournalsStore = create<JournalsState>((set, get) => ({
@@ -64,6 +69,35 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
     syncJournals: async () => {
         const merged = await syncData<Journal>('journals', 'journals')
         if (merged) set({ journals: merged, lastSync: new Date().toISOString() })
+    },
+
+    initRealtime: () => {
+        const { user } = useAuthStore.getState()
+        if (!user) return
+
+        const { startSync, finishSync } = useSyncStore.getState()
+
+        const unsubscribe = subscribeTable<Journal>('journals', user.id, async(updatedJournal) => {
+            startSync()
+            await new Promise(r => setTimeout(r, 1000))
+            set((state) => {
+                const exists = state.journals.find(j => j.id === updatedJournal.id)
+                if (exists) {
+                    return { journals: state.journals.map(j => j.id === updatedJournal.id ? updatedJournal : j) }
+                } else {
+                    return { journals: [...state.journals, updatedJournal] }
+                }
+            })
+            finishSync(true)
+        })
+
+        set({ journalsRealtimeUnsub: unsubscribe })
+    },
+
+    stopRealtime: () => {
+        const unsub = get().journalsRealtimeUnsub
+        if (unsub) unsub()
+        set({ journalsRealtimeUnsub: undefined })
     },
 
     visibleJournals: () => get().journals.filter(j => !j.deleted_at),
