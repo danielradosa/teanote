@@ -75,7 +75,7 @@ function SyncOnReconnect() {
             justifyContent: 'center',
             alignItems: 'center',
         }}>
-            <small>
+            <small className='synced-at'>
                 {status === 'offline' && '❌ Connection lost'}
                 {status === 'online' && '🌐 Back online'}
             </small>

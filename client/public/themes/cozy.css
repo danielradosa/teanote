@@ -1,0 +1,17 @@
+:root {
+    --brand-primary: #5b5b5b;
+    --brand-primary-light: #e6dec5;
+    --brand-secondary: #a2bc9f;
+    --brand-secondary-light: #cfe0c9;
+    --surface-color: #fdf7e5;
+    --bg-color: #fffdf8;
+    --dark-color: #ffec59;
+    --success-color: #7cc77e;
+    --danger-color: #ff849c;
+    --info-color: #7ea9ff;
+    --text-color: rgba(30, 30, 25, 0.9);
+    --text-color-light: rgba(255, 255, 255, 0.9);
+    --shadow-container: -2px 4px 18px #cfc6b5a8;
+    --color: var(--text-color);
+    --btn-color: var(--text-color);
+}

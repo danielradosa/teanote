@@ -201,7 +201,7 @@ function TeaProfilesPage() {
                                                     {tea.notes && <p><strong>Notes:</strong> <MdDisplay content={tea.notes} /></p>}
                                                 </div>
                                             )}
-                                            <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(tea.id)}>
+                                            <button className="btn btn-simple" onClick={() => toggleDetails(tea.id)}>
                                                 <i className={`bxr ${openDetailsId === tea.id ? 'bx-list-minus' : 'bx-list-plus'}`} />{' '}
                                                 {openDetailsId === tea.id ? 'hide details' : 'see details'}
                                             </button>

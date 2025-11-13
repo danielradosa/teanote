@@ -19,25 +19,25 @@ function DesktopSidebar() {
         <aside className="sidebar">
             {hasActiveSubscription || hasTrial ? (
                 <>
-                    <Link to="/" className="btn btn-sidebar hide-mobile">🏠 Home</Link>
+                    <Link to="/" className="btn btn-sidebar">🏠 Home</Link>
                     <Link to="/teas" className="btn btn-sidebar">🍃 Teas</Link>
                     <Link to="/journal" className="btn btn-sidebar">📔 Journal</Link>
                     <Link to="/brews" className="btn btn-sidebar">⏱️ Brews</Link>
-                    <Link to="/settings" className="btn btn-sidebar hide-mobile">⚙️ Settings</Link>
+                    <Link to="/settings" className="btn btn-sidebar">⚙️ Settings</Link>
                 </>
             ) : null}
-            <Link to="/account" className="btn btn-sidebar">👨🏻‍🔧 Account</Link>
+            <Link to="/account" className="btn btn-sidebar hide-mobile">👨🏻‍🔧 Account</Link>
 
             <footer className="sidebar-footer">
                 {isSyncing ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
                         <Loader size={16} inline={true} color='white' />
-                        <small>Syncing…</small>
+                        <small className='synced-at'>Syncing…</small>
                     </div>
                 ) : justSynced ? (
-                    <small className="text-green-500">✅ Just synced</small>
+                    <small className="synced-at">✅ Just synced</small>
                 ) : (
-                    lastSync && <small>Synced at {new Date(lastSync).toLocaleTimeString()}</small>
+                    lastSync && <small className='synced-at'>Synced at {new Date(lastSync).toLocaleTimeString()}</small>
                 )}
                 <SyncOnReconnect />
             </footer>

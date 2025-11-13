@@ -7,24 +7,10 @@
   font-weight: 400;
   font-size: 16px;
   font-synthesis: none;
+  font-display: swap;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --brand-primary: #bdb695;
-  --brand-primary-light: #bdb6958e;
-  --brand-secondary: #898565;
-  --brand-secondary-light: #8985658e;
-  --surface-color: #f9f7f3;
-  --success-color: #24be33;
-  --danger-color: #ed1244;
-  --info-color: #3239ff;
-  --dark-color: #202121;
-  --text-color-light: rgba(255, 255, 255, 0.88);
-  --text-color: rgba(0, 0, 0, 0.88);
-  --shadow-container: -2px 4px 16px #20212128;
-  --color: #202121;
-  --bg-color: #fff;
 }
 
 * {
@@ -40,6 +26,10 @@ textarea,
 summary {
   font: inherit;
   color: inherit;
+}
+
+body {
+  background-color: var(--bg-color);
 }
 
 .app {
@@ -125,6 +115,10 @@ header .logo a {
   display: flex;
   flex-direction: column;
   align-items: start;
+
+  h1 {
+    color: var(--text-color);
+  }
 }
 
 .quick-action-btns {
@@ -165,7 +159,7 @@ header .logo a {
 
 .page-header .subtitle {
   font-size: 13px;
-  color: #666;
+  color: var(--brand-primary);
 }
 
 .subscription button {
@@ -215,7 +209,8 @@ header .logo a {
 }
 
 .tea-form,
-.journal-form {
+.journal-form,
+.settings-form {
   display: flex;
   flex-direction: column;
   align-items: start;

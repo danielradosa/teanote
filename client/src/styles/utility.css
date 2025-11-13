@@ -2,11 +2,12 @@ input,
 textarea {
     padding: 8px 16px;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--bg-color);
+    color: var(--text-color) !important;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    border: 1px solid #ccc;
+    border: 1px solid var(--brand-primary);
 }
 
 input,
@@ -25,17 +26,23 @@ textarea {
 select {
     padding: 8px 16px;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--bg-color);
+    color: var(--text-color) !important;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    border: 1px solid #ccc;
+    border: 1px solid var(--brand-primary);
     min-width: 180px;
 }
 
 label {
     display: block;
     width: 100%;
+    color: var(--text-color);
+}
+
+section {
+    color: var(--text-color);
 }
 
 .select-wrap {
@@ -56,7 +63,7 @@ label {
 }
 
 ::placeholder {
-    color: #a9a9a9 !important;
+    color: var(--brand-primary) !important;
 }
 
 small {
@@ -73,7 +80,7 @@ small {
     border-radius: 8px;
     transition: all .15s ease-in-out;
     cursor: pointer;
-    color: #fff;
+    color: var(--btn-color);
 }
 
 .btn-sync {
@@ -107,7 +114,7 @@ small {
 .btn-simple {
     padding: 0;
     background-color: transparent;
-    color: var(--dark-color);
+    color: var(--text-color);
     font-weight: bold;
 }
 
@@ -121,7 +128,7 @@ small {
 .modal-overlay {
     padding: 16px;
     border-radius: 8px;
-    background: #f9f7f3;
+    background: var(--surface-color);
 
     h2 {
         font-size: 18px;
@@ -210,7 +217,7 @@ small {
 
 .tea-tag-white {
     background: #fff !important;
-    color: #999 !important;
+    color: #474747 !important;
 }
 
 .tea-tag-yellow {
@@ -253,7 +260,7 @@ small {
     margin-bottom: 4px;
     margin-left: 8px;
     font-size: 13px;
-    color: #202121;
+    color: var(--text-color);
 }
 
 .filter-label {
@@ -306,4 +313,8 @@ small {
     .hide-mobile {
         display: none;
     }
+}
+
+.synced-at {
+    color: var(--brand-primary);
 }

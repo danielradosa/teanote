@@ -7,7 +7,7 @@ import { useSettingsStore } from '../stores/useSettingsStore'
 
 function SettingsPage() {
     const { user, isSubscribed } = useAuthStore()
-    const { settings, loading, toggleAI, setTheme, setLanguage, loadSettings } = useSettingsStore()
+    const { settings, toggleAI, setTheme, setLanguage, loadSettings } = useSettingsStore()
 
     useEffect(() => {
         if (user) loadSettings()
@@ -23,34 +23,43 @@ function SettingsPage() {
             </header>
 
             <div className="settings-content">
-                {loading ? (
-                    <p>Loading…</p>
-                ) : settings ? (
-                    <section className="quick-actions">
-                        <h2>Preferences</h2>
-                        <div className="quick-action-btns">
-                            <select value={settings.theme} onChange={e => setTheme(e.target.value as any)}>
-                                <option>Teanote Default</option>
-                                <option>Teanote Cozy</option>
-                                <option>Teanote Night</option>
-                            </select>
-
-                            <button onClick={toggleAI}>
-                                AI: {settings.ai_enabled ? 'On' : 'Off'}
+                <section className="quick-actions">
+                    <h2>Preferences</h2>
+                    <div className="quick-action-btns settings-form">
+                        <label>
+                            <span className="basic-label">AI features (optional):</span>
+                            <button onClick={toggleAI} className='btn btn-dark' style={{ width: '100%'}}>
+                                {settings?.ai_enabled ? 'On ✨' : 'Off 🙅🏻‍♂️'}
                             </button>
+                        </label>
+                        
+                        <label>
+                            <span className="basic-label"><span className="req">* </span>Select theme:</span>
+                            <div className="select-wrap">
+                                <select value={settings?.theme} onChange={e => setTheme(e.target.value as any)}>
+                                    <option>Teanote Default</option>
+                                    <option>Teanote Cozy</option>
+                                    <option>Teanote Night</option>
+                                </select>
+                                <span className="arr-down"></span>
+                            </div>
+                        </label>
 
-                            <select value={settings.language} onChange={e => setLanguage(e.target.value as any)}>
-                                <option value="en">English</option>
-                                <option value="sk">Slovak</option>
-                                <option value="jp">Japanese</option>
-                                <option value="chinese">Chinese</option>
-                                <option value="korean">Korean</option>
-                            </select>
-                        </div>
-                    </section>
-                ) : (
-                    <p>Error loading settings</p>
-                )}
+                        <label>
+                            <span className="basic-label"><span className="req">* </span>Select language:</span>
+                            <div className="select-wrap">
+                                <select value={settings?.language} onChange={e => setLanguage(e.target.value as any)}>
+                                    <option value="en">English</option>
+                                    <option value="sk">Slovak</option>
+                                    <option value="jp">Japanese</option>
+                                    <option value="chinese">Chinese</option>
+                                    <option value="korean">Korean</option>
+                                </select>
+                                <span className="arr-down"></span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
             </div>
         </section>
     )
