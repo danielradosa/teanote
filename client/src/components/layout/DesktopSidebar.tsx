@@ -31,7 +31,7 @@ function DesktopSidebar() {
             <footer className="sidebar-footer">
                 {isSyncing ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
-                        <Loader size={16} inline={true} color='white' />
+                        <Loader size={16} inline={true} color='var(--text-color)' />
                         <small className='synced-at'>Syncing…</small>
                     </div>
                 ) : justSynced ? (

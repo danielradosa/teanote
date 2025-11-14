@@ -40,6 +40,7 @@ function SettingsPage() {
                                     <option>Teanote Default</option>
                                     <option>Teanote Cozy</option>
                                     <option>Teanote Night</option>
+                                    <option>Teanote Sakura</option>
                                 </select>
                                 <span className="arr-down"></span>
                             </div>

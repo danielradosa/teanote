@@ -431,7 +431,7 @@ function BrewPage() {
                                     tea.type !== preset.teaType;
 
                                 return (
-                                    <li className='brew-item' key={preset.id}>
+                                    <li className='brew-item preset' key={preset.id}>
                                         <div className="brew-details">
                                             <strong>{preset.name}</strong>&nbsp;
                                             {teaName ? (

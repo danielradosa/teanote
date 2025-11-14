@@ -18,6 +18,7 @@ function TeaProfilesPage() {
     const emptyForm: Omit<Tea, 'id' | 'dateAdded'> = {
         name: '',
         type: 'green',
+        inventory: '',
         origin: '',
         year: '',
         vendor: '',
@@ -184,6 +185,7 @@ function TeaProfilesPage() {
                                             </span>
                                             {openDetailsId === tea.id && (
                                                 <div className="tea-extra">
+                                                    {tea.inventory && <p><strong>In stash:</strong> {tea.inventory}</p>}
                                                     {tea.vendor && <p><strong>Vendor:</strong> {tea.vendor}</p>}
                                                     {tea.link && (
                                                         <p>
@@ -246,6 +248,10 @@ function TeaProfilesPage() {
                                 </div>
                             </label>
                             <label>
+                                <span className="basic-label">Inventory (optional):</span>
+                                <input type="text" placeholder='e.g. 50g' value={editingTea.inventory || ''} onChange={e => setEditingTea({ ...editingTea, inventory: e.target.value })} />
+                            </label>
+                            <label>
                                 <span className="basic-label">Origin (optional):</span>
                                 <input type="text" placeholder="e.g. Xishuangbanna" value={editingTea.origin || ''} onChange={e => setEditingTea({ ...editingTea, origin: e.target.value })} />
                             </label>
@@ -305,6 +311,10 @@ function TeaProfilesPage() {
                                 </select>
                                 <span className="arr-down"></span>
                             </div>
+                        </label>
+                        <label>
+                            <span className="basic-label">Inventory (optional):</span>
+                            <input type="text" placeholder='e.g. 50g' value={form.inventory} onChange={e => setForm({ ...form, inventory: e.target.value })} />
                         </label>
                         <label>
                             <span className="basic-label">Year (optional):</span>

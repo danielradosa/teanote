@@ -11,6 +11,10 @@
         padding: 20px 10px;
     }
 
+    .btn-sidebar {
+        padding: 4px 8px;
+    }
+
     .main-header .logo {
         justify-content: space-between;
         width: 100%;
@@ -100,6 +104,7 @@
     }
 
     @supports (position: -webkit-sticky) {
+
         .tea-actions,
         .journal-actions,
         .brew-actions {
@@ -139,5 +144,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .tea-list .tea-item,
+    .journal-list .journal-item,
+    .brew-list .brew-item.preset {
+        flex-direction: column-reverse;
     }
 }

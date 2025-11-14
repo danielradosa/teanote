@@ -6,10 +6,10 @@
     --surface-color: #fdf7e5;
     --bg-color: #fffdf8;
     --dark-color: #ffec59;
-    --success-color: #7cc77e;
-    --danger-color: #ff849c;
-    --info-color: #7ea9ff;
-    --text-color: rgba(30, 30, 25, 0.9);
+    --success-color: #89ff8d;
+    --danger-color: #ff95aa;
+    --info-color: #8ad8ff;
+    --text-color: #505353;
     --text-color-light: rgba(255, 255, 255, 0.9);
     --shadow-container: -2px 4px 18px #cfc6b5a8;
     --color: var(--text-color);

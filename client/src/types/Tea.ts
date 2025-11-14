@@ -3,6 +3,7 @@ export interface Tea {
     user_id?: string
     name: string
     type: 'green' | 'purple' | 'red' | 'white' | 'yellow' | 'puerh' | 'oolong'
+    inventory: string
     origin?: string
     year?: string
     vendor?: string

@@ -11,12 +11,14 @@ export default function AppInitializer({ children }: { children: React.ReactNode
 
     const applyTheme = (themeName: string | null | undefined) => {
         const theme = themeName?.toLowerCase() || 'default'
-        const themeFile =
-            theme.includes('cozy')
-                ? '/themes/cozy.css'
-                : theme.includes('night')
-                    ? '/themes/night.css'
-                    : '/themes/default.css'
+        const themeMap: Record<string, string> = {
+            cozy: '/themes/cozy.css',
+            night: '/themes/night.css',
+            sakura: '/themes/sakura.css',
+        }
+
+        const key = Object.keys(themeMap).find(k => theme.includes(k))
+        const themeFile = key ? themeMap[key] : '/themes/default.css'
 
         let link = document.getElementById('theme-css') as HTMLLinkElement | null
         if (link) {
