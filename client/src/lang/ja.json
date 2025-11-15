@@ -1,0 +1,22 @@
+{
+    "app_name": "Teanote",
+    "nav_sub_active": "サブスクリプション",
+    "nav_sub_status_active": "有効",
+    "nav_sub_status_expired": "期限切れ",
+    "nav_sub_trial": "トライアル",
+    "nav_sub_trial_days_left": "日残り",
+    "nav_link_start_brew": "抽出を開始",
+    "nav_link_journal": "ジャーナル",
+    "nav_logout_btn": "ログアウト",
+    "sidebar_link_home": "ホーム",
+    "sidebar_link_teas": "お茶",
+    "sidebar_link_journal": "ジャーナル",
+    "sidebar_link_brews": "抽出",
+    "sidebar_link_settings": "設定",
+    "sidebar_link_account": "アカウント",
+    "sidebar_text_syncing": "同期中",
+    "sidebar_text_just_synced": "同期しました",
+    "sidebar_text_synced_at": "同期時刻",
+    "sidebar_connection_lost": "接続が失われました",
+    "sidebar_connection_back": "オンラインに戻りました"
+}

@@ -1,0 +1,22 @@
+{
+    "app_name": "Teanote",
+    "nav_sub_active": "predplatné",
+    "nav_sub_status_active": "aktívne",
+    "nav_sub_status_expired": "expirované",
+    "nav_sub_trial": "skúšobná verzia",
+    "nav_sub_trial_days_left": "dní zostáva",
+    "nav_link_start_brew": "Spustiť lúhovanie",
+    "nav_link_journal": "Denník",
+    "nav_logout_btn": "Odhlásiť sa",
+    "sidebar_link_home": "Domov",
+    "sidebar_link_teas": "Čaje",
+    "sidebar_link_journal": "Denník",
+    "sidebar_link_brews": "Lúhovania",
+    "sidebar_link_settings": "Nastavenia",
+    "sidebar_link_account": "Účet",
+    "sidebar_text_syncing": "Synchronizujem",
+    "sidebar_text_just_synced": "Práve synchronizované",
+    "sidebar_text_synced_at": "Synchronizované o",
+    "sidebar_connection_lost": "Pripojenie zlyhalo",
+    "sidebar_connection_back": "Späť online"
+}

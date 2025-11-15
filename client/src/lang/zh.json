@@ -1,0 +1,22 @@
+{
+    "app_name": "Teanote",
+    "nav_sub_active": "订阅",
+    "nav_sub_status_active": "有效",
+    "nav_sub_status_expired": "已过期",
+    "nav_sub_trial": "试用",
+    "nav_sub_trial_days_left": "天剩余",
+    "nav_link_start_brew": "开始冲泡",
+    "nav_link_journal": "日记",
+    "nav_logout_btn": "退出登录",
+    "sidebar_link_home": "主页",
+    "sidebar_link_teas": "茶品",
+    "sidebar_link_journal": "日记",
+    "sidebar_link_brews": "冲泡",
+    "sidebar_link_settings": "设置",
+    "sidebar_link_account": "账户",
+    "sidebar_text_syncing": "正在同步",
+    "sidebar_text_just_synced": "已同步",
+    "sidebar_text_synced_at": "同步时间",
+    "sidebar_connection_lost": "连接已断开",
+    "sidebar_connection_back": "已重新连接"
+}

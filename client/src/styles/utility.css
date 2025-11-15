@@ -63,7 +63,7 @@ section {
 }
 
 ::placeholder {
-    color: var(--brand-primary) !important;
+    color: var(--placeholder-color) !important;
 }
 
 small {

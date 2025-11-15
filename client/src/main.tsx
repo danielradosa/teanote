@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 
 import './styles/index.css'
+import "./lang"
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

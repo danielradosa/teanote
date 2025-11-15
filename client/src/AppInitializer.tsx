@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/useAuthStore'
 import { useSettingsStore } from './stores/useSettingsStore'
 import DesktopNavDummy from './components/layout/DesktopNavDummy'
 import DesktopSidebarDummy from './components/layout/DesktopSidebarDummy'
+import i18n from './lang'
 
 export default function AppInitializer({ children }: { children: React.ReactNode }) {
     const initAuth = useAuthStore((s) => s.initAuth)
@@ -36,6 +37,12 @@ export default function AppInitializer({ children }: { children: React.ReactNode
         const savedTheme = localStorage.getItem('theme')
         applyTheme(savedTheme)
     }, [])
+
+    useEffect(() => {
+        if (settings?.language) {
+            i18n.changeLanguage(settings.language)
+        }
+    }, [settings?.language])
 
     useEffect(() => {
         if (settings?.theme) {

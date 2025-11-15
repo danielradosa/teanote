@@ -2,10 +2,12 @@
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
+import { useTranslation } from "react-i18next"
 
 function DesktopNav() {
     const { signOut, trialDaysLeft, isSubscribed, subscriptionEnd } = useAuthStore()
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const now = new Date()
     const subEndDate = subscriptionEnd ? new Date(subscriptionEnd) : null
@@ -21,28 +23,28 @@ function DesktopNav() {
     return (
         <header className="main-header">
             <div className="logo">
-                <Link to="/">🍵 Teanote</Link>
+                <Link to="/">🍵 {t("app_name")}</Link>
                 <span className='trial-badge'>
                     {hasActiveSubscription
-                        ? '🍃 subscription: active'
+                        ? `🍃 ${t("nav_sub_active")}: ${t("nav_sub_status_active")}`
                         : hasTrial
-                            ? `⏳ trial: ${trialDaysLeft}d left`
-                            : '⚠️ subscription: expired'}
+                            ? `⏳ ${t("nav_sub_trial")}: ${trialDaysLeft} ${t("nav_sub_trial_days_left")}`
+                            : `⚠️ ${t("nav_sub_active")}: ${t("nav_sub_status_expired")}`}
                 </span>
             </div>
             <nav>
                 {canAccessApp && (
                     <>
                         <Link to="/brews">
-                            <button className="btn btn-action">⏳ Start brew</button>
+                            <button className="btn btn-action">⏳ {t("nav_link_start_brew")}</button>
                         </Link>
                         <Link to="/journal">
-                            <button className="btn btn-action">📔 Journal</button>
+                            <button className="btn btn-action">📔 {t("nav_link_journal")}</button>
                         </Link>
                     </>
                 )}
                 <button className="btn btn-action logout-btn" onClick={handleLogout}>
-                    &larr; Log out
+                    &larr; {t("nav_logout_btn")}
                 </button>
             </nav>
         </header>

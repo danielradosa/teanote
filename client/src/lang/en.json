@@ -1,0 +1,22 @@
+{
+    "app_name": "Teanote",
+    "nav_sub_active": "subscription",
+    "nav_sub_status_active": "active",
+    "nav_sub_status_expired": "expired",
+    "nav_sub_trial": "trial",
+    "nav_sub_trial_days_left": "days left",
+    "nav_link_start_brew": "Start brew",
+    "nav_link_journal": "Journal",
+    "nav_logout_btn": "Log out",
+    "sidebar_link_home": "Home",
+    "sidebar_link_teas": "Teas",
+    "sidebar_link_journal": "Journal",
+    "sidebar_link_brews": "Brews",
+    "sidebar_link_settings": "Settings",
+    "sidebar_link_account": "Account",
+    "sidebar_text_syncing": "Syncing",
+    "sidebar_text_just_synced": "Just synced",
+    "sidebar_text_synced_at": "Synced at",
+    "sidebar_connection_lost": "Connection lost",
+    "sidebar_connection_back": "Back online"
+}

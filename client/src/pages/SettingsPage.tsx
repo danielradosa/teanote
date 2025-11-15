@@ -28,15 +28,18 @@ function SettingsPage() {
                     <div className="quick-action-btns settings-form">
                         <label>
                             <span className="basic-label">AI features (optional):</span>
-                            <button onClick={toggleAI} className='btn btn-dark' style={{ width: '100%'}}>
+                            <button onClick={toggleAI} className='btn btn-dark' style={{ width: '100%' }}>
                                 {settings?.ai_enabled ? 'On ✨' : 'Off 🙅🏻‍♂️'}
                             </button>
                         </label>
-                        
+
                         <label>
                             <span className="basic-label"><span className="req">* </span>Select theme:</span>
                             <div className="select-wrap">
-                                <select value={settings?.theme} onChange={e => setTheme(e.target.value as any)}>
+                                <select
+                                    value={settings?.theme || 'Teanote Default'}
+                                    onChange={e => setTheme(e.target.value as any)}
+                                >
                                     <option>Teanote Default</option>
                                     <option>Teanote Cozy</option>
                                     <option>Teanote Night</option>
@@ -49,12 +52,15 @@ function SettingsPage() {
                         <label>
                             <span className="basic-label"><span className="req">* </span>Select language:</span>
                             <div className="select-wrap">
-                                <select value={settings?.language} onChange={e => setLanguage(e.target.value as any)}>
+                                <select
+                                    value={settings?.language || 'en'}
+                                    onChange={e => setLanguage(e.target.value as any)}
+                                >
                                     <option value="en">English</option>
                                     <option value="sk">Slovak</option>
-                                    <option value="jp">Japanese</option>
-                                    <option value="chinese">Chinese</option>
-                                    <option value="korean">Korean</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ko">Korean</option>
                                 </select>
                                 <span className="arr-down"></span>
                             </div>
