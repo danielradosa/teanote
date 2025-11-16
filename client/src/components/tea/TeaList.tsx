@@ -5,6 +5,7 @@
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TeaItem from './TeaItem'
 import { useState } from 'react'
+import { t } from 'i18next'
 
 export default function TeaList({ teas, deleteTea, onEdit }: any) {
     const batchSize = 6
@@ -21,14 +22,14 @@ export default function TeaList({ teas, deleteTea, onEdit }: any) {
 
     return (
         <section className="tea-table">
-            <h2>All teas</h2>
+            <h2>{t('teas_all_teas')}</h2>
             {sortedTeas.length > 0 ? (
                 <InfiniteScroll
                     dataLength={Math.min(teaItemsToShow, sortedTeas.length)}
                     next={fetchMoreTeas}
                     hasMore={teaItemsToShow < sortedTeas.length}
-                    loader={<div>loading more...</div>}
-                    endMessage={<div>no more teas</div>}
+                    loader={<div>{t('general_loading_more')}</div>}
+                    endMessage={<div>{t('teas_no_more')}</div>}
                 >
                     <ul className="tea-list">
                         {sortedTeas.slice(0, teaItemsToShow).map((tea: any) => (
@@ -37,7 +38,7 @@ export default function TeaList({ teas, deleteTea, onEdit }: any) {
                     </ul>
                 </InfiniteScroll>
             ) : (
-                <p style={{ marginTop: 8 }}>no teas yet — add your first one</p>
+                <p style={{ marginTop: 8 }}>{t('teas_no_teas_yet')}</p>
             )}
         </section>
     )

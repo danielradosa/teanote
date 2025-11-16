@@ -208,7 +208,6 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
         // eslint-disable-next-line prefer-const
         presetsUnsub = subscribeTable<Preset>('presets', user.id, async(updatedPreset) => {
             startSync()
-            await new Promise(r => setTimeout(r, 1000))
             set((state) => {
                 const exists = state.presets.find(p => p.id === updatedPreset.id)
                 if (exists) {
@@ -217,6 +216,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
                     return { presets: [...state.presets, updatedPreset] }
                 }
             })
+            await new Promise(r => setTimeout(r, 1000))
             finishSync(true)
         })
         set({

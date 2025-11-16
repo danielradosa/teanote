@@ -5,7 +5,7 @@ import { useBrewsStore } from '../stores/useBrewsStore'
 import { useSettingsStore } from '../stores/useSettingsStore'
 import { useAuthStore } from '../stores/useAuthStore'
 import { initAllRealtime, stopAllRealtime } from '../helpers/realtimeStores'
-import { useTranslation } from "react-i18next"
+import { t } from 'i18next';
 
 function SyncOnReconnect() {
     const { syncTeas } = useTeasStore()
@@ -14,8 +14,6 @@ function SyncOnReconnect() {
     const { syncSettings } = useSettingsStore()
     const { user, checkAccess } = useAuthStore()
     const [status, setStatus] = useState<'offline' | 'syncing' | 'online' | null>(null)
-
-    const { t } = useTranslation()
 
     useEffect(() => {
         if (!user) return

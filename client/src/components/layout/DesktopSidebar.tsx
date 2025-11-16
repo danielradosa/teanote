@@ -5,12 +5,11 @@ import { useAuthStore } from '../../stores/useAuthStore'
 import { useSyncStore } from '../../stores/useSyncStore'
 import Loader from '../Loader'
 import SyncOnReconnect from '../SyncOnReconnect'
-import { useTranslation } from "react-i18next"
+import { t } from 'i18next';
 
 function DesktopSidebar() {
     const { isSubscribed, subscriptionEnd, trialDaysLeft } = useAuthStore()
     const { isSyncing, justSynced, lastSync } = useSyncStore()
-    const { t } = useTranslation()
 
     const now = new Date()
     const subEndDate = subscriptionEnd ? new Date(subscriptionEnd) : null

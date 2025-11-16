@@ -110,8 +110,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                 filter: `user_id=eq.${user.id}`
             }, async (payload: { new: Settings }) => {
                 startSync()
-                await new Promise(r => setTimeout(r, 1000))
                 set({ settings: payload.new })
+                await new Promise(r => setTimeout(r, 1000))
                 finishSync(true)
             })
             .subscribe()

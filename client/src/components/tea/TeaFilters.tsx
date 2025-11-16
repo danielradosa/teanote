@@ -3,6 +3,7 @@
 'use client'
 
 import SearchBar from '../SearchBar'
+import { t } from 'i18next'
 
 export default function TeaFilters({
     teas,
@@ -18,17 +19,17 @@ export default function TeaFilters({
     return (
         <section className="tea-filters" style={{ flex: '1 1 100%' }}>
             <h2 onClick={toggleFilters}>
-                Filter teas
+                {t('teas_filter')}
                 <span className="toggle-label">
                     {showFilters ? '– hide filters' : '+ show filters'}
                 </span>
             </h2>
             <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                 <label className='filter-label'>
-                    Type:&nbsp;
+                    {t('teas_filter_type_label')}:&nbsp;
                     <div className="select-wrap">
                         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-                            <option value="">all types</option>
+                            <option value="">{t('teas_select_type')}</option>
                             {[...new Set(teas.map((t: any) => t.type))].map((type: any) =>
                                 <option value={type} key={type}>{type}</option>
                             )}
@@ -38,10 +39,10 @@ export default function TeaFilters({
                 </label>
 
                 <label className="filter-label">
-                    Year:&nbsp;
+                    {t('teas_filter_year_label')}:&nbsp;
                     <div className="select-wrap">
                         <select value={yearFilter} onChange={e => setYearFilter(e.target.value)}>
-                            <option value="">all years</option>
+                            <option value="">{t('teas_select_year')}</option>
                             {[...new Set(teas.map((t: any) => t.year).filter((y: string) => y && y.trim() !== ''))].map((year: any) =>
                                 <option value={year} key={year}>{year}</option>
                             )}
@@ -51,12 +52,12 @@ export default function TeaFilters({
                 </label>
 
                 <label className='filter-label'>
-                    Search:&nbsp;
-                    <SearchBar value={search} setValue={setSearch} placeholder="Search by tea type or name..." />
+                    {t('general_search_label')}:&nbsp;
+                    <SearchBar value={search} setValue={setSearch} placeholder={t('teas_search_placeholder')} />
                 </label>
 
                 <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setYearFilter(''); setSearch(''); }}>
-                    <i className="bxr bx-eraser" /> clear filters
+                    <i className="bxr bx-eraser" /> {t('general_search_clear_btn')}
                 </button>
             </div>
         </section>

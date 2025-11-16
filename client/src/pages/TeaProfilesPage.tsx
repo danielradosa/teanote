@@ -7,6 +7,7 @@ import TeaList from '../components/tea/TeaList'
 import TeaForm from '../components/tea/TeaForm'
 import { useToggleFilters } from '../hooks/toggleFilters'
 import type { Tea } from '../types/Tea'
+import { t } from 'i18next'
 
 export default function TeaProfilesPage() {
     const { addTea, deleteTea, updateTea, visibleTeas } = useTeasStore()
@@ -53,8 +54,8 @@ export default function TeaProfilesPage() {
     return (
         <section className="page-wrap tea-page">
             <header className="page-header">
-                <h1>Teas</h1>
-                <p className="subtitle">All your tea profiles 🍵</p>
+                <h1>{t('teas_title')}</h1>
+                <p className="subtitle">{t('teas_subtitle')} 🍵</p>
             </header>
 
             <div className="tea-content">

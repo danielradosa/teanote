@@ -79,7 +79,6 @@ export const useTeasStore = create<TeasState>((set, get) => ({
 
         const unsubscribe = subscribeTable<Tea>('teas', user.id, async(updatedTea) => {
             startSync()
-            await new Promise(r => setTimeout(r, 1000))
             set((state) => {
                 const exists = state.teas.find(t => t.id === updatedTea.id)
                 if (exists) {
@@ -88,6 +87,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
                     return { teas: [...state.teas, updatedTea] }
                 }
             })
+            await new Promise(r => setTimeout(r, 1000))
             finishSync(true)
         })
         set({ teasRealtimeUnsub: unsubscribe })

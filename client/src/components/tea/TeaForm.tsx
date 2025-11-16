@@ -4,6 +4,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import RichToolbar from '../RichToolbar'
+import { t } from 'i18next'
 
 export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, onCancel }: any) {
     const emptyForm = {
@@ -43,49 +44,49 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
 
     return (
         <section className={isEditing ? 'edit-panel' : 'new-tea'}>
-            <h2>{isEditing ? `Edit tea — ${form.name}` : 'Add new tea'}</h2>
+            <h2>{isEditing ? `${t('teas_edit_tea')} — ${form.name}` : `${t('teas_add_new')}`}</h2>
             <div className="tea-form">
                 <label>
-                    <span className="basic-label"><span className="req">*</span> Tea name:</span>
+                    <span className="basic-label"><span className="req">*</span> {t('teas_form_name_label')}:</span>
                     <input
                         type="text"
-                        placeholder={isEditing ? 'e.g. Sencha' : 'e.g. Bai Mu Dan'}
+                        placeholder={isEditing ? `${t('teas_form_name_p')}` : `${t('teas_form_name_p')}`}
                         value={form.name}
                         onChange={e => handleChange({ ...form, name: e.target.value })}
                     />
                 </label>
                 <label>
-                    <span className="basic-label"><span className="req">*</span> Tea type:</span>
+                    <span className="basic-label"><span className="req">*</span> {t('teas_form_type_label')}:</span>
                     <div className='select-wrap'>
                         <select
                             value={form.type}
                             onChange={e => handleChange({ ...form, type: e.target.value })}
                         >
-                            <option value="green">green</option>
-                            <option value="oolong">oolong</option>
-                            <option value="red">red</option>
-                            <option value="white">white</option>
-                            <option value="yellow">yellow</option>
-                            <option value="puerh">puerh</option>
-                            <option value="purple">purple</option>
+                            <option value="green">{t('teas_select_type_green')}</option>
+                            <option value="oolong">{t('teas_select_type_oolong')}</option>
+                            <option value="red">{t('teas_select_type_red')}</option>
+                            <option value="white">{t('teas_select_type_white')}</option>
+                            <option value="yellow">{t('teas_select_type_yellow')}</option>
+                            <option value="puerh">{t('teas_select_type_puerh')}</option>
+                            <option value="purple">{t('teas_select_type_purple')}</option>
                         </select>
                         <span className="arr-down"></span>
                     </div>
                 </label>
                 <label>
-                    <span className="basic-label">Inventory (optional):</span>
+                    <span className="basic-label">{t('teas_form_inventory_label')}:</span>
                     <input
                         type="text"
-                        placeholder="e.g. 50g"
+                        placeholder={t('teas_form_inventory_p')}
                         value={form.inventory}
                         onChange={e => handleChange({ ...form, inventory: e.target.value })}
                     />
                 </label>
                 <label>
-                    <span className="basic-label">Year (optional):</span>
+                    <span className="basic-label">{t('teas_form_year_label')}:</span>
                     <input
                         type="text"
-                        placeholder={isEditing ? 'e.g. 2004' : 'e.g. 2012'}
+                        placeholder={isEditing ? `${t('teas_form_year_p')}` : `${t('teas_form_year_p')}`}
                         value={form.year}
                         onChange={e => handleChange({ ...form, year: e.target.value })}
                     />
@@ -94,37 +95,37 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                 {(isEditing || showMoreFields) && (
                     <>
                         <label>
-                            <span className="basic-label">Origin (optional):</span>
+                            <span className="basic-label">{t('teas_form_origin_label')}:</span>
                             <input
                                 type="text"
-                                placeholder="e.g. Xishuangbanna"
+                                placeholder={t('teas_form_origin_p')}
                                 value={form.origin}
                                 onChange={e => handleChange({ ...form, origin: e.target.value })}
                             />
                         </label>
                         <label>
-                            <span className="basic-label">Vendor (optional):</span>
+                            <span className="basic-label">{t('teas_form_vendor_label')}:</span>
                             <input
                                 type="text"
-                                placeholder="e.g. YunnanSourcing"
+                                placeholder={t('teas_form_vendor_p')}
                                 value={form.vendor}
                                 onChange={e => handleChange({ ...form, vendor: e.target.value })}
                             />
                         </label>
                         <label>
-                            <span className="basic-label">Link (optional):</span>
+                            <span className="basic-label">{t('teas_form_link_label')}:</span>
                             <input
                                 type="text"
-                                placeholder="e.g. https://someshop.tea/product1"
+                                placeholder={t('teas_form_link_p')}
                                 value={form.link}
                                 onChange={e => handleChange({ ...form, link: e.target.value })}
                             />
                         </label>
                         <label>
-                            <span className="basic-label">Image URL (optional):</span>
+                            <span className="basic-label">{t('teas_form_img_label')}:</span>
                             <input
                                 type="text"
-                                placeholder="e.g. https://mytea.com/photo.png"
+                                placeholder={t('teas_form_img_p')}
                                 value={form.image}
                                 onChange={e => handleChange({ ...form, image: e.target.value })}
                             />
@@ -138,10 +139,10 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                     textareaRef={textareaRef}
                 />
                 <label>
-                    <span className="basic-label">Notes (optional):</span>
+                    <span className="basic-label">{t('teas_form_notes_label')}:</span>
                     <textarea
                         ref={textareaRef}
-                        placeholder={isEditing ? 'e.g. This one is real tasty.' : 'e.g. This one is real good.'}
+                        placeholder={isEditing ? `${t('teas_form_notes_p')}` : `${t('teas_form_notes_p')}`}
                         value={form.notes || ''}
                         onChange={e => handleChange({ ...form, notes: e.target.value })}
                     />
@@ -149,16 +150,17 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
 
                 <div className="tea-actions">
                     <button className="btn btn-quick" onClick={handleSubmit}>
-                        <i className="bxr bx-save" /> {isEditing ? 'save' : 'add tea'}
+                        <i className={`bxr ${isEditing ? 'bx-save' : 'bx-plus'}`} /> {isEditing ? `${t('teas_save_tea_btn')}` : `${t('teas_add_tea_btn')}`}
                     </button>
                     {isEditing && (
                         <button className="btn btn-dark" onClick={onCancel}>
-                            <i className="bxr bx-block" /> cancel
+                            <i className="bxr bx-block" /> {t('teas_cancel_tea_btn')}
                         </button>
                     )}
                     {!isEditing && (
                         <button className="btn btn-info" onClick={() => setShowMoreFields(!showMoreFields)}>
-                            {showMoreFields ? 'hide details' : 'add more details'}
+                            <i className={`bxr ${showMoreFields ? 'bx-bookmark-x' : 'bx-bookmark-plus'}`} />
+                            {showMoreFields ? `${t('teas_add_tea_btn')}` : `${t('teas_add_details_btn')}`}
                         </button>
                     )}
                 </div>

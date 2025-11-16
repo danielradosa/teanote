@@ -79,7 +79,6 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
 
         const unsubscribe = subscribeTable<Journal>('journals', user.id, async(updatedJournal) => {
             startSync()
-            await new Promise(r => setTimeout(r, 1000))
             set((state) => {
                 const exists = state.journals.find(j => j.id === updatedJournal.id)
                 if (exists) {
@@ -88,6 +87,7 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
                     return { journals: [...state.journals, updatedJournal] }
                 }
             })
+            await new Promise(r => setTimeout(r, 1000))
             finishSync(true)
         })
 

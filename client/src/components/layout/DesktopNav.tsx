@@ -2,12 +2,11 @@
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
-import { useTranslation } from "react-i18next"
+import { t } from 'i18next';
 
 function DesktopNav() {
     const { signOut, trialDaysLeft, isSubscribed, subscriptionEnd } = useAuthStore()
     const navigate = useNavigate()
-    const { t } = useTranslation()
 
     const now = new Date()
     const subEndDate = subscriptionEnd ? new Date(subscriptionEnd) : null

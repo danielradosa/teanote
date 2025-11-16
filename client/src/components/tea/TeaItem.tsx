@@ -4,6 +4,7 @@
 
 import { useState } from 'react'
 import MdDisplay from '../MdDisplay'
+import { t } from 'i18next'
 
 export default function TeaItem({ tea, deleteTea, onEdit }: any) {
     const [openDetails, setOpenDetails] = useState(false)
@@ -33,20 +34,20 @@ export default function TeaItem({ tea, deleteTea, onEdit }: any) {
 
                 {openDetails && (
                     <div className="tea-extra">
-                        {tea.inventory && <p><strong>In stash:</strong> {tea.inventory}</p>}
-                        {tea.vendor && <p><strong>Vendor:</strong> {tea.vendor}</p>}
+                        {tea.inventory && <p><strong>{t('teas_item_stash')}:</strong> {tea.inventory}</p>}
+                        {tea.vendor && <p><strong>{t('teas_item_vendor')}:</strong> {tea.vendor}</p>}
                         {tea.link && (
                             <p>
-                                <strong>Link:</strong> <a href={tea.link} target="_blank" rel="noreferrer">{tea.link}</a>
+                                <strong>{t('teas_item_link')}:</strong> <a href={tea.link} target="_blank" rel="noreferrer">{tea.link}</a>
                             </p>
                         )}
                         {tea.image && <div className="tea-image"><img src={tea.image} alt={tea.name} /></div>}
-                        {tea.notes && <p><strong>Notes:</strong> <MdDisplay content={tea.notes} /></p>}
+                        {tea.notes && <p><strong>{t('teas_item_notes')}:</strong> <MdDisplay content={tea.notes} /></p>}
                     </div>
                 )}
 
                 <button className="btn btn-simple" onClick={() => setOpenDetails(!openDetails)}>
-                    <i className={`bxr ${openDetails ? 'bx-list-minus' : 'bx-list-plus'}`} /> {openDetails ? 'hide details' : 'see details'}
+                    <i className={`bxr ${openDetails ? 'bx-list-minus' : 'bx-list-plus'}`} /> {openDetails ? `${t('general_hide_details')}` : `${t('general_see_details')}`}
                 </button>
             </div>
 

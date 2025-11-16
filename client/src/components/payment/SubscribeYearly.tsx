@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { useAuthStore } from '../../stores/useAuthStore';
+import { t } from 'i18next';
 
 export default function SubscribeYearly() {
     const { session, user } = useAuthStore();
@@ -36,7 +37,7 @@ export default function SubscribeYearly() {
 
     return (
         <button className="btn btn-subscribe" onClick={handleSubscribe} disabled={loading}>
-            {loading ? <MoonLoader size={16} color="#fff" /> : 'Subscribe yearly for $26.88 (Save 25%)'}
+            {loading ? <MoonLoader size={16} color="#fff" /> : `${t('subscribe_btn_monthly')}`}
         </button>
     );
 }

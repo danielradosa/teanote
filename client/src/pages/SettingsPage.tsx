@@ -4,6 +4,7 @@
 import { useEffect } from 'react'
 import { useAuthStore } from '../stores/useAuthStore'
 import { useSettingsStore } from '../stores/useSettingsStore'
+import { t } from 'i18next'
 
 function SettingsPage() {
     const { user, isSubscribed } = useAuthStore()
@@ -18,23 +19,23 @@ function SettingsPage() {
     return (
         <section className="page-wrap settings-page">
             <header className="page-header">
-                <h1>Settings</h1>
-                <p className="subtitle">Edit your settings 🍵</p>
+                <h1>{t('settings_title')}</h1>
+                <p className="subtitle">{t('settings_subtitle')} 🍵</p>
             </header>
 
             <div className="settings-content">
                 <section className="quick-actions">
-                    <h2>Preferences</h2>
+                    <h2>{t('settings_preferences')}</h2>
                     <div className="quick-action-btns settings-form">
                         <label>
-                            <span className="basic-label">AI features (optional):</span>
+                            <span className="basic-label">{t('settings_ai_label')}:</span>
                             <button onClick={toggleAI} className='btn btn-dark' style={{ width: '100%' }}>
-                                {settings?.ai_enabled ? 'On ✨' : 'Off 🙅🏻‍♂️'}
+                                {settings?.ai_enabled ? `${t('settings_ai_on')} ✨` : `${t('settings_ai_off')} 🙅🏻‍♂️`}
                             </button>
                         </label>
 
                         <label>
-                            <span className="basic-label"><span className="req">* </span>Select theme:</span>
+                            <span className="basic-label"><span className="req">* </span>{t('settings_theme_label')}:</span>
                             <div className="select-wrap">
                                 <select
                                     value={settings?.theme || 'Teanote Default'}
@@ -50,17 +51,17 @@ function SettingsPage() {
                         </label>
 
                         <label>
-                            <span className="basic-label"><span className="req">* </span>Select language:</span>
+                            <span className="basic-label"><span className="req">* </span>{t('settings_lang_label')}:</span>
                             <div className="select-wrap">
                                 <select
                                     value={settings?.language || 'en'}
                                     onChange={e => setLanguage(e.target.value as any)}
                                 >
                                     <option value="en">English</option>
-                                    <option value="sk">Slovak</option>
-                                    <option value="ja">Japanese</option>
-                                    <option value="zh">Chinese</option>
-                                    <option value="ko">Korean</option>
+                                    <option value="sk">Slovenčina</option>
+                                    <option value="ja">日本語</option>
+                                    <option value="zh">中文</option>
+                                    <option value="ko">한국어</option>
                                 </select>
                                 <span className="arr-down"></span>
                             </div>

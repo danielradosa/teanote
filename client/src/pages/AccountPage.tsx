@@ -1,8 +1,11 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/useAuthStore'
 import SubscribeMonthly from '../components/payment/SubscribeMonthly'
 import SubscribeYearly from '../components/payment/SubscribeYearly'
+import { t } from 'i18next';
 
 export default function AccountPage() {
     const { user, trialDaysLeft, signOut, isSubscribed, subscriptionEnd, checkAccess } = useAuthStore()
@@ -32,39 +35,39 @@ export default function AccountPage() {
     return (
         <section className="page-wrap account-page">
             <header className="page-header">
-                <h1>Account</h1>
-                <p className="subtitle">Manage your account here 🍵</p>
+                <h1>{t('account_title')}</h1>
+                <p className="subtitle">{t('account_subtitle')} 🍵</p>
             </header>
 
             <section className="account-content">
                 <section className="manage-account">
-                    <h2>Your information</h2>
+                    <h2>{t('account_info')}</h2>
                     <p>
-                        Subscription status:{' '}
+                        {t('account_sub_status')}:{' '}
                         <span className={`sub-status ${hasActiveSubscription ? 'active' : 'inactive'}`}>
-                            {hasActiveSubscription ? 'active ✅' : 'expired ❌'}
+                            {hasActiveSubscription ? `${t('account_sub_status_active')} ✅` : `${t('account_sub_status_active')} ❌`}
                         </span>
                     </p>
-                    <p>Email: <strong>{user?.email}</strong></p>
-                    {user?.id && <p>User ID: <strong>{user.id}</strong></p>}
+                    <p>{t('account_email')}: <strong>{user?.email}</strong></p>
+                    {user?.id && <p>{t('account_id')}: <strong>{user.id}</strong></p>}
 
                     <button onClick={handleLogout} className="btn btn-danger" style={{ width: 'max-content', marginTop: 10 }}>
-                        Log out
+                        &larr; {t('account_logout')}
                     </button>
 
                     {searchParams.get('success') && (
-                        <div className="msg success">🎉 Subscription active</div>
+                        <div className="msg success">🎉 {t('account_purchased')}</div>
                     )}
                     {searchParams.get('cancelled') && (
-                        <div className="msg error">⚠️ Payment cancelled</div>
+                        <div className="msg error">⚠️ {t('account_cancelled')}</div>
                     )}
 
                     {!hasActiveSubscription && (
                         <>
-                            <h2 style={{ marginTop: 10 }}>Subscribe now</h2>
+                            <h2 style={{ marginTop: 10 }}>{t('account_sub_btn')}</h2>
                             <div className="subscription-wrap">
                                 {trialDaysLeft !== null && trialDaysLeft > 0 && (
-                                    <p>You have <strong>{trialDaysLeft}</strong> days of trial left. Finish your trial and subscribe now.</p>
+                                    <p>{t('account_you_have')} <strong>{trialDaysLeft}</strong> {t('account_trial_left')}.</p>
                                 )}
                                 <SubscribeMonthly />
                                 <SubscribeYearly />
@@ -72,7 +75,7 @@ export default function AccountPage() {
 
                             {(!isSubscribed && (!trialDaysLeft || trialDaysLeft <= 0)) && (
                                 <p className="msg error" style={{ marginTop: 16 }}>
-                                    You must have an active subscription or trial to access your brews and journal.
+                                    {t('account_not_subbed')}.
                                 </p>
                             )}
                         </>

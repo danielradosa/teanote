@@ -1,4 +1,5 @@
 import React from 'react'
+import { t } from 'i18next'
 
 interface RichToolbarProps {
     value: string
@@ -48,9 +49,9 @@ const RichToolbar: React.FC<RichToolbarProps> = ({ setValue, textareaRef }) => {
         <div className="format-toolbar">
             <button type="button" onClick={() => insertAround("**", "**")} className='btn btn-action' style={{ fontWeight: 'bold' }}>B</button>
             <button type="button" onClick={() => insertAround("*", "*")} className='btn btn-action' style={{ fontStyle: 'italic' }}>i</button>
-            <button type="button" onClick={() => insertAround("## ", "")} className='btn btn-action'>Heading</button>
-            <button type="button" onClick={() => insertLines("- ")} className='btn btn-action'><i className="bxr bx-list-ul" /> List</button>
-            <small className='hide-mobile'>use of markdown is recommended</small>
+            <button type="button" onClick={() => insertAround("## ", "")} className='btn btn-action'>{t('general_md_heading')}</button>
+            <button type="button" onClick={() => insertLines("- ")} className='btn btn-action'><i className="bxr bx-list-ul" /> {t('general_md_list')}</button>
+            <small className='hide-mobile'>{t('general_md_msg')}</small>
         </div>
     )
 }
