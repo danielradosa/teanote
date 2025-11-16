@@ -28,7 +28,7 @@ export default function TeaItem({ tea, deleteTea, onEdit }: any) {
                             display: 'inline-block'
                         }}
                     >
-                        {tea.type}
+                        {t(`tea_tag_${tea.type}`)}
                     </span>
                 </span>
 

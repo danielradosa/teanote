@@ -9,7 +9,8 @@ import RichToolbar from '../components/RichToolbar'
 import MdDisplay from '../components/MdDisplay'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import SearchBar from '../components/SearchBar'
-import { useToggleFilters } from '../hooks/toggleFilters';
+import { useToggleFilters } from '../hooks/toggleFilters'
+import { t } from 'i18next'
 
 function JournalPage() {
     const { visibleTeas } = useTeasStore()
@@ -82,6 +83,12 @@ function JournalPage() {
     });
     const orderedJournals = [...filteredJournals].reverse();
 
+    const teaTypesInJournals = [...new Set(
+        journals
+            .map(journal => teas.find(t => t.id === journal.teaId)?.type)
+            .filter(Boolean)
+    )];
+
     useEffect(() => {
         const ensureScrollable = () => {
             const ul = document.querySelector('.journal-list');
@@ -101,40 +108,42 @@ function JournalPage() {
     return (
         <section className="page-wrap journal-page">
             <header className="page-header">
-                <h1>Journals</h1>
-                <p className="subtitle">Your tea notes & reflections 🍵</p>
+                <h1>{t('journals_title')}</h1>
+                <p className="subtitle">{t('journals_subtitle')} 🍵</p>
             </header>
             <div className="journal-content">
                 {/* Journal Filters */}
                 <section className="journal-filters" style={{ flex: '1 1 100%' }}>
                     <h2 onClick={toggleFilters}>
-                        Filter journals
+                        {t('journals_filter_title')}
                         <span className="toggle-label">
-                            {showFilters ? '– hide filters' : '+ show filters'}
+                            {showFilters ? `– ${t('general_hide_filters')}` : `+ ${t('general_show_filters')}`}
                         </span>
                     </h2>
                     <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                         <label className='filter-label'>
-                            Type:&nbsp;
+                            {t('journal_type_label')}:&nbsp;
                             <div className="select-wrap">
                                 <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-                                    <option value="">all types</option>
-                                    {[...new Set(teas.map(t => t.type))].map(type =>
-                                        <option value={type} key={type}>{type}</option>
-                                    )}
+                                    <option value="">{t('journal_select_types')}</option>
+                                    {teaTypesInJournals.map(type => (
+                                        <option value={type} key={type}>
+                                            {t(`tea_tag_${type}`)}
+                                        </option>
+                                    ))}
                                 </select>
                                 <span className='arr-down'></span>
                             </div>
                         </label>
                         {/* Rating dropdown */}
                         <label className='filter-label'>
-                            Rating:&nbsp;
+                            {t('journal_rating_label')}:&nbsp;
                             <div className="select-wrap">
                                 <select
                                     value={ratingFilter}
                                     onChange={e => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
                                 >
-                                    <option value="">all ratings</option>
+                                    <option value="">{t('journal_select_rating')}</option>
                                     {[1, 2, 3, 4, 5].map(r =>
                                         <option value={r} key={r}>{'⭐'.repeat(r)}</option>
                                     )}
@@ -143,24 +152,24 @@ function JournalPage() {
                             </div>
                         </label>
                         <label className='filter-label'>
-                            Search:&nbsp;
-                            <SearchBar value={search} setValue={setSearch} placeholder="Search by teas or journal title..." />
+                            {t('general_search_label')}:&nbsp;
+                            <SearchBar value={search} setValue={setSearch} placeholder={t('journal_search_placeholder')} />
                         </label>
                         <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch(''); }}>
-                            <i className="bxr bx-eraser" /> clear filters
+                            <i className="bxr bx-eraser" /> {t('general_search_clear_btn')}
                         </button>
                     </div>
                 </section>
                 {/* Journal List */}
                 <section className="journal-table">
-                    <h2>All journals</h2>
+                    <h2>{t('journals_all')}</h2>
                     {filteredJournals.length > 0 ? (
                         <InfiniteScroll
                             dataLength={Math.min(journalItemsToShow, orderedJournals.length)}
                             next={fetchMoreJournals}
                             hasMore={journalItemsToShow < orderedJournals.length}
-                            loader={<div>loading more...</div>}
-                            endMessage={<div>no more journals</div>}
+                            loader={<div>{t('general_loading_more')}</div>}
+                            endMessage={<div>{t('journals_no_more')}</div>}
                         >
                             <ul className="journal-list">
                                 {orderedJournals.slice(0, journalItemsToShow).map(journal => {
@@ -186,7 +195,7 @@ function JournalPage() {
                                                                     display: 'inline-block'
                                                                 }}
                                                             >
-                                                                {tea.type}
+                                                                {t(`tea_tag_${tea.type}`)}
                                                             </span>
                                                             {/* Tea name right next to tag */}
                                                             <span
@@ -212,7 +221,7 @@ function JournalPage() {
                                                 {openDetailsId === journal.id && (
                                                     <div className="journal-extra">
                                                         <p style={{ fontSize: '13px' }}>
-                                                            Brew & preset:{' '}
+                                                            {t('journals_brew_preset')}:{' '}
                                                             <strong>{getBrewName(journal.brew_preset_id ?? '') || 'none'}</strong>
                                                         </p>
                                                         <MdDisplay content={journal.content} />
@@ -220,7 +229,7 @@ function JournalPage() {
                                                 )}
                                                 <button className="btn btn-dark btn-simple" onClick={() => toggleDetails(journal.id)}>
                                                     <i className={`bxr ${openDetailsId === journal.id ? 'bx-list-minus' : 'bx-list-plus'}`} />
-                                                    {openDetailsId === journal.id ? 'hide' : 'see'} details
+                                                    {openDetailsId === journal.id ? `${t('general_hide_details')}` : `${t('general_see_details')}`}
                                                 </button>
                                             </div>
                                             <div className="journal-actions">
@@ -233,25 +242,25 @@ function JournalPage() {
                             </ul>
                         </InfiniteScroll>
                     ) : (
-                        <p style={{ marginTop: 8 }}>no journals yet — add your first one</p>
+                        <p style={{ marginTop: 8 }}>{t('journals_none')}</p>
                     )}
                 </section>
 
                 {editingJournal && (
                     <section className="edit-panel">
-                        <h2>Edit journal — {editingJournal.title}</h2>
+                        <h2>{t('journals_edit')} — {editingJournal.title}</h2>
                         <div className="journal-form">
                             <label>
-                                <span className="basic-label"><span className="req">* </span>Journal name:</span>
+                                <span className="basic-label"><span className="req">* </span>{t('journal_form_name_label')}:</span>
                                 <input
                                     type="text"
-                                    placeholder="e.g. Thoughts on Duck Shit"
+                                    placeholder={t('journal_form_name_p')}
                                     value={editingJournal.title}
                                     onChange={e => setEditingJournal(j => j ? { ...j, title: e.target.value } : null)}
                                 />
                             </label>
                             <label>
-                                <span className="basic-label">Link a brew/preset (optional):</span>
+                                <span className="basic-label">{t('journal_form_brew_label')}:</span>
                                 <div className="select-wrap">
                                     <select
                                         value={editingJournal.brew_preset_id || ''}
@@ -266,7 +275,7 @@ function JournalPage() {
                                             const date = new Date(b.startedAt).toLocaleDateString()
                                             return (
                                                 <option key={b.id} value={b.id}>
-                                                    {`${teaName}${presetName} – brewed on ${date}`}
+                                                    {`${teaName}${presetName} – ${t('journal_brewed_on')} ${date}`}
                                                 </option>
                                             )
                                         })}
@@ -275,7 +284,7 @@ function JournalPage() {
                                 </div>
                             </label>
                             <label>
-                                <span className='basic-label'>Select tea (optional):</span>
+                                <span className='basic-label'>{t('journal_form_tea_label')}:</span>
                                 <div className="select-wrap">
                                     <select
                                         required
@@ -283,20 +292,22 @@ function JournalPage() {
                                         onChange={e => setEditingJournal(j => j ? { ...j, teaId: e.target.value } : null)}
                                     >
                                         <option value="">-</option>
-                                        {teas.map(tea => (
-                                            <option key={tea.id} value={tea.id}>
-                                                {tea.name} {tea.type ? `[${tea.type}]` : ''}
-                                            </option>
-                                        ))}
+                                        {teas
+                                            .filter(tea => journals.some(j => j.teaId === tea.id))
+                                            .map(tea => (
+                                                <option key={tea.id} value={tea.id}>
+                                                    {tea.name} {tea.type ? `[${t(`tea_tag_${tea.type}`)}]` : ''}
+                                                </option>
+                                            ))}
                                     </select>
                                     <span className="arr-down"></span>
                                 </div>
                             </label>
                             <label>
-                                <span className="basic-label">Rating (optional):</span>
+                                <span className="basic-label">{t('journal_form_rating_label')}:</span>
                                 <input
                                     type="number"
-                                    placeholder="Rating (1 to 5)"
+                                    placeholder={t('journal_form_rating_p')}
                                     min={1}
                                     max={5}
                                     value={editingJournal.rating || ''}
@@ -313,20 +324,20 @@ function JournalPage() {
                                 textareaRef={editTextareaRef}
                             />
                             <label>
-                                <span className='basic-label'><span className="req">* </span>Notes:</span>
+                                <span className='basic-label'><span className="req">* </span>{t('journal_form_notes_label')}:</span>
                                 <textarea
                                     ref={editTextareaRef}
-                                    placeholder="Write your thoughts here…"
+                                    placeholder={t('journal_form_notes_p')}
                                     value={editingJournal.content}
                                     onChange={e => setEditingJournal(j => j ? { ...j, content: e.target.value } : null)}
                                 />
                             </label>
                             <div className="journal-actions">
                                 <button className="btn btn-quick" onClick={handleUpdate}>
-                                    <i className="bxr bx-save" /> save
+                                    <i className="bxr bx-save" /> {t('journal_save_btn')}
                                 </button>
                                 <button className="btn btn-dark" onClick={() => setEditingJournal(null)}>
-                                    <i className="bxr bx-block" /> cancel
+                                    <i className="bxr bx-block" /> {t('journal_cancel_btn')}
                                 </button>
                             </div>
                         </div>
@@ -335,14 +346,14 @@ function JournalPage() {
 
                 {/* Add New Journal */}
                 <section className="new-journal">
-                    <h2>Add new journal</h2>
+                    <h2>{t('journal_add_new')}</h2>
                     <div className="journal-form">
                         <label>
-                            <span className="basic-label"><span className="req">* </span>Journal name:</span>
-                            <input type="text" placeholder="e.g. Thoughts on Bai Mu Dan" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                            <span className="basic-label"><span className="req">* </span>{t('journal_form_name_label')}:</span>
+                            <input type="text" placeholder={t('journal_form_name_p')} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
                         </label>
                         <label>
-                            <span className='basic-label'>Link a brew/preset (optional):</span>
+                            <span className='basic-label'>{t('journal_form_brew_label')}:</span>
                             <div className='select-wrap'>
                                 <select
                                     id="brew-select"
@@ -359,7 +370,7 @@ function JournalPage() {
                                         const date = new Date(b.startedAt).toLocaleDateString()
                                         return (
                                             <option key={b.id} value={b.id}>
-                                                {`${teaName}${presetName} – brewed on ${date}`}
+                                                {`${teaName}${presetName} – ${t('journal_brewed_on')} ${date}`}
                                             </option>
                                         )
                                     })}
@@ -368,7 +379,7 @@ function JournalPage() {
                             </div>
                         </label>
                         <label>
-                            <span className='basic-label'>Select tea (optional):</span>
+                            <span className='basic-label'>{t('journal_form_tea_label')}:</span>
                             <div className='select-wrap'>
                                 <select
                                     id="tea-select"
@@ -386,10 +397,10 @@ function JournalPage() {
                             </div>
                         </label>
                         <label>
-                            <span className="basic-label">Rating (optional):</span>
+                            <span className="basic-label">{t('journal_form_rating_label')}:</span>
                             <input
                                 type="number"
-                                placeholder="e.g. 3 (1 to 5)"
+                                placeholder={t('journal_form_rating_p')}
                                 inputMode="numeric"
                                 min={1}
                                 max={5}
@@ -399,11 +410,11 @@ function JournalPage() {
                         </label>
                         <RichToolbar value={form.content} setValue={v => setForm({ ...form, content: v })} textareaRef={textareaRef} />
                         <label>
-                            <span className="basic-label"><span className="req">* </span>Notes:</span>
-                            <textarea ref={textareaRef} placeholder="Write your thoughts here…" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+                            <span className="basic-label"><span className="req">* </span>{t('journal_form_notes_label')}:</span>
+                            <textarea ref={textareaRef} placeholder={t('journal_form_notes_p')} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
                         </label>
                         <div className="journal-actions">
-                            <button className="btn btn-quick" onClick={handleAddJournal}><i className="bxr bx-plus" /> add journal</button>
+                            <button className="btn btn-quick" onClick={handleAddJournal}><i className="bxr bx-plus" /> {t('journal_add_btn')}</button>
                         </div>
                     </div>
                 </section>
