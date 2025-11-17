@@ -133,5 +133,6 @@
     "journals_edit": "Edit journal",
     "journal_save_btn": "save",
     "journal_cancel_btn": "cancel",
-    "journals_brew_preset": "Brew & preset"
+    "journals_brew_preset": "Brew & preset",
+    "journal_preset_none": "none selected"
 }

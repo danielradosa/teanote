@@ -21,7 +21,7 @@ export default function TeaFilters({
             <h2 onClick={toggleFilters}>
                 {t('teas_filter')}
                 <span className="toggle-label">
-                    {showFilters ? '– hide filters' : '+ show filters'}
+                    {showFilters ? `– ${t('general_hide_filters')}` : `+ ${t('general_show_filters')}`}
                 </span>
             </h2>
             <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>

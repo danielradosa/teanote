@@ -133,5 +133,6 @@
     "journals_edit": "Upraviť denník",
     "journal_save_btn": "uložiť",
     "journal_cancel_btn": "zrušiť",
-    "journals_brew_preset": "Čajovanie & šablóna"
+    "journals_brew_preset": "Čajovanie & šablóna",
+    "journal_preset_none": "nevybrané/ná"
 }

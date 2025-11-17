@@ -1,4 +1,6 @@
 export interface Journal {
+    type: string
+    name: any
     id: string
     user_id?: string
     teaId: string
