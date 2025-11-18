@@ -13,6 +13,7 @@
 
     .btn-sidebar {
         padding: 4px 8px;
+        line-height: 1.5;
     }
 
     .main-header .logo {
@@ -40,6 +41,7 @@
         top: auto !important;
         bottom: 0px !important;
         justify-content: center;
+        padding: 32px;
 
         a {
             align-items: center !important;
@@ -50,6 +52,7 @@
 
     main {
         margin-left: 0 !important;
+        width: 100% !important;
     }
 
     .sidebar-footer {
