@@ -201,5 +201,7 @@
     "session_end": "end brew session",
     "session_stop": "stop",
     "preset_from_brew": "preset",
-    "dash_teas_overview": "Overview of my teas"
+    "dash_teas_overview": "Overview of my teas",
+    "sidebar_link_more": "More...",
+    "sidebar_link_less": "Less..."
 }

@@ -313,9 +313,17 @@ small {
     background-color: var(--success-color);
 }
 
+.hide-desktop {
+    display: none;
+}
+
 @media(max-width: 860px) {
     .hide-mobile {
         display: none;
+    }
+
+    .hide-desktop {
+        display: block;
     }
 }
 

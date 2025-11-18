@@ -201,5 +201,7 @@
     "session_end": "ukončiť čajovanie",
     "session_stop": "zastaviť",
     "preset_from_brew": "šablóna",
-    "dash_teas_overview": "Prehľad mojích čajov"
+    "dash_teas_overview": "Prehľad mojích čajov",
+    "sidebar_link_more": "Viac...",
+    "sidebar_link_less": "Menej..."
 }

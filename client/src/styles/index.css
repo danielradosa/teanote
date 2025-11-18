@@ -472,3 +472,22 @@ input[type="checkbox"] {
     position: -webkit-sticky;
   }
 }
+
+.more-links {
+  width: 100%;
+  position: absolute;
+  top: -200px;
+  background-color: var(--brand-secondary);
+  padding: 10px;
+  display: flex;
+  right: 0;
+  flex-direction: column;
+  gap: 10px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  transition: all .15s ease-in-out;
+
+  .btn-sidebar {
+    height: 56px;
+  }
+}

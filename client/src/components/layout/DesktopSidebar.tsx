@@ -3,6 +3,7 @@
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useSyncStore } from '../../stores/useSyncStore'
+import MobileMoreLinks from './MobileMoreLinks'
 import Loader from '../Loader'
 import SyncOnReconnect from '../SyncOnReconnect'
 import { t } from 'i18next';
@@ -20,11 +21,12 @@ function DesktopSidebar() {
         <aside className="sidebar">
             {hasActiveSubscription || hasTrial ? (
                 <>
-                    <Link to="/" className="btn btn-sidebar">🏠 {t("sidebar_link_home")}</Link>
+                    <Link to="/" className="btn btn-sidebar hide-mobile">🏠 {t("sidebar_link_home")}</Link>
                     <Link to="/teas" className="btn btn-sidebar">🍃 {t("sidebar_link_teas")}</Link>
                     <Link to="/journal" className="btn btn-sidebar">📔 {t("sidebar_link_journal")}</Link>
                     <Link to="/brews" className="btn btn-sidebar">⏱️ {t("sidebar_link_brews")}</Link>
-                    <Link to="/settings" className="btn btn-sidebar">⚙️ {t("sidebar_link_settings")}</Link>
+                    <MobileMoreLinks />
+                    <Link to="/settings" className="btn btn-sidebar hide-mobile">⚙️ {t("sidebar_link_settings")}</Link>
                 </>
             ) : null}
             <Link to="/account" className="btn btn-sidebar hide-mobile">👨🏻‍🔧 {t("sidebar_link_account")}</Link>
