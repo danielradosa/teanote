@@ -1,12 +1,25 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/useAuthStore'
-import { t } from 'i18next';
+import i18n, { t } from 'i18next'
 
 function DesktopNav() {
     const { signOut, trialDaysLeft, isSubscribed, subscriptionEnd } = useAuthStore()
     const navigate = useNavigate()
+
+    const [language, setLanguage] = useState(i18n.language)
+
+    useEffect(() => {
+        const handleLanguageChange = (lng: string) => {
+            setLanguage(lng)
+        }
+        i18n.on('languageChanged', handleLanguageChange)
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange)
+        }
+    }, [])
 
     const now = new Date()
     const subEndDate = subscriptionEnd ? new Date(subscriptionEnd) : null

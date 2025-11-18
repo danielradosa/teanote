@@ -8,6 +8,7 @@ import SearchBar from '../components/SearchBar'
 import type { Brew, Preset } from '../types/Brew'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useToggleFilters } from '../hooks/toggleFilters';
+import { t } from 'i18next'
 
 function BrewPage() {
     const {
@@ -179,7 +180,6 @@ function BrewPage() {
         setEditInfusionTimes('');
     };
 
-    // Prepare options for filters
     const actualInfusionCounts = Array.from(new Set(brews.map(b => b.infusions.length).filter(c => c > 0)));
     const infusionOptions = actualInfusionCounts.sort((a, b) => a - b).map(c => <option key={c} value={c}>{c}</option>);
 
@@ -223,22 +223,22 @@ function BrewPage() {
     return (
         <section className="page-wrap brew-page">
             <header className="page-header">
-                <h1>Brews</h1>
-                <p className="subtitle">Your recent tea sessions and stats 🍵</p>
+                <h1>{t('brews_title')}</h1>
+                <p className="subtitle">{t('brews_subtitle')} 🍵</p>
             </header>
 
             <div className="brew-content">
                 {/* Brew Filters */}
                 <section className="brew-filters" style={{ flex: '1 1 100%' }}>
                     <h2 onClick={toggleFilters}>
-                        Filter brews
+                        {t('brews_filter_title')}
                         <span className="toggle-label">
-                            {showFilters ? '– hide filters' : '+ show filters'}
+                            {showFilters ? `– ${t('general_show_filters')}` : `+ ${t('general_show_filters')}`}
                         </span>
                     </h2>
                     <div className={`filter-wrap ${showFilters ? 'visible' : 'hidden'}`}>
                         <label className='filter-label'>
-                            # of infusions/steeps:&nbsp;
+                            {t('brews_filter_infusion_label')}:&nbsp;
                             <div className="select-wrap">
                                 <select
                                     value={selectedInfusions ?? ''}
@@ -247,14 +247,14 @@ function BrewPage() {
                                             e.target.value ? parseInt(e.target.value) : null
                                         )
                                     }>
-                                    <option value="">any amount</option>
+                                    <option value="">{t('brews_filter_infusion_select')}</option>
                                     {infusionOptions}
                                 </select>
                                 <span className='arr-down'></span>
                             </div>
                         </label>
                         <label className='filter-label'>
-                            Total brew length:&nbsp;
+                            {t('brews_filter_length_label')}:&nbsp;
                             <div className="select-wrap">
                                 <select
                                     value={selectedLength ?? ''}
@@ -263,31 +263,31 @@ function BrewPage() {
                                             e.target.value ? parseInt(e.target.value) : null
                                         )
                                     }>
-                                    <option value="">any</option>
+                                    <option value="">{t('brews_filter_length_select')}</option>
                                     {brewLengthOptions}
                                 </select>
                                 <span className='arr-down'></span>
                             </div>
                         </label>
-                        <label className='filter-label'>Search:&nbsp;
-                            <SearchBar value={search} setValue={setSearch} placeholder="Search brews & presets..." />
+                        <label className='filter-label'>{t('general_search_label')}:&nbsp;
+                            <SearchBar value={search} setValue={setSearch} placeholder={t('brews_filter_search_p')} />
                         </label>
                         <button className="btn btn-dark"
                             onClick={() => { setSelectedInfusions(null); setSelectedLength(null); setSearch(''); }}>
-                            <i className="bxr bx-eraser" /> clear filters
+                            <i className="bxr bx-eraser" /> {t('general_search_clear_btn')}
                         </button>
                     </div>
                 </section>
                 {/* Brews list */}
                 <section className="recent-sessions">
-                    <h2>Recent brews</h2>
+                    <h2>{t('brews_recent_title')}</h2>
                     {brews.length > 0 ? (
                         <InfiniteScroll
                             dataLength={Math.min(brewItemsToShow, orderedBrews.length)}
                             next={fetchMoreBrews}
                             hasMore={brewItemsToShow < orderedBrews.length}
-                            loader={<div>loading more...</div>}
-                            endMessage={<div>no more brews</div>}
+                            loader={<div>{t('general_loading_more')}</div>}
+                            endMessage={<div>{t('brews_no_more')}</div>}
                         >
                             <ul className="brew-list">
                                 {orderedBrews.slice(0, brewItemsToShow).map(brew => {
@@ -299,23 +299,23 @@ function BrewPage() {
                                                 <span>
                                                     <strong>{teas.find(t => t.id === brew.teaId)?.name ?? brew.teaId}</strong>
                                                     {brew.finishedAt && (
-                                                        <span className="brew-finished-badge">Finished</span>
+                                                        <span className="brew-finished-badge">{t('brews_item_finished')}</span>
                                                     )}
                                                 </span>
                                                 <div className="brew-meta">
                                                     {brew.infusions.length > 0
-                                                        ? `${brew.infusions.length} ${brew.infusions.length === 1 ? 'infusion' : 'infusions'}`
-                                                        : <span style={{ color: '#a52d44' }}>no infusions recorded</span>
+                                                        ? `${brew.infusions.length} ${brew.infusions.length === 1 ? `${t('brews_item_infusion')}` : `${t('brews_item_infusions_s')}`}`
+                                                        : <span style={{ color: '#a52d44' }}>{t('brews_item_no_infusions')}</span>
                                                     }
                                                 </div>
                                                 <div className="brew-meta">
                                                     {brew.presetId && (
                                                         <div style={{ fontStyle: 'italic', color: '#555' }}>
-                                                            Preset used: {presets.find(p => p.id === brew.presetId)?.name}
+                                                            {t('brews_item_preset')}: {presets.find(p => p.id === brew.presetId)?.name}
                                                         </div>
                                                     )}
                                                     <span>
-                                                        {totalTime}s total • Infusions:&nbsp;
+                                                        {totalTime}s {t('brews_item_total')} • {t('brews_item_infusions')}:&nbsp;
                                                         {infusionTimes.length > 0
                                                             ? infusionTimes.join('s, ') + 's'
                                                             : '-'}
@@ -324,7 +324,7 @@ function BrewPage() {
                                                 {getLiveElement(brew)}
                                             </div>
                                             <div className="brew-actions">
-                                                {/* TODO - EDIT FORM */}
+                                                {/* TODO - EDIT FORM?? */}
                                                 <button className="btn btn-danger" onClick={() => deleteBrew(brew.id)}><i className="bxr bx-trash" /></button>
                                             </div>
                                         </li>
@@ -333,25 +333,25 @@ function BrewPage() {
                             </ul>
                         </InfiniteScroll>
                     ) : (
-                        <p style={{ marginTop: 8 }}>no brews yet — start a new session</p>
+                        <p style={{ marginTop: 8 }}>{t('brews_no_yet')}</p>
                     )}
                 </section>
                 <section className="new-preset">
                     <div>
-                        <h2>New preset</h2>
+                        <h2>{t('brews_form_new_preset')}</h2>
                         <div className="brew-main-actions">
                             <label>
-                                <span className="basic-label"><span className="req">* </span>Preset name:</span>
+                                <span className="basic-label"><span className="req">* </span>{t('brews_form_pname_label')}:</span>
                                 <input
                                     value={presetName}
                                     onChange={e => setPresetName(e.target.value)}
                                     required
-                                    placeholder="e.g. morning gongfu"
+                                    placeholder={t('brews_form_pname_p')}
                                     style={{ width: '100%' }}
                                 />
                             </label>
                             <label>
-                                <span className="basic-label">Select tea (optional):</span>
+                                <span className="basic-label">{t('brews_form_tname_label')}:</span>
                                 <div className="select-wrap">
                                     <select
                                         value={presetTeaId}
@@ -369,26 +369,26 @@ function BrewPage() {
                             </label>
                             {(!presetTeaId || !teas.find(t => t.id === presetTeaId)) && (
                                 <label>
-                                    <span className="basic-label"><span className='req'>* </span>Tea type:</span>
+                                    <span className="basic-label"><span className='req'>* </span>{t('brews_form_ttype_label')}:</span>
                                     <div className="select-wrap">
                                         <select value={presetTeaType} onChange={e => setPresetTeaType(e.target.value)}
                                             required={!presetTeaId} style={{ width: '100%' }}>
 
-                                            <option value="any">any</option>
-                                            <option value="green">green</option>
-                                            <option value="oolong">oolong</option>
-                                            <option value="red">red</option>
-                                            <option value="white">white</option>
-                                            <option value="yellow">yellow</option>
-                                            <option value="puerh">puerh</option>
-                                            <option value="purple">purple</option>
+                                            <option value="any">{t('brews_form_ttype_any')}</option>
+                                            <option value="green">{t('tea_tag_green')}</option>
+                                            <option value="oolong">{t('tea_tag_oolong')}</option>
+                                            <option value="red">{t('tea_tag_red')}</option>
+                                            <option value="white">{t('tea_tag_white')}</option>
+                                            <option value="yellow">{t('tea_tag_yellow')}</option>
+                                            <option value="puerh">{t('tea_tag_puerh')}</option>
+                                            <option value="purple">{t('tea_tag_purple')}</option>
                                         </select>
                                         <span className="arr-down"></span>
                                     </div>
                                 </label>
                             )}
                             <label>
-                                <span className="basic-label"><span className='req'>* </span>Amount of infusions/steeps:</span>
+                                <span className="basic-label"><span className='req'>* </span>{t('brews_form_ainfusions_label')}:</span>
                                 <input
                                     type="number"
                                     min={1}
@@ -399,27 +399,27 @@ function BrewPage() {
                                 />
                             </label>
                             <label>
-                                <span className="basic-label"><span className='req'>* </span>Set infusion times (in seconds):</span>
+                                <span className="basic-label"><span className='req'>* </span>{t('brews_form_tinfusions_label')}:</span>
                                 <input
                                     value={presetInfusionTimes}
                                     onChange={e => setPresetInfusionTimes(e.target.value)}
-                                    placeholder="e.g. 5, 7, 12, 20"
+                                    placeholder={t('brews_form_tinfusions_p')}
                                     required
                                     style={{ width: '100%' }}
                                 />
                             </label>
                             <div className="brew-actions">
                                 <button className="btn btn-quick" onClick={handleAddPreset}>
-                                    <i className="bxr bx-plus" /> add preset
+                                    <i className="bxr bx-plus" /> {t('brews_form_add_preset')}
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div style={{ marginTop: '16px' }}>
-                        <h2>All presets</h2>
+                        <h2>{t('presets_all_title')}</h2>
                         <ul className="brew-list">
                             {filteredPresets.length === 0 && (
-                                <p>no presets found</p>
+                                <p>{t('presets_none')}</p>
                             )}
                             {filteredPresets.map(preset => {
                                 const tea = preset.teaId ? teas.find(t => t.id === preset.teaId) : undefined;
@@ -436,38 +436,40 @@ function BrewPage() {
                                             <strong>{preset.name}</strong>&nbsp;
                                             {teaName ? (
                                                 <>
-                                                    &mdash; Tea: {teaName}
+                                                    &mdash; {t('presets_tea_tea')}: {teaName}
                                                     {preset.teaType && (
                                                         <span
                                                             className={'tea-tag tea-tag-' + preset.teaType}
                                                             style={{ marginLeft: 6 }}
                                                         >
-                                                            {preset.teaType}
+                                                            {t(`tea_tag_${preset.teaType}`)}
                                                         </span>
                                                     )}
                                                 </>
                                             ) : (
                                                 <>
-                                                    &mdash; Tea type:
+                                                    &mdash; {t('presets_tea_type')}:
                                                     <span className={'tea-tag tea-tag-' + (preset.teaType || 'generic')}>
-                                                        {preset.teaType || 'generic'}
+                                                        {preset.teaType
+                                                            ? t(`tea_tag_${preset.teaType}`)
+                                                            : t("preset_type_generic")}
                                                     </span>
                                                 </>
                                             )}
                                             <div style={{ marginTop: 8 }}>
-                                                Infusions: {preset.infusionsAmount}<br />
-                                                Times: {preset.infusionTimes.join('s, ')}s
+                                                {t('preset_infusions')}: {preset.infusionsAmount}<br />
+                                                {t('preset_times')}: {preset.infusionTimes.join('s, ')}s
                                             </div>
 
                                             {hasDrift && (
                                                 <div className='gentle-sync' style={{ fontSize: 13, color: '#a56800' }}>
-                                                    Type changed in tea profile: {preset.teaType} → {tea!.type}<br />
+                                                    {t('preset_changed')}: {t(`tea_tag_${preset.teaType}`)} → {t(`tea_tag_${tea!.type}`)}<br />
                                                     <button
                                                         style={{ width: 'max-content' }}
                                                         className="btn btn-quick btn-sync"
                                                         onClick={() => updatePreset(preset.id, { teaType: tea!.type })}
                                                     >
-                                                        <i className="bxr bx-refresh-cw-alt" /> sync
+                                                        <i className="bxr bx-refresh-cw-alt" /> {t('preset_sync_btn')}
                                                     </button>
                                                 </div>
                                             )}
@@ -496,20 +498,20 @@ function BrewPage() {
                 {editingPresetId && (
                     <section className='edit-preset-container'>
                         <div className='edit-preset'>
-                            <h2>Edit preset &mdash; {editName || 'preset'}</h2>
+                            <h2>{t('preset_edit_title')} &mdash; {editName || 'preset'}</h2>
                             <form className="edit-preset-form" style={{ marginTop: 10, display: 'grid', gap: 10 }} onSubmit={handleBrewEdit}>
                                 <label>
-                                    <span className='basic-label'><span className="req">* </span>Preset name:</span>
+                                    <span className='basic-label'><span className="req">* </span>{t('preset_edit_title_label')}:</span>
                                     <input
                                         value={editName}
                                         onChange={e => setEditName(e.target.value)}
                                         required
-                                        placeholder="Preset name"
+                                        placeholder={t('preset_edit_title_p')}
                                         style={{ width: '100%' }}
                                     />
                                 </label>
                                 <label>
-                                    <span className="basic-label">Select tea (optional):</span>
+                                    <span className="basic-label">{t('preset_edit_select_tea')}:</span>
                                     <div className="select-wrap">
                                         <select
                                             value={editTeaId}
@@ -526,7 +528,7 @@ function BrewPage() {
                                 </label>
                                 {(!editTeaId || !teas.find(t => t.id === editTeaId)) && (
                                     <label>
-                                        <span className='basic-label'><span className="req">* </span>Tea type:</span>
+                                        <span className='basic-label'><span className="req">* </span>{t('preset_edit_tea_type_label')}:</span>
                                         <div className="select-wrap">
                                             <select
                                                 value={editTeaType}
@@ -534,21 +536,21 @@ function BrewPage() {
                                                 required={!editTeaId}
                                                 style={{ width: '100%' }}
                                             >
-                                                <option value="any">any</option>
-                                                <option value="green">green</option>
-                                                <option value="oolong">oolong</option>
-                                                <option value="red">red</option>
-                                                <option value="white">white</option>
-                                                <option value="yellow">yellow</option>
-                                                <option value="puerh">puerh</option>
-                                                <option value="purple">purple</option>
+                                                <option value="any">{t('tea_tag_any')}</option>
+                                                <option value="green">{t('tea_tag_green')}</option>
+                                                <option value="oolong">{t('tea_tag_oolong')}</option>
+                                                <option value="red">{t('tea_tag_red')}</option>
+                                                <option value="white">{t('tea_tag_white')}</option>
+                                                <option value="yellow">{t('tea_tag_yellow')}</option>
+                                                <option value="puerh">{t('tea_tag_puerh')}</option>
+                                                <option value="purple">{t('tea_tag_purple')}</option>
                                             </select>
                                             <span className="arr-down"></span>
                                         </div>
                                     </label>
                                 )}
                                 <label>
-                                    <span className="basic-label"><span className="req">* </span>Amount of infusions/steeps:</span>
+                                    <span className="basic-label"><span className="req">* </span>{t('preset_edit_ainfusions_label')}:</span>
                                     <input
                                         type="number"
                                         min={1}
@@ -559,21 +561,21 @@ function BrewPage() {
                                     />
                                 </label>
                                 <label>
-                                    <span className="basic-label"><span className="req">* </span>Set infusion times (in seconds):</span>
+                                    <span className="basic-label"><span className="req">* </span>{t('preset_edit_tinfusions_label')}:</span>
                                     <input
                                         value={editInfusionTimes}
                                         onChange={e => setEditInfusionTimes(e.target.value)}
                                         required
-                                        placeholder="Set infusion times e.g. 5, 7, 12, 20"
+                                        placeholder={t('preset_edit_tinfusions_p')}
                                         style={{ width: '100%' }}
                                     />
                                 </label>
                                 <div style={{ display: 'flex', gap: 8 }} className='brew-actions'>
                                     <button className="btn btn-quick" type="submit">
-                                        <i className="bxr bx-save" /> save
+                                        <i className="bxr bx-save" /> {t('preset_save_btn')}
                                     </button>
                                     <button className="btn btn-dark" type="button" onClick={cancelEdit}>
-                                        <i className="bxr bx-block" /> cancel
+                                        <i className="bxr bx-block" /> {t('preset_cancel_btn')}
                                     </button>
                                 </div>
                             </form>
@@ -583,10 +585,10 @@ function BrewPage() {
                 )}
                 <section className="quick-actions new-sesion">
                     <div>
-                        <h2>Start brew session</h2>
+                        <h2>{t('session_start_title')}</h2>
                         <div className='brew-main-actions'>
                             <label>
-                                <span className="basic-label"><span className='req'>* </span>Select tea:</span>
+                                <span className="basic-label"><span className='req'>* </span>{t('session_select_tea')}:</span>
                                 <div className="select-wrap">
                                     <select
                                         value={selectedTeaId}
@@ -601,7 +603,7 @@ function BrewPage() {
                                 </div>
                             </label>
                             <label>
-                                <span className="basic-label">Select preset (optional):</span>
+                                <span className="basic-label">{t('session_select_preset')}:</span>
                                 <div className="select-wrap">
                                     <select
                                         value={selectedPresetId}
@@ -610,7 +612,7 @@ function BrewPage() {
                                         <option value="">-</option>
                                         {presets.map(preset => (
                                             <option key={preset.id} value={preset.id}>
-                                                {preset.name} {preset.teaType ? `[${preset.teaType}]` : ''}
+                                                {preset.name} {preset.teaType ? `[${t(`tea_tag_${preset.teaType}`)}]` : ''}
                                             </option>
                                         ))}
                                     </select>
@@ -621,14 +623,14 @@ function BrewPage() {
                                 <button
                                     className="btn btn-quick"
                                     onClick={() => {
-                                        if (!selectedTeaId) return alert('Select a tea first');
+                                        if (!selectedTeaId) return alert(`${t('session_alert_tea_select')}`);
                                         const newId = addBrew({ teaId: selectedTeaId, presetId: selectedPresetId || undefined });
                                         if (typeof newId === 'string') {
                                             setActiveBrewId(newId);
                                         }
                                     }}
                                 >
-                                    <i className="bxr bx-alarm-plus" /> start brew
+                                    <i className="bxr bx-alarm-plus" /> {t('session_start_btn')}
                                 </button>
                             </div>
                         </div>

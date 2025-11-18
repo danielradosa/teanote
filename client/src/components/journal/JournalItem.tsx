@@ -43,7 +43,7 @@ export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelet
                 </span>
 
                 {openDetails && (
-                    <div className="journal-extra">
+                    <div className="journal-extra" style={{ marginTop: 8 }}>
                         <p style={{ fontSize: '13px' }}>
                             {t('journals_brew_preset')}: <strong>{getBrewName(journal.brew_preset_id ?? '') || `${t('journal_preset_none')}`}</strong>
                         </p>

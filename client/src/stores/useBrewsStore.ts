@@ -119,6 +119,8 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
             ...p,
             id: uuid(),
             user_id: user.id,
+            teaId: p.teaId ? p.teaId : null,
+            teaType: p.teaType ? p.teaType : null,
             created_at: now,
             updated_at: now,
             deleted_at: null,
@@ -133,9 +135,17 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
 
     updatePreset: (id, updates) => {
         const now = new Date().toISOString()
+
+        const fixedUpdates = {
+            ...updates,
+            teaId: updates.teaId ? updates.teaId : null,
+            teaType: updates.teaType ? updates.teaType : null,
+        }
+
         const updated = get().presets.map(p =>
-            p.id === id ? { ...p, ...updates, updated_at: now } : p
+            p.id === id ? { ...p, ...fixedUpdates, updated_at: now } : p
         )
+
         storage.set('presets', updated)
         set({ presets: updated })
 
@@ -192,7 +202,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
         const { startSync, finishSync } = useSyncStore.getState()
 
         // eslint-disable-next-line prefer-const
-        brewsUnsub = subscribeTable<Brew>('brews', user.id, async(updatedBrew) => {
+        brewsUnsub = subscribeTable<Brew>('brews', user.id, async (updatedBrew) => {
             startSync()
             await new Promise(r => setTimeout(r, 1000))
             set((state) => {
@@ -206,7 +216,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
             finishSync(true)
         })
         // eslint-disable-next-line prefer-const
-        presetsUnsub = subscribeTable<Preset>('presets', user.id, async(updatedPreset) => {
+        presetsUnsub = subscribeTable<Preset>('presets', user.id, async (updatedPreset) => {
             startSync()
             set((state) => {
                 const exists = state.presets.find(p => p.id === updatedPreset.id)

@@ -67,11 +67,6 @@ export default function TeaItem({ tea, deleteTea, onEdit }: any) {
                                 <img
                                     src={tea.image}
                                     alt={tea.name}
-                                    style={{
-                                        maxWidth: '100%',
-                                        height: 'auto',
-                                        borderRadius: 8
-                                    }}
                                 />
                             </div>
                         )}

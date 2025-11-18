@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useBrewsStore } from '../../stores/useBrewsStore'
 import type { Preset } from '../../types/Brew'
+import { t } from 'i18next'
 
 interface BrewTimerProps {
     brewId: string
@@ -40,7 +41,7 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
         // eslint-disable-next-line
     }, [secs, running, infusionIdx, reportLive])
 
-    if (!brew) return <div>brew not found</div>
+    if (!brew) return <div>{t('timer_brew_not_found')}</div>
     if (brew.finishedAt) {
         onClose()
         return null
@@ -58,7 +59,7 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
                     clearInterval(timerRef.current!)
                     setRunning(false)
                     addInfusion(brewId, { actualTime: planned })
-                    toast.success('Infusion finished!')
+                    toast.success(`${t('toast_infusion_finished')}`)
                     setSecs(0)
                     return 0
                 }
@@ -103,19 +104,19 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
         setSecs(0);
         setRunning(false);
         updateBrew(brewId, { finishedAt: new Date() });
-        toast.success('Brew session ended 🍵', { duration: 3000 });
+        toast.success(`${t('toast_brew_ended')}`, { duration: 3000 });
         onClose();
     }
 
     return (
         <div className='brew-timer-container'>
-            <h2>Brew session</h2>
+            <h2>{t('session_brew')}</h2>
             {preset && (
                 <div style={{ marginBottom: 5, fontSize: 13, color: '#888' }}>
-                    Preset: {preset.name} &mdash; Infusions: {preset.infusionTimes.join(', ')}s
+                    {t('session_preset')}: {preset.name} &mdash; {t('session_infusions')}: {preset.infusionTimes.join(', ')}s
                 </div>
             )}
-            <p>Infusion {Math.min(infusionIdx + 1, preset?.infusionsAmount ?? Infinity)}{preset?.infusionsAmount ? ` / ${preset.infusionsAmount}` : ''}</p>
+            <p>{t('session_infusion')} {Math.min(infusionIdx + 1, preset?.infusionsAmount ?? Infinity)}{preset?.infusionsAmount ? ` / ${preset.infusionsAmount}` : ''}</p>
             <div className='brew-timer-actions'>
                 <span style={{ fontSize: 32 }}>
                     {running
@@ -126,25 +127,25 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
                 {!running && !infusionsDone && (
                     <>
                         <button onClick={handleStart} className='btn btn-quick'>
-                            <i className="bxr bx-play-circle" />start
+                            <i className="bxr bx-play-circle" />{t('session_start')}
                         </button>
                         <button onClick={handleEndSession} className='btn btn-dark'>
-                            <i className="bxr bx-save" />end brew session
+                            <i className="bxr bx-save" />{t('session_end')}
                         </button>
                     </>
                 )}
                 {!running && infusionsDone && (
                     <button onClick={handleEndSession} className='btn btn-dark'>
-                        <i className="bxr bx-save" />end brew session
+                        <i className="bxr bx-save" />{t('session_end')}
                     </button>
                 )}
                 {running && (
                     <>
                         <button onClick={handleStop} className='btn btn-info'>
-                            <i className="bxr bx-stop-circle" />stop
+                            <i className="bxr bx-stop-circle" /> {t('session_stop')}
                         </button>
                         <button onClick={handleEndSession} className='btn btn-dark'>
-                            <i className="bxr bx-save" />end brew session
+                            <i className="bxr bx-save" /> {t('session_end')}
                         </button>
                     </>
                 )}

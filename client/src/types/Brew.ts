@@ -22,8 +22,8 @@ export interface Brew {
 export interface Preset {
     id: string
     name: string
-    teaId?: string
-    teaType?: string
+    teaId?: string | null
+    teaType?: string | null
     infusionsAmount: number
     infusionTimes: number[]
     created_at?: string
