@@ -217,6 +217,11 @@ function BrewPage() {
         || (p.teaId && teas.find(t => t.id === p.teaId)?.name?.toLowerCase().includes(search.toLowerCase()))
         || (p.teaType && p.teaType.toLowerCase().includes(search.toLowerCase()))
     );
+    const orderedPresets = [...filteredPresets].sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return dateB - dateA;
+    });
 
     const orderedBrews = [...filteredBrews].reverse();
 
@@ -437,10 +442,10 @@ function BrewPage() {
                     <div style={{ marginTop: '16px' }}>
                         <h2>{t('presets_all_title')}</h2>
                         <ul className="brew-list">
-                            {filteredPresets.length === 0 && (
+                            {orderedPresets.length === 0 && (
                                 <p>{t('presets_none')}</p>
                             )}
-                            {filteredPresets.map(preset => {
+                            {orderedPresets.map(preset => {
                                 const tea = preset.teaId ? teas.find(t => t.id === preset.teaId) : undefined;
                                 const teaName = tea?.name ?? null;
                                 const hasDrift =
