@@ -59,6 +59,7 @@
     "teas_all_teas": "Všetky čaje",
     "general_see_details": "zobraziť detaily",
     "general_hide_details": "skryť detaily",
+    "teas_less_details_btn": "menej info",
     "teas_no_more": "nieje tu viac čajov",
     "teas_add_new": "Pridať nový čaj",
     "teas_edit_tea": "Uprav čaj",
@@ -199,5 +200,6 @@
     "session_start": "spustiť",
     "session_end": "ukončiť čajovanie",
     "session_stop": "zastaviť",
-     "preset_from_brew": "šablóna"
+    "preset_from_brew": "šablóna",
+    "dash_teas_overview": "Prehľad mojích čajov"
 }

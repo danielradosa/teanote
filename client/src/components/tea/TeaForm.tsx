@@ -160,7 +160,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                     {!isEditing && (
                         <button className="btn btn-info" onClick={() => setShowMoreFields(!showMoreFields)}>
                             <i className={`bxr ${showMoreFields ? 'bx-bookmark-x' : 'bx-bookmark-plus'}`} />
-                            {showMoreFields ? `${t('teas_add_tea_btn')}` : `${t('teas_add_details_btn')}`}
+                            {showMoreFields ? `${t('teas_less_details_btn')}` : `${t('teas_add_details_btn')}`}
                         </button>
                     )}
                 </div>

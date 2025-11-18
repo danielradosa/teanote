@@ -78,6 +78,7 @@
     "teas_save_tea_btn": "save",
     "teas_cancel_tea_btn": "cancel",
     "teas_add_details_btn": "add more details",
+    "teas_less_details_btn": "less details",
     "general_loading_more": "loading more...",
     "teas_no_teas_yet": "no teas yet — add your first one",
     "teas_item_stash": "In stash",
@@ -199,5 +200,6 @@
     "session_start": "start",
     "session_end": "end brew session",
     "session_stop": "stop",
-    "preset_from_brew": "preset"
+    "preset_from_brew": "preset",
+    "dash_teas_overview": "Overview of my teas"
 }

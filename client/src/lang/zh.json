@@ -198,5 +198,7 @@
   "session_start": "开始",
   "session_end": "结束会话",
   "session_stop": "停止",
-  "preset_from_brew": "预设"
+  "preset_from_brew": "预设",
+  "dash_teas_overview": "我的茶品概览",
+  "teas_less_details_btn": "显示更少"
 }

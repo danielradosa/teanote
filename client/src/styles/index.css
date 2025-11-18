@@ -46,8 +46,8 @@ body {
 }
 
 main {
-  width: 100%;
   margin-left: 210px;
+  width: calc(100% - 210px);
 }
 
 header {
@@ -99,6 +99,7 @@ header .logo a {
   padding: 10px;
   gap: 10px;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 
@@ -282,6 +283,7 @@ header .logo a {
   align-items: center;
   margin-top: 10px;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .brew-meta {
