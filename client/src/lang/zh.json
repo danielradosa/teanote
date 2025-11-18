@@ -197,5 +197,6 @@
   "session_infusion": "冲泡",
   "session_start": "开始",
   "session_end": "结束会话",
-  "session_stop": "停止"
+  "session_stop": "停止",
+  "preset_from_brew": "预设"
 }

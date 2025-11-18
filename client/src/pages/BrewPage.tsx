@@ -138,6 +138,21 @@ function BrewPage() {
         return null
     }
 
+    const handleBrewToPreset = (brew: Brew) => {
+        const tea = teas.find(t => t.id === brew.teaId);
+        if (!tea) return alert('Tea not found for this brew');
+
+        const newPreset: Omit<Preset, 'id' | 'created_at' | 'updated_at' | 'user_id' | 'deleted_at'> = {
+            name: `${tea.name} ${t('preset_from_brew')}`,
+            teaId: brew.teaId,
+            teaType: tea.type,
+            infusionsAmount: brew.infusions.length || 1,
+            infusionTimes: brew.infusions.map(i => i.actualTime)
+        };
+
+        addPreset(newPreset);
+    }
+
     const handleBrewEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!editingPresetId) return;
@@ -324,8 +339,12 @@ function BrewPage() {
                                                 {getLiveElement(brew)}
                                             </div>
                                             <div className="brew-actions">
-                                                {/* TODO - EDIT FORM?? */}
-                                                <button className="btn btn-danger" onClick={() => deleteBrew(brew.id)}><i className="bxr bx-trash" /></button>
+                                                <button className="btn btn-quick" onClick={() => handleBrewToPreset(brew)}>
+                                                    <i className="bxr bx-copy" />
+                                                </button>
+                                                <button className="btn btn-danger" onClick={() => deleteBrew(brew.id)}>
+                                                    <i className="bxr bx-trash" />
+                                                </button>
                                             </div>
                                         </li>
                                     )

@@ -197,5 +197,6 @@
   "session_infusion": "우림",
   "session_start": "시작",
   "session_end": "세션 종료",
-  "session_stop": "중지"
+  "session_stop": "중지",
+  "preset_from_brew": "프리셋"
 }

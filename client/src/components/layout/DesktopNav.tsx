@@ -9,7 +9,7 @@ function DesktopNav() {
     const { signOut, trialDaysLeft, isSubscribed, subscriptionEnd } = useAuthStore()
     const navigate = useNavigate()
 
-    const [language, setLanguage] = useState(i18n.language)
+    const [, setLanguage] = useState(i18n.language)
 
     useEffect(() => {
         const handleLanguageChange = (lng: string) => {

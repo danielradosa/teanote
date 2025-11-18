@@ -198,5 +198,6 @@
     "session_infusion": "Infusion",
     "session_start": "start",
     "session_end": "end brew session",
-    "session_stop": "stop"
+    "session_stop": "stop",
+    "preset_from_brew": "preset"
 }
