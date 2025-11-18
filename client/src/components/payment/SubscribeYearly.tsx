@@ -37,7 +37,7 @@ export default function SubscribeYearly() {
 
     return (
         <button className="btn btn-subscribe" onClick={handleSubscribe} disabled={loading}>
-            {loading ? <MoonLoader size={16} color="#fff" /> : `${t('subscribe_btn_monthly')}`}
+            {loading ? <MoonLoader size={16} color="#fff" /> : `${t('subscribe_btn_yearly')}`}
         </button>
     );
 }

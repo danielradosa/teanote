@@ -81,6 +81,10 @@ small {
     transition: all .15s ease-in-out;
     cursor: pointer;
     color: var(--btn-color);
+
+    &:active {
+        scale: 0.95;
+    }
 }
 
 .btn-sync {

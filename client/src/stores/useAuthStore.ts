@@ -19,7 +19,6 @@ interface AuthState {
     signOut: () => Promise<void>
 }
 
-// read cached session for instant initial state
 function getCachedSession(): Session | null {
     try {
         const key = Object.keys(localStorage).find((k) => k.includes('auth-token'))
@@ -123,6 +122,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     signOut: async () => {
         await supabase.auth.signOut()
-        set({ user: null, session: null, access: 'denied', trialDaysLeft: null, isSubscribed: false, subscriptionEnd: null })
-    },
+        localStorage.clear()
+        set({
+            user: null,
+            session: null,
+            access: 'denied',
+            trialDaysLeft: null,
+            isSubscribed: false,
+            subscriptionEnd: null,
+        })
+    }
 }))

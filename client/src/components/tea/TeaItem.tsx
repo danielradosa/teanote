@@ -13,8 +13,10 @@ export default function TeaItem({ tea, deleteTea, onEdit }: any) {
         <li className="tea-item">
             <div className={`tea-details ${openDetails ? 'details-open' : ''}`}>
                 <span>
-                    <strong>{tea.name}</strong> {tea.year}
-                    {tea.origin && <span> — {tea.origin}</span>}
+                    <strong>{tea.name}</strong>
+                    {tea.year && <> {tea.year}</>}
+                    {tea.origin && <> — {tea.origin}</>}
+
                     <span
                         className={`tea-tag tea-tag-${tea.type}`}
                         style={{
@@ -33,27 +35,72 @@ export default function TeaItem({ tea, deleteTea, onEdit }: any) {
                 </span>
 
                 {openDetails && (
-                    <div className="tea-extra">
-                        {tea.inventory && <p><strong>{t('teas_item_stash')}:</strong> {tea.inventory}</p>}
-                        {tea.vendor && <p><strong>{t('teas_item_vendor')}:</strong> {tea.vendor}</p>}
-                        {tea.link && (
+                    <div className="tea-extra" style={{ marginTop: 8 }}>
+                        {tea.inventory && (
                             <p>
-                                <strong>{t('teas_item_link')}:</strong> <a href={tea.link} target="_blank" rel="noreferrer">{tea.link}</a>
+                                <strong>{t('teas_item_stash')}:</strong> {tea.inventory}
                             </p>
                         )}
-                        {tea.image && <div className="tea-image"><img src={tea.image} alt={tea.name} /></div>}
-                        {tea.notes && <p><strong>{t('teas_item_notes')}:</strong> <MdDisplay content={tea.notes} /></p>}
+
+                        {tea.vendor && (
+                            <p>
+                                <strong>{t('teas_item_vendor')}:</strong> {tea.vendor}
+                            </p>
+                        )}
+
+                        {tea.link && (
+                            <p>
+                                <strong>{t('teas_item_link')}:</strong>{' '}
+                                <a
+                                    href={tea.link}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{ wordBreak: 'break-all' }}
+                                >
+                                    {tea.link}
+                                </a>
+                            </p>
+                        )}
+
+                        {tea.image && (
+                            <div className="tea-image" style={{ margin: '8px 0' }}>
+                                <img
+                                    src={tea.image}
+                                    alt={tea.name}
+                                    style={{
+                                        maxWidth: '100%',
+                                        height: 'auto',
+                                        borderRadius: 8
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {tea.notes && (
+                            <div>
+                                <strong>{t('teas_item_notes')}:</strong>
+                                <MdDisplay content={tea.notes} />
+                            </div>
+                        )}
                     </div>
                 )}
 
-                <button className="btn btn-simple" onClick={() => setOpenDetails(!openDetails)}>
-                    <i className={`bxr ${openDetails ? 'bx-list-minus' : 'bx-list-plus'}`} /> {openDetails ? `${t('general_hide_details')}` : `${t('general_see_details')}`}
+                <button
+                    className="btn btn-simple"
+                    onClick={() => setOpenDetails(!openDetails)}
+                >
+                    <i className={`bxr ${openDetails ? 'bx-list-minus' : 'bx-list-plus'}`} />{' '}
+                    {openDetails ? t('general_hide_details') : t('general_see_details')}
                 </button>
             </div>
 
             <div className="tea-actions">
-                <button className="btn btn-info" onClick={() => onEdit(tea)}><i className="bxr bx-edit" /></button>
-                <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}><i className="bxr bx-trash" /></button>
+                <button className="btn btn-info" onClick={() => onEdit(tea)}>
+                    <i className="bxr bx-edit" />
+                </button>
+                <button className="btn btn-danger" onClick={() => deleteTea(tea.id)}>
+                    <i className="bxr bx-trash" />
+                </button>
             </div>
         </li>
     )

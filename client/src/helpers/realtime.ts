@@ -16,5 +16,5 @@ export function subscribeTable<T>(
     )
     .subscribe()
 
-  return () => supabase.removeChannel(channel) // returns unsubscribe function
+  return () => supabase.removeChannel(channel)
 }

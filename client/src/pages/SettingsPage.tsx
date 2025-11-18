@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
 import { useEffect } from 'react'
@@ -7,14 +8,14 @@ import { useSettingsStore } from '../stores/useSettingsStore'
 import { t } from 'i18next'
 
 function SettingsPage() {
-    const { user, isSubscribed } = useAuthStore()
+    const { user, isSubscribed, trialDaysLeft } = useAuthStore()
     const { settings, toggleAI, setTheme, setLanguage, loadSettings } = useSettingsStore()
 
     useEffect(() => {
         if (user) loadSettings()
     }, [user, loadSettings])
 
-    if (!isSubscribed) return null
+    if (!isSubscribed && trialDaysLeft === 0) return null
 
     return (
         <section className="page-wrap settings-page">
