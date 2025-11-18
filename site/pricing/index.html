@@ -33,9 +33,27 @@
     <meta name="twitter:description" content="Start your 30-day free trial for the mindful tea journal app, Teanote.">
     <meta name="twitter:image" content="https://teanote.xyz/img/og_teanote.jpg">
 
-    <link href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css" rel="stylesheet">
-    <link href="https://cdn.boxicons.com/3.0.3/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="preload" href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css">
+    </noscript>
+    <link rel="preload" href="https://cdn.boxicons.com/3.0.3/fonts/brands/boxicons-brands.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.boxicons.com/3.0.3/fonts/brands/boxicons-brands.min.css">
+    </noscript>
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../style.css">
+    </noscript>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    </noscript>
 
     <!-- Structured Data -->
     <script type="application/ld+json" defer>
@@ -89,6 +107,7 @@
                 <nav>
                     <a href="https://teanote.xyz/#features">Features</a>
                     <a href="https://teanote.xyz/pricing">Pricing</a>
+                    <a href="https://blog.teanote.xyz">Blog</a>
                     <a href="https://docs.teanote.xyz">Docs</a>
                     <a href="https://app.teanote.xyz" class="login-btn">Log in &rarr;</a>
                 </nav>
@@ -144,7 +163,7 @@
                         </div>
                     </div>
                     <img class="bg-test-price"
-                        src="https://png.pngtree.com/background/20250626/original/pngtree-object-name-abstract-beige-triangle-background-geometric-polygonal-texture-gradient-pattern-picture-image_16655854.jpg"
+                        src="../gradbg.jpg"
                         alt="">
                 </section>
             </main>
