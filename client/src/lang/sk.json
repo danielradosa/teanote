@@ -199,9 +199,9 @@
     "session_infusion": "Lúhovanie",
     "session_start": "spustiť",
     "session_end": "ukončiť čajovanie",
-    "session_stop": "zastaviť",
+    "session_stop": "ukončiť tento nálev",
     "preset_from_brew": "šablóna",
     "dash_teas_overview": "Prehľad mojích čajov",
-    "sidebar_link_more": "Viac...",
-    "sidebar_link_less": "Menej..."
+    "sidebar_link_more": "Viac",
+    "sidebar_link_less": "Menej"
 }

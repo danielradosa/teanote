@@ -197,10 +197,10 @@
   "session_infusion": "抽出",
   "session_start": "開始",
   "session_end": "セッション終了",
-  "session_stop": "停止",
+  "session_stop": "この抽出を終了",
   "preset_from_brew": "プリセット",
   "dash_teas_overview": "お茶の概要",
   "teas_less_details_btn": "詳細を減らす",
-  "sidebar_link_more": "もっと…",
-  "sidebar_link_less": "少なく…"
+  "sidebar_link_more": "もっと",
+  "sidebar_link_less": "少なく"
 }

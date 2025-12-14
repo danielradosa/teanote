@@ -491,3 +491,72 @@ input[type="checkbox"] {
     height: 56px;
   }
 }
+
+.tea-timer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid var(--text-color);
+  background: var(--bg-color);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.tea-liquid {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: var(--fill);
+  background: linear-gradient(to top,
+      var(--tea-color),
+      color-mix(in srgb, var(--tea-color) 70%, transparent));
+  transition: height 0.6s ease;
+}
+
+.tea-liquid::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -20%;
+  width: 140%;
+  height: 12px;
+  background: inherit;
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: wave 4s ease-in-out infinite;
+}
+
+@keyframes wave {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.tea-time {
+  position: relative;
+  z-index: 2;
+  font-size: 28px;
+
+  mix-blend-mode: difference;
+  color: white;
+}

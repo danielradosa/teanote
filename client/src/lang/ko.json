@@ -197,10 +197,10 @@
   "session_infusion": "우림",
   "session_start": "시작",
   "session_end": "세션 종료",
-  "session_stop": "중지",
+  "session_stop": "현재 우림 종료",
   "preset_from_brew": "프리셋",
   "dash_teas_overview": "내 차 컬렉션 개요",
   "teas_less_details_btn": "상세 줄이기",
-  "sidebar_link_more": "더보기…",
-  "sidebar_link_less": "간략히…"
+  "sidebar_link_more": "더보기",
+  "sidebar_link_less": "간략히"
 }

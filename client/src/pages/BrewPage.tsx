@@ -481,8 +481,8 @@ function BrewPage() {
                                                 </>
                                             )}
                                             <div style={{ marginTop: 8 }}>
-                                                {t('preset_infusions')}: {preset.infusionsAmount}<br />
-                                                {t('preset_times')}: {preset.infusionTimes.join('s, ')}s
+                                                <span style={{ display: "flex", alignItems: "center", gap: "5px" }}><i className="bx bx-repeat-alt-2" /> {t('preset_infusions')}: {preset.infusionsAmount}</span>
+                                                <span style={{ display: "flex", alignItems: "center", gap: "5px" }}><i className="bx bx-hourglass" /> {t('preset_times')}: {preset.infusionTimes.join('s, ')}s</span>
                                             </div>
 
                                             {hasDrift && (
