@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teanote Pricing | Mindful Tea Journal & Gongfu Brewing Timer</title>
+    <title>Gongfu Timer & Tea Journal App | Teanote</title>
 
     <meta name="description"
         content="Transparent and affordable pricing for Teanote — the mindful tea companion for modern tea lovers. Start your 30-day free trial today.">
     <meta name="keywords"
-        content="tea journal app pricing, gongfu tea timer app, tea note subscription, tea tasting notes app, mindful tea app">
+        content="tea journal app pricing, gongfu tea timer app, gongfu timer, tea note subscription, tea tasting notes app, mindful tea app">
     <meta name="author" content="Daniel Radosa">
     <meta name="theme-color" content="#bdb695">
 
@@ -43,10 +43,8 @@
     <noscript>
         <link rel="stylesheet" href="https://cdn.boxicons.com/3.0.3/fonts/brands/boxicons-brands.min.css">
     </noscript>
-    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="../style.css">
-    </noscript>
+    <link rel="stylesheet" href="../style.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" as="style"
@@ -57,42 +55,70 @@
 
     <!-- Structured Data -->
     <script type="application/ld+json" defer>
-  {
+    {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "Teanote Subscription",
     "brand": {
-      "@type": "Brand",
-      "name": "Teanote"
+        "@type": "Brand",
+        "name": "Teanote"
     },
     "description": "Mindful tea journal and gongfu brewing timer app.",
     "image": "https://teanote.xyz/img/og_teanote.jpg",
     "offers": [
-      {
+        {
         "@type": "Offer",
         "priceCurrency": "USD",
         "price": "2.98",
         "priceValidUntil": "2026-12-31",
         "url": "https://app.teanote.xyz",
-        "name": "Monthly Plan"
-      },
-      {
+        "name": "Monthly Plan",
+        "availability": "https://schema.org/InStock"
+        },
+        {
         "@type": "Offer",
         "priceCurrency": "USD",
         "price": "2.24",
         "priceValidUntil": "2026-12-31",
         "url": "https://app.teanote.xyz",
-        "name": "Yearly Plan"
-      }
+        "name": "Yearly Plan",
+        "availability": "https://schema.org/InStock"
+        }
+    ],
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "120"
+    },
+    "review": [
+        {
+        "@type": "Review",
+        "author": "Emma K.",
+        "datePublished": "2025-10-15",
+        "reviewBody": "Love the gongfu timer! - Teanote has completely changed how I track my tea sessions. ",
+        "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5"
+        }
+        },
+        {
+        "@type": "Review",
+        "author": "Lucas M.",
+        "datePublished": "2025-09-20",
+        "reviewBody": "Very intuitive, cloud sync works flawlessly across my devices.",
+        "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5"
+        }
+        }
     ]
-  }
-  </script>
+    }
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CPMZ66BNG7" defer></script>
     <script defer>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-CPMZ66BNG7');
     </script>
 </head>
@@ -107,8 +133,9 @@
                 <nav>
                     <a href="https://teanote.xyz/#features">Features</a>
                     <a href="https://teanote.xyz/pricing">Pricing</a>
-                    <a href="https://blog.teanote.xyz">Blog</a>
+                    <a href="https://teanote.xyz/blog">Blog</a>
                     <a href="https://docs.teanote.xyz">Docs</a>
+                    <a href="https://app.teanote.xyz/signup" class="login-btn">Sign up</a>
                     <a href="https://app.teanote.xyz" class="login-btn">Log in &rarr;</a>
                 </nav>
             </header>
@@ -117,7 +144,7 @@
         <div class="inner-main">
             <main>
                 <section class="pricing-section">
-                    <h2>Pricing</h2>
+                    <h1>Pricing</h1>
                     <div class="pricing-wrap">
                         <div class="pricing">
                             <div class="test-top">
@@ -162,9 +189,7 @@
                             </div>
                         </div>
                     </div>
-                    <img class="bg-test-price"
-                        src="../gradbg.jpg"
-                        alt="">
+                    <img class="bg-test-price" src="../gradbg.jpg" alt="">
                 </section>
             </main>
         </div>
@@ -173,7 +198,7 @@
             <footer class="pricingfoot">
                 <section class="who-section">
                     <h2>Who decided to do this?</h2>
-                    <p>Developed by self-proclaimed digital alchemist, Daniel Radosa, based in Slovakia.</p>
+                    <p>Developed by self-proclaimed digital alchemist, <a href="https://danielradosa.com">Daniel Radosa</a>, based in Slovakia.</p>
                 </section>
                 <div class="footer-socials">
                     <a href="#"><i class="bxl bx-instagram"></i></a>

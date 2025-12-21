@@ -274,12 +274,18 @@ footer {
     filter: blur(48px);
 }
 
-.pricing-section {
+.pricing-section,
+.blog-section {
     margin-top: 128px;
     width: 1200px;
 }
 
-.pricing-wrap {
+.blog-wrap {
+    flex-direction: column;
+}
+
+.pricing-wrap,
+.blog-wrap {
     display: flex;
     gap: 32px;
     width: 1200px;
@@ -311,13 +317,14 @@ footer {
 }
 
 .testimonials-section,
-.pricing-section {
+.pricing-section,
+.blog-section {
     display: flex;
     align-items: center;
     flex-direction: column;
     position: relative;
 
-    h2 {
+    h1, h2 {
         font-size: 36px;
         margin-bottom: 64px;
     }
@@ -465,7 +472,7 @@ footer {
     box-shadow: -2px 4px 16px #202121;
 }
 
-.main-footer {
+.main-footer, .pricingfoot {
     width: 1200px;
     padding: 0;
 
@@ -481,6 +488,12 @@ footer {
         p {
             font-size: 24px;
             text-align: center;
+
+            a {
+                color: #202121;
+                text-decoration: none;
+                font-weight: 500 !important;
+            }
         }
     }
 
@@ -662,6 +675,28 @@ a {
     text-decoration: none;
 }
 
+#not-found {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-top: 60px;
+
+    h1 {
+        font-size: 8vw;
+    }
+
+    h2 {
+        font-size: 6vw;
+        font-weight: normal;
+    }
+
+    a {
+        color: #bdb695;
+        font-size: 3vw;
+    }
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1200px) {
@@ -692,13 +727,15 @@ a {
         text-align: center;
     }
 
-    .pricing-section {
+    .pricing-section,
+    .blog-section {
         max-width: 1200px;
         width: 100%;
         margin-top: 64px;
     }
 
-    .pricing-wrap {
+    .pricing-wrap,
+    .blog-wrap {
         flex-direction: column;
         padding: 16px;
         max-width: 1200px;
@@ -871,4 +908,35 @@ a {
             display: flex;
         }
     }
+}
+
+.post {
+    border: 2px solid #898565;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 4px 4px 16px #20212183;
+    background-color: #ffffff;
+    padding: 32px;
+    z-index: 20;
+    position: relative;
+}
+
+.blog-vid {
+    border-radius: 8px;
+    height: 320px;
+    margin-top: 32px;
+}
+
+.author,
+time,
+.tags {
+    font-size: 12px;
+}
+
+.post h3 {
+    font-size: 24px;
+}
+
+.author a {
+    color: #202121;
 }
