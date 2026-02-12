@@ -8,6 +8,7 @@ export interface Tea {
     year?: string
     vendor?: string
     notes?: string
+    image_path?: string
     image?: string
     link?: string
     dateAdded?: string

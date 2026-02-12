@@ -6,6 +6,7 @@ import { syncData } from '../helpers/sync'
 import type { Tea } from '../types/Tea'
 import { subscribeTable } from '../helpers/realtime'
 import { useSyncStore } from './useSyncStore'
+import { deleteImage } from '../helpers/upload'
 
 interface TeasState {
     teas: Tea[]
@@ -55,8 +56,20 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         if (navigator.onLine) get().syncTeas()
     },
 
-    deleteTea: (id) => {
+    deleteTea: async (id: string) => {
         const now = new Date().toISOString()
+
+        const tea = get().teas.find(t => t.id === id)
+        if (!tea) return
+
+        try {
+            if (tea.image_path) {
+                await deleteImage('teas', tea.image_path)
+            }
+        } catch (err) {
+            console.error('Failed to delete image:', err)
+        }
+
         const updated = get().teas.map(t =>
             t.id === id ? { ...t, deleted_at: now, updated_at: now } : t
         )
@@ -77,7 +90,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
 
         const { startSync, finishSync } = useSyncStore.getState()
 
-        const unsubscribe = subscribeTable<Tea>('teas', user.id, async(updatedTea) => {
+        const unsubscribe = subscribeTable<Tea>('teas', user.id, async (updatedTea) => {
             startSync()
             set((state) => {
                 const exists = state.teas.find(t => t.id === updatedTea.id)

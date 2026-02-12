@@ -48,9 +48,24 @@ export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelet
                             {t('journals_brew_preset')}: <strong>{getBrewName(journal.brew_preset_id ?? '') || `${t('journal_preset_none')}`}</strong>
                         </p>
                         <MdDisplay content={journal.content} />
+                        {Array.isArray(journal.images) && journal.images.length > 0 && (
+                            <div className="journal-images" style={{ display: 'flex', gap: 10, }}>
+                                {journal.images.map((img: string, idx: number) => (
+                                    <img
+                                        key={img}
+                                        src={img}
+                                        alt={`journal image ${idx + 1}`}
+                                        style={{
+                                            maxHeight: 120,
+                                            borderRadius: 8,
+                                            objectFit: 'cover'
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
-
                 <button className="btn btn-simple" onClick={() => setOpenDetails(!openDetails)}>
                     <i className={`bxr ${openDetails ? 'bx-list-minus' : 'bx-list-plus'}`} /> {openDetails ? t('general_hide_details') : t('general_see_details')}
                 </button>

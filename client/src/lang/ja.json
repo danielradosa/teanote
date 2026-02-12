@@ -126,7 +126,7 @@
   "journal_form_tea_label": "お茶を選ぶ (任意)",
   "journal_form_rating_label": "評価 (任意)",
   "journal_form_rating_p": "例：3 (1〜5)",
-  "journal_form_notes_label": "メモ (任意)",
+  "journal_form_notes_label": "メモ",
   "journal_form_notes_p": "ここに思ったことを書いてください…",
   "journal_add_btn": "日記を追加",
   "journal_brewed_on": "淹れた日",
@@ -202,5 +202,7 @@
   "dash_teas_overview": "お茶の概要",
   "teas_less_details_btn": "詳細を減らす",
   "sidebar_link_more": "もっと",
-  "sidebar_link_less": "少なく"
+  "sidebar_link_less": "少なく",
+  "or": "または",
+  "upload": "アップロード"
 }

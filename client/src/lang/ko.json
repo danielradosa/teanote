@@ -126,7 +126,7 @@
   "journal_form_tea_label": "차 선택 (선택)",
   "journal_form_rating_label": "평점 (선택)",
   "journal_form_rating_p": "예: 3 (1 ~ 5)",
-  "journal_form_notes_label": "메모 (선택)",
+  "journal_form_notes_label": "메모",
   "journal_form_notes_p": "생각한 것을 여기에 작성하세요…",
   "journal_add_btn": "저널 추가",
   "journal_brewed_on": "양조 날짜",
@@ -202,5 +202,7 @@
   "dash_teas_overview": "내 차 컬렉션 개요",
   "teas_less_details_btn": "상세 줄이기",
   "sidebar_link_more": "더보기",
-  "sidebar_link_less": "간략히"
+  "sidebar_link_less": "간략히",
+  "or": "또는",
+  "upload": "업로드"
 }

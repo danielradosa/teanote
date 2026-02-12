@@ -1,12 +1,13 @@
 export interface Journal {
     type: string
-    name: any
+    name: string
     id: string
     user_id?: string
     teaId: string
     brew_preset_id?: string
     title: string
     rating?: number
+    image?: string[]
     content: string
     dateAdded?: string
     updated_at: string

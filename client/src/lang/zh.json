@@ -126,7 +126,7 @@
     "journal_form_tea_label": "选择茶 (可选)",
     "journal_form_rating_label": "评分 (可选)",
     "journal_form_rating_p": "例如：3（1 至 5）",
-    "journal_form_notes_label": "笔记 (可选)",
+    "journal_form_notes_label": "笔记",
     "journal_form_notes_p": "在这里写下你的想法…",
     "journal_add_btn": "添加笔记",
     "journal_brewed_on": "冲泡于",
@@ -202,5 +202,7 @@
   "dash_teas_overview": "我的茶品概览",
   "teas_less_details_btn": "显示更少",
   "sidebar_link_more": "更多",
-  "sidebar_link_less": "更少"
+  "sidebar_link_less": "更少",
+  "or": "或者",
+  "upload": "上传"
 }

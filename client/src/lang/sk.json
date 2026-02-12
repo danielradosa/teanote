@@ -128,7 +128,7 @@
     "journal_form_tea_label": "Vyber čaj (voliteľné)",
     "journal_form_rating_label": "Hodnotenie (voliteľné)",
     "journal_form_rating_p": "napr. 3 (1 až 5)",
-    "journal_form_notes_label": "Poznámky (voliteľné)",
+    "journal_form_notes_label": "Poznámky",
     "journal_form_notes_p": "Sem spíš svoje myšlienky...",
     "journal_add_btn": "pridať denník",
     "journal_brewed_on": "odčajované",
@@ -203,5 +203,8 @@
     "preset_from_brew": "šablóna",
     "dash_teas_overview": "Prehľad mojích čajov",
     "sidebar_link_more": "Viac",
-    "sidebar_link_less": "Menej"
+    "sidebar_link_less": "Menej",
+    "or": "alebo",
+    "upload": "uploadnuť",
+    "delete": "vymazať"
 }

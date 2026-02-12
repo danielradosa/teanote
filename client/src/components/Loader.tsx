@@ -15,7 +15,7 @@ function Loader({ size = 30, color = '#202121', inline = false }: LoaderProps) {
             alignItems: 'center',
             height: '100%',
             width: '100%',
-            marginBottom: 16,
+            marginBottom: 0,
         }
 
     return (

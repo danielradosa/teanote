@@ -73,7 +73,10 @@ export default function TeaProfilesPage() {
 
                 <TeaList
                     teas={orderedTeas}
-                    deleteTea={deleteTea}
+                    deleteTea={(id: string | undefined) => {
+                        deleteTea(id!)
+                        if (editingTea?.id === id) setEditingTea(null)
+                    }}
                     onEdit={setEditingTea}
                 />
 

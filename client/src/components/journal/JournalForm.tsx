@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import RichToolbar from '../RichToolbar'
+import { useAuthStore } from '../../stores/useAuthStore'
+import Loader from '../Loader'
+import { uploadImage, deleteImage } from '../../helpers/upload'
 import { t } from 'i18next'
 
 export default function JournalForm({
@@ -17,42 +19,111 @@ export default function JournalForm({
     isEditing = false
 }: any) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const [pendingFiles, setPendingFiles] = useState<File[]>([])
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const { user } = useAuthStore()
+    const [uploading, setUploading] = useState(false)
 
-    const emptyForm = {
+    const emptyForm = useMemo(() => ({
         title: '',
         teaId: '',
         content: '',
         rating: undefined,
-        brew_preset_id: ''
-    }
+        brew_preset_id: '',
+        images: [] as string[]
+    }), [])
 
-    const [local, setLocal] = useState(journal || emptyForm)
+    const [local, setLocal] = useState({
+        ...emptyForm,
+        ...journal,
+        images: journal?.images ?? []
+    })
 
     // Sync when parent changes journal
     useEffect(() => {
-        setLocal(journal || emptyForm)
-    }, [journal])
+        setLocal({ ...emptyForm, ...journal, images: journal?.images ?? [] })
+    }, [journal, emptyForm])
 
-    // LOCAL CHANGE HANDLER (safe!)
     const handleChange = (updates: any) => {
         const updated = { ...local, ...updates }
         setLocal(updated)
-
-        if (isEditing && onChange) {
-            onChange(updated) // one-way sync upward (NOT inside useEffect)
-        }
+        if (isEditing && onChange) onChange(updated)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!local.title?.trim() || !local.content?.trim()) {
             alert('Title and content required')
             return
         }
 
-        onSubmit(local)
+        let images = local.images
+
+        if (!isEditing && pendingFiles.length && user) {
+            setUploading(true)
+            try {
+                const uploaded: string[] = []
+
+                for (const file of pendingFiles) {
+                    const res = await uploadSessionImage(file, user.id)
+                    uploaded.push(res.signedUrl)
+                }
+
+                images = uploaded
+            } finally {
+                setUploading(false)
+            }
+        }
+
+        onSubmit({
+            ...local,
+            images
+        })
 
         if (!isEditing) {
             setLocal(emptyForm)
+            setPendingFiles([])
+        }
+    }
+
+    // IMAGE HELPERS
+    const handleFilesUpload = async (files: FileList) => {
+        if (!user) return alert('Not logged in')
+
+        const currentCount = local.images.length
+        const remaining = 3 - currentCount
+        if (remaining <= 0) return
+
+        const selected = Array.from(files).slice(0, remaining)
+
+        if (!isEditing) {
+            const previews = selected.map(file => URL.createObjectURL(file))
+
+            setPendingFiles(prev => [...prev, ...selected])
+            setLocal((prev: { images: any }) => ({
+                ...prev,
+                images: [...prev.images, ...previews]
+            }))
+
+            return
+        }
+
+        setUploading(true)
+        try {
+            const uploadedUrls: string[] = []
+
+            for (const file of selected) {
+                const res = await uploadSessionImage(file, user.id)
+                uploadedUrls.push(res.signedUrl)
+            }
+
+            handleChange({
+                images: [...local.images, ...uploadedUrls]
+            })
+        } catch (err) {
+            console.error(err)
+            alert('Image upload failed')
+        } finally {
+            setUploading(false)
         }
     }
 
@@ -111,9 +182,7 @@ export default function JournalForm({
                         >
                             <option value="">-</option>
                             {teas.map((tea: any) => (
-                                <option key={tea.id} value={tea.id}>
-                                    {tea.name}
-                                </option>
+                                <option key={tea.id} value={tea.id}>{tea.name}</option>
                             ))}
                         </select>
                         <span className="arr-down"></span>
@@ -128,13 +197,69 @@ export default function JournalForm({
                         min={1}
                         max={5}
                         value={local.rating ?? ''}
-                        onChange={e =>
-                            handleChange({
-                                rating:
-                                    e.target.value === '' ? undefined : Number(e.target.value)
-                            })
-                        }
+                        onChange={e => handleChange({ rating: e.target.value === '' ? undefined : Number(e.target.value) })}
                     />
+                </label>
+
+                <label>
+                    <span className="basic-label">{t('journal_img_upload')} max. 3:</span>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                        {(local.images ?? []).map((img: string, idx: number) => (
+                            <div key={img} style={{ position: 'relative' }}>
+                                <img
+                                    src={img}
+                                    alt={`Journal img ${idx}`}
+                                    style={{ maxHeight: 120, borderRadius: 8 }}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={async e => {
+                                        e.stopPropagation()
+                                        try {
+                                            await deleteSessionImage(local.images[idx], user.id)
+                                            const newImages = local.images.filter((_: any, i: number) => i !== idx)
+                                            setLocal((prev: any) => ({ ...prev, images: newImages }))
+                                            if (isEditing && onChange) onChange({ ...local, images: newImages })
+                                        } catch (err) {
+                                            console.error(err)
+                                            alert('Failed to delete image')
+                                        }
+                                    }}
+                                >
+                                    <i className="bx bx-trash" />
+                                </button>
+                            </div>
+                        ))}
+
+                        {(local.images ?? []).length < 3 && (
+                            <>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    multiple
+                                    onChange={e => {
+                                        const files = e.target.files
+                                        if (!files || !user) return
+                                        handleFilesUpload(files)
+                                        e.target.value = ''
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-quick"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {uploading
+                                        ? <Loader />
+                                        : <><i className="bxr bx-archive-arrow-up" /> {t('upload')}</>
+                                    }
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </label>
 
                 <RichToolbar
@@ -142,7 +267,6 @@ export default function JournalForm({
                     setValue={v => handleChange({ content: v })}
                     textareaRef={textareaRef}
                 />
-
                 <label>
                     <span className="basic-label">
                         <span className="req">* </span>{t('journal_form_notes_label')}:

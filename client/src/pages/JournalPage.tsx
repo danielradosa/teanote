@@ -97,9 +97,13 @@ export default function JournalPage() {
 
                 {editingJournal && (
                     <JournalForm
+                        key={`edit-${editingJournal.id}`}
                         journal={editingJournal}
                         onChange={setEditingJournal}
-                        onSubmit={() => { updateJournal(editingJournal.id, editingJournal); setEditingJournal(null) }}
+                        onSubmit={() => {
+                            updateJournal(editingJournal.id, editingJournal)
+                            setEditingJournal(null)
+                        }}
                         isEditing
                         onCancel={() => setEditingJournal(null)}
                         teas={teas}
@@ -109,6 +113,7 @@ export default function JournalPage() {
                 )}
 
                 <JournalForm
+                    key="new-journal"
                     journal={null}
                     onChange={() => { }}
                     onSubmit={addJournal}

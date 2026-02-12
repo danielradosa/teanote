@@ -128,7 +128,7 @@
     "journal_form_tea_label": "Select tea (optional)",
     "journal_form_rating_label": "Rating (optional)",
     "journal_form_rating_p": "e.g. 3 (1 to 5)",
-    "journal_form_notes_label": "Notes (optional)",
+    "journal_form_notes_label": "Notes",
     "journal_form_notes_p": "Write your thoughts here...",
     "journal_add_btn": "add journal",
     "journal_brewed_on": "brewed on",
@@ -203,5 +203,9 @@
     "preset_from_brew": "preset",
     "dash_teas_overview": "Overview of my teas",
     "sidebar_link_more": "More",
-    "sidebar_link_less": "Less"
+    "sidebar_link_less": "Less",
+    "or": "or",
+    "upload": "upload",
+    "journal_img_upload": "Upload images (optional)",
+    "delete": "delete"
 }
