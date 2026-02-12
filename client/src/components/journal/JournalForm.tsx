@@ -3,9 +3,6 @@
 
 import { useRef, useEffect, useState, useMemo } from 'react'
 import RichToolbar from '../RichToolbar'
-import { useAuthStore } from '../../stores/useAuthStore'
-import Loader from '../Loader'
-import { uploadImage, deleteImage } from '../../helpers/upload'
 import { t } from 'i18next'
 
 export default function JournalForm({
@@ -19,10 +16,6 @@ export default function JournalForm({
     isEditing = false
 }: any) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
-    const [pendingFiles, setPendingFiles] = useState<File[]>([])
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const { user } = useAuthStore()
-    const [uploading, setUploading] = useState(false)
 
     const emptyForm = useMemo(() => ({
         title: '',
@@ -35,13 +28,11 @@ export default function JournalForm({
 
     const [local, setLocal] = useState({
         ...emptyForm,
-        ...journal,
-        images: journal?.images ?? []
+        ...journal
     })
 
-    // Sync when parent changes journal
     useEffect(() => {
-        setLocal({ ...emptyForm, ...journal, images: journal?.images ?? [] })
+        setLocal({ ...emptyForm, ...journal})
     }, [journal, emptyForm])
 
     const handleChange = (updates: any) => {
@@ -56,74 +47,12 @@ export default function JournalForm({
             return
         }
 
-        let images = local.images
-
-        if (!isEditing && pendingFiles.length && user) {
-            setUploading(true)
-            try {
-                const uploaded: string[] = []
-
-                for (const file of pendingFiles) {
-                    const res = await uploadSessionImage(file, user.id)
-                    uploaded.push(res.signedUrl)
-                }
-
-                images = uploaded
-            } finally {
-                setUploading(false)
-            }
-        }
-
         onSubmit({
-            ...local,
-            images
+            ...local
         })
 
         if (!isEditing) {
             setLocal(emptyForm)
-            setPendingFiles([])
-        }
-    }
-
-    // IMAGE HELPERS
-    const handleFilesUpload = async (files: FileList) => {
-        if (!user) return alert('Not logged in')
-
-        const currentCount = local.images.length
-        const remaining = 3 - currentCount
-        if (remaining <= 0) return
-
-        const selected = Array.from(files).slice(0, remaining)
-
-        if (!isEditing) {
-            const previews = selected.map(file => URL.createObjectURL(file))
-
-            setPendingFiles(prev => [...prev, ...selected])
-            setLocal((prev: { images: any }) => ({
-                ...prev,
-                images: [...prev.images, ...previews]
-            }))
-
-            return
-        }
-
-        setUploading(true)
-        try {
-            const uploadedUrls: string[] = []
-
-            for (const file of selected) {
-                const res = await uploadSessionImage(file, user.id)
-                uploadedUrls.push(res.signedUrl)
-            }
-
-            handleChange({
-                images: [...local.images, ...uploadedUrls]
-            })
-        } catch (err) {
-            console.error(err)
-            alert('Image upload failed')
-        } finally {
-            setUploading(false)
         }
     }
 
@@ -203,63 +132,7 @@ export default function JournalForm({
 
                 <label>
                     <span className="basic-label">{t('journal_img_upload')} max. 3:</span>
-                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                        {(local.images ?? []).map((img: string, idx: number) => (
-                            <div key={img} style={{ position: 'relative' }}>
-                                <img
-                                    src={img}
-                                    alt={`Journal img ${idx}`}
-                                    style={{ maxHeight: 120, borderRadius: 8 }}
-                                />
-                                <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                    onClick={async e => {
-                                        e.stopPropagation()
-                                        try {
-                                            await deleteSessionImage(local.images[idx], user.id)
-                                            const newImages = local.images.filter((_: any, i: number) => i !== idx)
-                                            setLocal((prev: any) => ({ ...prev, images: newImages }))
-                                            if (isEditing && onChange) onChange({ ...local, images: newImages })
-                                        } catch (err) {
-                                            console.error(err)
-                                            alert('Failed to delete image')
-                                        }
-                                    }}
-                                >
-                                    <i className="bx bx-trash" />
-                                </button>
-                            </div>
-                        ))}
-
-                        {(local.images ?? []).length < 3 && (
-                            <>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    hidden
-                                    multiple
-                                    onChange={e => {
-                                        const files = e.target.files
-                                        if (!files || !user) return
-                                        handleFilesUpload(files)
-                                        e.target.value = ''
-                                    }}
-                                />
-                                <button
-                                    type="button"
-                                    className="btn btn-quick"
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
-                                    {uploading
-                                        ? <Loader />
-                                        : <><i className="bxr bx-archive-arrow-up" /> {t('upload')}</>
-                                    }
-                                </button>
-                            </>
-                        )}
-                    </div>
+                    
                 </label>
 
                 <RichToolbar
