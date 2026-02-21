@@ -951,3 +951,25 @@ time,
 .post h3 a:hover {
     text-decoration: underline;
 }
+
+/* Blog RSS pill */
+.rss-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--brand-secondary);
+    background: rgba(189, 182, 149, 0.18);
+}
+
+.rss-link {
+    font-weight: 700 !important;
+    color: #202121;
+    text-decoration: none;
+}
+
+.rss-link:hover {
+    color: var(--brand-secondary);
+    text-decoration: underline;
+}
