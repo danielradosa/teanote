@@ -1,40 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Landing -->
+  <!-- Core -->
   <url>
     <loc>https://teanote.xyz/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Pricing -->
   <url>
     <loc>https://teanote.xyz/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog index -->
+  <!-- SEO landing pages -->
+  <url>
+    <loc>https://teanote.xyz/tea-journal-app</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/gongfu-timer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/tea-tasting-notes-app</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/tea-inventory-tracker</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/myteapal-alternative</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Blog -->
   <url>
     <loc>https://teanote.xyz/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
 
-  <!-- Blog posts -->
   <url>
-    <loc>https://teanote.xyz/blog/visual-representation-for-brews-added</loc>
+    <loc>https://teanote.xyz/blog/how-to-write-tea-tasting-notes</loc>
     <changefreq>yearly</changefreq>
-    <lastmod>2026-02-08</lastmod>
-    <priority>0.5</priority>
+    <lastmod>2026-02-21</lastmod>
+    <priority>0.6</priority>
   </url>
-
   <url>
-    <loc>https://teanote.xyz/blog/why-keep-a-tea-journal</loc>
+    <loc>https://teanote.xyz/blog/gongfu-timer-times-by-tea</loc>
     <changefreq>yearly</changefreq>
-    <lastmod>2026-02-08</lastmod>
-    <priority>0.5</priority>
+    <lastmod>2026-02-21</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/blog/how-to-track-your-tea-inventory</loc>
+    <changefreq>yearly</changefreq>
+    <lastmod>2026-02-21</lastmod>
+    <priority>0.6</priority>
   </url>
 
   <url>
@@ -42,6 +72,25 @@
     <changefreq>yearly</changefreq>
     <lastmod>2026-02-08</lastmod>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/blog/why-keep-a-tea-journal</loc>
+    <changefreq>yearly</changefreq>
+    <lastmod>2026-01-22</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://teanote.xyz/blog/visual-representation-for-brews-added</loc>
+    <changefreq>yearly</changefreq>
+    <lastmod>2025-12-14</lastmod>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Feed (optional) -->
+  <url>
+    <loc>https://teanote.xyz/blog/rss.xml</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
   </url>
 
 </urlset>

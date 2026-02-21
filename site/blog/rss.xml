@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Teanote Blog</title>
+    <link>https://teanote.xyz/blog</link>
+    <description>Guides and updates for Teanote — a mindful tea journal and gongfu timer.</description>
+    <language>en</language>
+    <lastBuildDate>Sat, 21 Feb 2026 19:15:00 GMT</lastBuildDate>
+
+    <item>
+      <title>How to Write Tea Tasting Notes (Simple Template)</title>
+      <link>https://teanote.xyz/blog/how-to-write-tea-tasting-notes</link>
+      <guid>https://teanote.xyz/blog/how-to-write-tea-tasting-notes</guid>
+      <pubDate>Sat, 21 Feb 2026 19:00:00 GMT</pubDate>
+      <description>A practical 5-line template for notes you’ll actually write.</description>
+    </item>
+
+    <item>
+      <title>Gongfu Timer Times by Tea Type (Starting Points)</title>
+      <link>https://teanote.xyz/blog/gongfu-timer-times-by-tea</link>
+      <guid>https://teanote.xyz/blog/gongfu-timer-times-by-tea</guid>
+      <pubDate>Sat, 21 Feb 2026 19:00:00 GMT</pubDate>
+      <description>Simple timing starting points for oolong, puer, black, white, and green teas.</description>
+    </item>
+
+    <item>
+      <title>How to Track Your Tea Inventory (Without Spreadsheets)</title>
+      <link>https://teanote.xyz/blog/how-to-track-your-tea-inventory</link>
+      <guid>https://teanote.xyz/blog/how-to-track-your-tea-inventory</guid>
+      <pubDate>Sat, 21 Feb 2026 19:00:00 GMT</pubDate>
+      <description>The minimum viable tea profile + how to connect inventory to sessions.</description>
+    </item>
+
+    <item>
+      <title>New feature: upload photos directly to tea profiles and brew sessions</title>
+      <link>https://teanote.xyz/blog/direct-photo-uploads</link>
+      <guid>https://teanote.xyz/blog/direct-photo-uploads</guid>
+      <pubDate>Sun, 08 Feb 2026 16:42:00 GMT</pubDate>
+      <description>Direct photo uploads for tea profiles and brew sessions.</description>
+    </item>
+
+    <item>
+      <title>Why Keeping a Tea Journal Changes How You Taste Tea</title>
+      <link>https://teanote.xyz/blog/why-keep-a-tea-journal</link>
+      <guid>https://teanote.xyz/blog/why-keep-a-tea-journal</guid>
+      <pubDate>Thu, 22 Jan 2026 13:10:00 GMT</pubDate>
+      <description>How a tea journal builds tasting memory and awareness.</description>
+    </item>
+
+    <item>
+      <title>Gongfu Timer update: visual infusion animation</title>
+      <link>https://teanote.xyz/blog/visual-representation-for-brews-added</link>
+      <guid>https://teanote.xyz/blog/visual-representation-for-brews-added</guid>
+      <pubDate>Sun, 14 Dec 2025 15:50:00 GMT</pubDate>
+      <description>A visual infusion animation to make session timing clearer.</description>
+    </item>
+
+  </channel>
+</rss>
