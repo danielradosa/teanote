@@ -970,6 +970,7 @@ time,
     background: rgba(189, 182, 149, 0.18);
     width: max-content;
     align-self: center;
+    margin-bottom: 20px;
 }
 
 .rss-link {
