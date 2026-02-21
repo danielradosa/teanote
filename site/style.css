@@ -953,6 +953,13 @@ time,
 }
 
 /* Blog RSS pill */
+.rss-intro {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
 .rss-pill {
     display: inline-flex;
     align-items: center;
@@ -961,6 +968,8 @@ time,
     border-radius: 999px;
     border: 1px solid var(--brand-secondary);
     background: rgba(189, 182, 149, 0.18);
+    width: max-content;
+    align-self: center;
 }
 
 .rss-link {

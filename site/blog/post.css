@@ -63,23 +63,22 @@
   margin: 0 0 12px 0;
 }
 
-/* Make CTA buttons look like the homepage buttons even outside hero sections */
-.post-cta .hero-cta {
-  display: inline-block;
+/* Blog post CTA button */
+.post-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-image: linear-gradient(235deg, darkgreen 0%, var(--success-color) 80%);
   color: white;
   text-decoration: none;
-  padding: 12px 20px;
-  font-weight: 800;
+  padding: 12px 22px;
+  font-weight: 800 !important;
   border-radius: 40px;
-  transition: all .3s ease-in-out;
+  transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+  box-shadow: -2px 4px 16px rgba(36, 190, 51, 0.35);
 }
 
-.post-cta .hero-cta.glow {
-  box-shadow: -2px 4px 16px var(--success-color);
-}
-
-.post-cta .hero-cta:hover {
+.post-cta-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 2px 0px 24px var(--success-color);
+  box-shadow: 2px 0px 24px rgba(36, 190, 51, 0.55);
 }
