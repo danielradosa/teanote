@@ -1,0 +1,255 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const title = 'Tea Journal App & Gongfu Timer | Teanote';
+const description = 'Teanote &mdash; your mindful tea journal app and gongfu timer. Track tasting notes, leaf appearance, and brewing sessions on any device. Start free today.';
+---
+
+<Layout title={title} description={description} canonical="https://teanote.xyz/">
+  <Fragment slot="head">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://teanote.xyz/" />
+    <meta property="og:title" content="Teanote | Mindful Tea Journal & Gongfu Brewing Timer" />
+    <meta property="og:description" content="A mindful tea companion to capture your tea notes, brewing sessions, and reflections. Start your 30-day free trial." />
+    <meta property="og:image" content="https://teanote.xyz/img/og-home-2026.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Teanote | Mindful Tea Journal & Gongfu Brewing Timer" />
+    <meta name="twitter:description" content="Track your tea sessions, perfect your brews, and reflect on every cup with Teanote." />
+    <meta name="twitter:image" content="https://teanote.xyz/img/og-home-2026.jpg" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CPMZ66BNG7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CPMZ66BNG7');
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Teanote",
+        "operatingSystem": "Web, Android, iOS",
+        "applicationCategory": "ProductivityApplication",
+        "description": "A mindful tea journal and brewing timer for tea enthusiasts.",
+        "offers": { "@type": "Offer", "price": "2.24", "priceCurrency": "USD" },
+        "url": "https://teanote.xyz",
+        "image": "https://teanote.xyz/img/og-home-2026.jpg",
+        "author": { "@type": "Person", "name": "Daniel Radosa" }
+      }
+    </script>
+  </Fragment>
+
+  <Header />
+
+  <main class="mx-auto max-w-6xl px-4">
+    <section class="flex flex-col items-center justify-center py-20 md:py-28">
+      <h1 class="text-center text-3xl font-extrabold tracking-tight md:text-5xl">
+        Teanote &mdash; The Best Tea Journal App &amp; Gongfu Brewing Timer
+      </h1>
+      <p class="mt-5 max-w-2xl text-center text-lg text-zinc-700 md:text-xl">
+        Track every brew, capture tasting notes, and perfect your tea ritual. Works on all devices &mdash; no download needed.
+      </p>
+
+      <div class="mt-8">
+        <Button href="https://app.teanote.xyz" variant="primary" class="track-click" data-track="cta_hero_start_trial">Start your 30-day free trial</Button>
+      </div>
+      <p class="mt-3 text-sm font-semibold text-zinc-600">No app install required. Cancel anytime.</p>
+
+      <div class="mt-10 w-full max-w-4xl overflow-hidden rounded-2xl border border-zinc-200 shadow-lg">
+        <video class="h-auto w-full" autoplay muted loop playsinline preload="metadata" poster="/demo/01-teas.jpg">
+          <source src="/demo/teanote-flow.webm" type="video/webm" />
+          <img src="/demo/teanote-flow.gif" alt="Teanote app demo flow" class="h-auto w-full" loading="lazy" />
+        </video>
+      </div>
+    </section>
+
+    <section class="pb-6">
+      <div class="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-3">
+        <span class="rounded-full border border-zinc-200 bg-white/85 px-4 py-2 text-sm font-bold text-zinc-700">No app install needed</span>
+        <span class="rounded-full border border-zinc-200 bg-white/85 px-4 py-2 text-sm font-bold text-zinc-700">Sync across devices</span>
+        <span class="rounded-full border border-zinc-200 bg-white/85 px-4 py-2 text-sm font-bold text-zinc-700">Cancel anytime</span>
+      </div>
+    </section>
+
+    <!-- Stats / value props -->
+    <section class="py-14 md:py-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <h2 class="text-3xl font-extrabold md:text-4xl">Built for calm tea sessions</h2>
+        <p class="mt-4 text-lg text-zinc-700">No hype. Just a clean tea journal + gongfu timer that works everywhere.</p>
+      </div>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <div class="text-sm font-extrabold text-[#898565]">Works anywhere</div>
+          <div class="mt-2 text-2xl font-extrabold">Web app</div>
+          <p class="mt-3 text-zinc-700">Use Teanote on phone or desktop &mdash; no app store download needed.</p>
+        </div>
+
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <div class="text-sm font-extrabold text-[#898565]">Cross-device sync</div>
+          <div class="mt-2 text-2xl font-extrabold">One journal</div>
+          <p class="mt-3 text-zinc-700">Log a session on mobile while brewing, review notes later on desktop.</p>
+        </div>
+
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <div class="text-sm font-extrabold text-[#898565]">Gongfu-friendly</div>
+          <div class="mt-2 text-2xl font-extrabold">Brew sessions</div>
+          <p class="mt-3 text-zinc-700">Track infusions, presets, and reflections &mdash; and refine each tea over time.</p>
+        </div>
+      </div>
+
+      <div class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row">
+        <Button href="https://app.teanote.xyz" variant="primary" class="track-click" data-track="cta_mid_start_trial">Start your 30-day free trial</Button>
+        <a class="text-sm font-extrabold text-[#898565] hover:underline" href="/blog">Read the changelog →</a>
+      </div>
+    </section>
+
+    <section id="features" class="py-16 md:py-20">
+      <h2 class="text-center text-3xl font-extrabold md:text-4xl">Teanote's main features</h2>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <div class="tilt-card rounded-2xl bg-gradient-to-br from-[#bdb695] to-[#898565] p-5 text-white shadow-lg">
+          <h3 class="text-center text-xl font-extrabold">Capture your moments</h3>
+          <p class="mt-2 text-center font-semibold text-white/90">Take notes on taste, aroma, and mood after each brew.</p>
+          <button type="button" class="mt-4 block w-full cursor-zoom-in relative" data-lightbox-src="/demo/03-journals.jpg" aria-label="Open Tea journal preview">
+            <span class="absolute left-3 top-3 z-10 rounded-full bg-black/65 px-2 py-1 text-xs font-extrabold tracking-wide text-white">Journal</span>
+            <video class="demo-media w-full rounded-lg" data-autostagger autoplay muted loop playsinline preload="metadata" poster="/demo/03-journals.jpg">
+              <source src="/demo/03-journals.webm" type="video/webm" />
+              <img src="/demo/03-journals.gif" alt="Tea journal feature" class="w-full rounded-lg" loading="lazy" />
+            </video>
+          </button>
+        </div>
+
+        <div class="tilt-card rounded-2xl bg-gradient-to-br from-[#bdb695] to-[#898565] p-5 text-white shadow-lg">
+          <h3 class="text-center text-xl font-extrabold">Focus on the ritual</h3>
+          <p class="mt-2 text-center font-semibold text-white/90">A minimal gongfu timer built for your tea sessions.</p>
+          <button type="button" class="mt-4 block w-full cursor-zoom-in relative" data-lightbox-src="/demo/02-brews.jpg" aria-label="Open Gongfu timer preview">
+            <span class="absolute left-3 top-3 z-10 rounded-full bg-black/65 px-2 py-1 text-xs font-extrabold tracking-wide text-white">Brews</span>
+            <video class="demo-media w-full rounded-lg" data-autostagger autoplay muted loop playsinline preload="metadata" poster="/demo/02-brews.jpg">
+              <source src="/demo/02-brews.webm" type="video/webm" />
+              <img src="/demo/02-brews.gif" alt="Gongfu timer feature" class="w-full rounded-lg" loading="lazy" />
+            </video>
+          </button>
+        </div>
+
+        <div class="tilt-card rounded-2xl bg-gradient-to-br from-[#bdb695] to-[#898565] p-5 text-white shadow-lg">
+          <h3 class="text-center text-xl font-extrabold">Remember the teas</h3>
+          <p class="mt-2 text-center font-semibold text-white/90">Curate tea profiles, have your inventory always with you.</p>
+          <button type="button" class="mt-4 block w-full cursor-zoom-in relative" data-lightbox-src="/demo/01-teas.jpg" aria-label="Open Tea profile preview">
+            <span class="absolute left-3 top-3 z-10 rounded-full bg-black/65 px-2 py-1 text-xs font-extrabold tracking-wide text-white">Teas</span>
+            <video class="demo-media w-full rounded-lg" data-autostagger autoplay muted loop playsinline preload="metadata" poster="/demo/01-teas.jpg">
+              <source src="/demo/01-teas.webm" type="video/webm" />
+              <img src="/demo/01-teas.gif" alt="Tea profile feature" class="w-full rounded-lg" loading="lazy" />
+            </video>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row">
+        <Button href="https://app.teanote.xyz" variant="primary" class="track-click" data-track="cta_features_start_trial">Start your 30-day free trial</Button>
+        <Button href="/pricing" variant="outline" class="track-click" data-track="cta_view_pricing">View pricing</Button>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16">
+      <div class="mx-auto max-w-3xl text-center">
+        <h2 class="text-3xl font-extrabold md:text-4xl">Loved by focused tea drinkers</h2>
+      </div>
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        <blockquote class="tilt-card rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <p class="text-zinc-700">"Finally a tea app that does not feel noisy. I log sessions faster and actually revisit notes."</p>
+          <footer class="mt-3 text-sm font-bold text-zinc-600">- Daily gongfu drinker</footer>
+        </blockquote>
+        <blockquote class="tilt-card rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <p class="text-zinc-700">"The infusion tracking is the first one that matches how I actually brew."</p>
+          <footer class="mt-3 text-sm font-bold text-zinc-600">- Pu'er enthusiast</footer>
+        </blockquote>
+        <blockquote class="tilt-card rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <p class="text-zinc-700">"Cross-device sync is huge. I brew on phone, review on laptop, done."</p>
+          <footer class="mt-3 text-sm font-bold text-zinc-600">- Tea club member</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16">
+      <div class="mx-auto max-w-3xl">
+        <h2 class="text-center text-3xl font-extrabold md:text-4xl">Frequently asked questions</h2>
+        <div class="mt-8 space-y-3">
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm" open>
+            <summary class="cursor-pointer font-extrabold">Do I need to install an app?</summary>
+            <p class="mt-2 text-zinc-700">No. Teanote works in your browser on mobile and desktop.</p>
+          </details>
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <summary class="cursor-pointer font-extrabold">Can I cancel anytime?</summary>
+            <p class="mt-2 text-zinc-700">Yes. You can cancel whenever you want with no lock-in.</p>
+          </details>
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <summary class="cursor-pointer font-extrabold">Does Teanote support gongfu sessions?</summary>
+            <p class="mt-2 text-zinc-700">Yes. It is built for infusion-based brewing, presets, and quick brew logging.</p>
+          </details>
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <summary class="cursor-pointer font-extrabold">Can I export my data later?</summary>
+            <p class="mt-2 text-zinc-700">Yes. If you need help exporting, just use the contact form and we will help quickly.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Built by + changelog -->
+    <section class="py-16 md:py-20">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-2xl font-extrabold">Built by a tea nerd (hi)</h2>
+          <p class="mt-3 text-zinc-700">
+            Teanote is built by <a class="font-extrabold hover:text-[#898565]" href="https://danielradosa.com">Daniel Radosa</a>.
+            I made it because I wanted a calm place to store tasting notes, gongfu sessions, and tea memories &mdash;
+            synced across devices, without the noise.
+          </p>
+          <p class="mt-3 text-zinc-700">
+            If you have a feature request, just email <a class="font-extrabold hover:text-[#898565]" href="mailto:info@teanote.xyz">info@teanote.xyz</a>.
+          </p>
+        </div>
+
+        <div class="tilt-card rounded-2xl border border-[#898565]/40 bg-gradient-to-br from-[#bdb695]/15 to-white p-7 shadow-sm">
+          <div class="flex items-baseline justify-between gap-4">
+            <h2 class="text-2xl font-extrabold">Changelog</h2>
+            <a class="text-sm font-extrabold text-[#898565] hover:underline" href="/blog">See all →</a>
+          </div>
+
+          <ul class="mt-4 space-y-3 text-zinc-800">
+            <li>
+              <div class="text-sm font-semibold text-zinc-600">8 Feb 2026</div>
+              <a class="font-extrabold hover:text-[#898565]" href="/blog/direct-photo-uploads">Direct photo uploads</a>
+              <div class="text-sm text-zinc-700">Attach photos to tea profiles and brew sessions.</div>
+            </li>
+            <li>
+              <div class="text-sm font-semibold text-zinc-600">14 Dec 2025</div>
+              <a class="font-extrabold hover:text-[#898565]" href="/blog/visual-representation-for-brews-added">Visual infusion animation</a>
+              <div class="text-sm text-zinc-700">A calmer way to track gongfu infusion progress.</div>
+            </li>
+          </ul>
+
+          <div class="mt-6">
+            <a class="inline-flex items-center gap-2 rounded-full border border-[#898565]/50 bg-white px-4 py-2 text-sm font-extrabold text-zinc-900 hover:text-[#898565] transition" href="/blog/rss.xml">
+              RSS / Newsletter <span class="font-semibold text-zinc-600">/blog/rss.xml</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="fixed bottom-3 left-0 right-0 z-40 px-3 md:hidden">
+    <a href="https://app.teanote.xyz" data-track="cta_mobile_sticky" class="block rounded-full bg-[#202121] px-5 py-3 text-center text-sm font-extrabold text-white shadow-lg">
+      Start your 30-day free trial
+    </a>
+  </div>
+
+  <Footer />
+</Layout>

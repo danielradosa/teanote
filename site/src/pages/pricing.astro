@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const title = 'Plans & Pricing | Teanote';
+const description = 'Transparent and affordable pricing for Teanote &mdash; the mindful tea companion for modern tea lovers. Start your 30-day free trial today.';
+---
+
+<Layout title={title} description={description} canonical="https://teanote.xyz/pricing">
+  <Fragment slot="head">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://teanote.xyz/pricing" />
+    <meta property="og:title" content="Teanote Pricing | Mindful Tea Journal & Gongfu Brewing Timer" />
+    <meta property="og:description" content="Simple pricing &mdash; try free, cancel anytime." />
+    <meta property="og:image" content="https://teanote.xyz/img/og_teanote.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Teanote Pricing | Mindful Tea Journal & Gongfu Brewing Timer" />
+    <meta name="twitter:description" content="Start your 30-day free trial for Teanote." />
+    <meta name="twitter:image" content="https://teanote.xyz/img/og_teanote.jpg" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CPMZ66BNG7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CPMZ66BNG7');
+    </script>
+
+    <!-- Structured Data: Product/Offers (no ratings/reviews yet) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Teanote Subscription",
+        "brand": {"@type": "Brand", "name": "Teanote"},
+        "description": "Mindful tea journal and gongfu brewing timer app.",
+        "image": "https://teanote.xyz/img/og_teanote.jpg",
+        "offers": [
+          {
+            "@type": "Offer",
+            "priceCurrency": "USD",
+            "price": "2.98",
+            "priceValidUntil": "2026-12-31",
+            "url": "https://app.teanote.xyz",
+            "name": "Monthly Plan",
+            "availability": "https://schema.org/InStock"
+          },
+          {
+            "@type": "Offer",
+            "priceCurrency": "USD",
+            "price": "2.24",
+            "priceValidUntil": "2026-12-31",
+            "url": "https://app.teanote.xyz",
+            "name": "Yearly Plan",
+            "availability": "https://schema.org/InStock"
+          }
+        ]
+      }
+    </script>
+  </Fragment>
+
+  <Header />
+
+  <main class="mx-auto max-w-6xl px-4">
+    <section class="py-16 md:py-20">
+      <h1 class="text-center text-4xl font-extrabold tracking-tight md:text-5xl">Pricing</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-center text-lg text-zinc-700 md:text-xl">
+        Transparent, simple pricing. 30-day free trial, cancel anytime.
+      </p>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        <!-- Monthly -->
+        <div class="rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold">Monthly</h2>
+              <p class="mt-1 text-sm font-semibold text-zinc-600">Flexible month-to-month</p>
+            </div>
+            <div class="text-right">
+              <div class="text-4xl font-extrabold tracking-tight">$2.98</div>
+              <div class="text-sm font-semibold text-zinc-600">per month</div>
+            </div>
+          </div>
+
+          <ul class="mt-6 space-y-2 text-zinc-800">
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>No setup or hidden fees</li>
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>Cloud sync across all devices</li>
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>Unlimited teas, journals & presets</li>
+          </ul>
+
+          <div class="mt-8">
+            <Button href="https://app.teanote.xyz" variant="primary" class="w-full">Start your 30-day free trial</Button>
+          </div>
+        </div>
+
+        <!-- Yearly -->
+        <div class="rounded-2xl border border-[#898565]/40 bg-gradient-to-br from-[#bdb695]/15 to-white p-7 shadow-sm">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold">Yearly</h2>
+              <p class="mt-1 text-sm font-semibold text-zinc-700">Save 25% with annual billing</p>
+            </div>
+            <div class="text-right">
+              <div class="text-4xl font-extrabold tracking-tight">$2.24</div>
+              <div class="text-sm font-semibold text-zinc-700">per month (billed yearly)</div>
+            </div>
+          </div>
+
+          <ul class="mt-6 space-y-2 text-zinc-800">
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>No setup or hidden fees</li>
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>Cloud sync across all devices</li>
+            <li class="flex gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-[#898565]"></span>Unlimited teas, journals & presets</li>
+          </ul>
+
+          <div class="mt-8">
+            <Button href="https://app.teanote.xyz" variant="primary" class="w-full">Start your 30-day free trial</Button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 rounded-2xl border border-zinc-200 bg-white p-7 text-center">
+        <h2 class="text-2xl font-extrabold">Questions?</h2>
+        <p class="mt-2 text-zinc-700">Email us at <a class="font-bold hover:text-[#898565]" href="mailto:info@teanote.xyz">info@teanote.xyz</a></p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

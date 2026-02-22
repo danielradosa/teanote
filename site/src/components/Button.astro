@@ -1,0 +1,33 @@
+---
+export interface Props {
+  href: string;
+  variant?: 'primary' | 'dark' | 'outline';
+  class?: string;
+}
+
+const { href, variant = 'primary', class: className = '', ...rest } = Astro.props;
+
+const base = 'group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-3 font-extrabold transition-all duration-300 shadow-sm will-change-transform';
+
+const variants: Record<string, string> = {
+  primary: 'text-white bg-gradient-to-tr from-green-900 to-green-500 shadow-[0_10px_40px_rgba(34,197,94,0.35)] hover:shadow-[0_10px_70px_rgba(34,197,94,0.65)] hover:-translate-y-0.5 hover:scale-[1.02]',
+  dark: 'text-white bg-gradient-to-tr from-zinc-950 to-[#898565] shadow-[0_10px_40px_rgba(24,24,27,0.25)] hover:shadow-[0_10px_70px_rgba(24,24,27,0.40)] hover:-translate-y-0.5 hover:scale-[1.02]',
+  outline: 'text-zinc-900 border border-zinc-300 hover:border-[#898565] hover:text-[#898565] bg-white'
+};
+---
+
+<a href={href} class={`${base} ${variants[variant]} ${className}`.trim()} {...rest}>
+  <!-- liquid sheen -->
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute -inset-6 rotate-12 opacity-0 blur-xl transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-8"
+    style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0) 60%);"
+  ></span>
+
+  <!-- inner glow ring -->
+  <span aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/15"></span>
+
+  <span class="relative z-10">
+    <slot />
+  </span>
+</a>

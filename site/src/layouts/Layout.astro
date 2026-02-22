@@ -1,0 +1,118 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+}
+
+const { title, description, canonical } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="theme-color" content="#bdb695" />
+
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-white text-zinc-900">
+    <slot />
+
+    <script>
+      const cards = document.querySelectorAll('.tilt-card');
+
+      cards.forEach((card) => {
+        const maxTilt = 8;
+
+        const reset = () => {
+          card.classList.remove('is-tilting');
+          card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+        };
+
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          const rotateY = (x - 0.5) * maxTilt * 2;
+          const rotateX = (0.5 - y) * maxTilt * 2;
+          card.classList.add('is-tilting');
+          card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
+        });
+
+        card.addEventListener('mouseleave', reset);
+        card.addEventListener('blur', reset);
+      });
+
+      const track = (eventName, params = {}) => {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', eventName, params);
+        }
+      };
+
+      document.querySelectorAll('[data-track]').forEach((el) => {
+        el.addEventListener('click', () => {
+          const eventName = el.getAttribute('data-track');
+          if (eventName) track(eventName);
+        });
+      });
+
+      document.querySelectorAll('form[data-track-submit]').forEach((form) => {
+        form.addEventListener('submit', () => {
+          const eventName = form.getAttribute('data-track-submit');
+          if (eventName) track(eventName);
+        });
+      });
+
+      const demoVideos = document.querySelectorAll('video[data-autostagger]');
+      demoVideos.forEach((video, idx) => {
+        const delay = 140 + idx * 220;
+        setTimeout(() => {
+          video.classList.add('is-ready');
+          const p = video.play?.();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        }, delay);
+      });
+
+      const lightboxTriggers = document.querySelectorAll('[data-lightbox-src]');
+      let lightboxEl = null;
+
+      const closeLightbox = () => {
+        if (lightboxEl) {
+          lightboxEl.remove();
+          lightboxEl = null;
+          document.body.classList.remove('modal-open');
+        }
+      };
+
+      lightboxTriggers.forEach((el) => {
+        el.addEventListener('click', () => {
+          const src = el.getAttribute('data-lightbox-src');
+          if (!src) return;
+
+          closeLightbox();
+          lightboxEl = document.createElement('div');
+          lightboxEl.className = 'lightbox-backdrop';
+          lightboxEl.innerHTML = `<img src="${src}" class="lightbox-image" alt="Preview" />`;
+          lightboxEl.addEventListener('click', closeLightbox);
+          document.body.appendChild(lightboxEl);
+          document.body.classList.add('modal-open');
+          track('feature_media_open_lightbox', { src });
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+      });
+    </script>
+  </body>
+</html>

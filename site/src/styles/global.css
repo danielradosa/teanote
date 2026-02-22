@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+/* Small brand utilities */
+:root {
+  --brand-primary: #bdb695;
+  --brand-secondary: #898565;
+  --brand-dark: #202121;
+  --success: #24be33;
+}
+
+body {
+  background:
+    radial-gradient(44rem 26rem at 18% 36%, rgba(74, 52, 38, 0.27) 0%, rgba(74, 52, 38, 0) 68%),
+    radial-gradient(42rem 24rem at 82% 34%, rgba(36, 82, 56, 0.24) 0%, rgba(36, 82, 56, 0) 70%),
+    radial-gradient(34rem 22rem at 50% 42%, rgba(189, 182, 149, 0.29) 0%, rgba(189, 182, 149, 0) 72%),
+    radial-gradient(30rem 18rem at 30% 48%, rgba(137, 133, 101, 0.21) 0%, rgba(137, 133, 101, 0) 72%),
+    radial-gradient(28rem 17rem at 70% 46%, rgba(32, 54, 41, 0.19) 0%, rgba(32, 54, 41, 0) 74%),
+    linear-gradient(to bottom, #ffffff 0%, #ffffff 14%, #f6f3ea 30%, #efe9db 40%, #f6f3ea 52%, #ffffff 68%, #ffffff 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Nicer selection */
+::selection {
+  background: rgba(189, 182, 149, 0.55);
+}
+
+/* Contact modal */
+body.modal-open {
+  overflow: hidden;
+}
+
+.contact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.contact-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 24, 27, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.contact-panel {
+  position: relative;
+  width: min(100%, 32rem);
+  border-radius: 1rem;
+  border: 1px solid rgb(228, 228, 231);
+  background: white;
+  padding: 1.25rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* 3D hover cards */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 140ms ease, box-shadow 180ms ease;
+  will-change: transform;
+}
+
+.tilt-card.is-tilting {
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transition: none;
+  }
+}
+
+.header-elevated {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+.demo-media {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.demo-media.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.72);
+  padding: 1rem;
+}
+
+.lightbox-image {
+  max-width: min(1400px, 96vw);
+  max-height: 92vh;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+}

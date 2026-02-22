@@ -1,0 +1,136 @@
+---
+const nav = [
+  { href: '/#features', label: 'Features' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/blog', label: 'Blog' },
+  { href: 'https://docs.teanote.xyz', label: 'Docs', external: true },
+];
+---
+
+<header id="site-header" class="sticky top-0 z-50 border-b border-zinc-200 bg-white text-[#202121] transition-all duration-200">
+  <div id="header-inner" class="mx-auto max-w-6xl px-4 py-4 md:py-5 transition-all duration-200">
+    <div class="flex items-center justify-between">
+      <a href="/" class="text-xl font-extrabold tracking-tight">🍵 Teanote</a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden items-center gap-8 md:flex">
+        {nav.map((item) => (
+          <a
+            href={item.href}
+            class="font-semibold text-[#202121]/90 transition hover:text-[#898565]"
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noreferrer' : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+
+        <a
+          href="https://app.teanote.xyz/signup"
+          class="rounded-full border border-zinc-300 px-4 py-2 text-sm font-extrabold text-[#202121] transition hover:border-zinc-400 hover:bg-zinc-50 hover:scale-[1.03]"
+        >
+          Sign up
+        </a>
+        <a
+          href="https://app.teanote.xyz"
+          class="rounded-full border border-zinc-300 px-4 py-2 text-sm font-extrabold text-[#202121] transition hover:border-zinc-400 hover:bg-zinc-50 hover:scale-[1.03]"
+        >
+          Log in →
+        </a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button
+        id="mobile-menu-button"
+        class="inline-flex items-center justify-center rounded-full border border-zinc-300 p-2 md:hidden text-[#202121]"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <!-- Hamburger icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M4 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobile-menu" class="hidden md:hidden">
+      <div class="mt-4 rounded-2xl border border-zinc-200 bg-white/90 p-4 backdrop-blur">
+        <nav class="flex flex-col gap-3">
+          {nav.map((item) => (
+            <a
+              href={item.href}
+              class="rounded-xl px-3 py-2 font-semibold text-[#202121]/90 transition hover:bg-zinc-100 hover:text-[#202121]"
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noreferrer' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="mt-4 grid grid-cols-1 gap-3">
+          <a
+            href="https://app.teanote.xyz/signup"
+            class="w-full rounded-full border border-zinc-300 px-4 py-2 text-center text-sm font-extrabold text-[#202121] transition hover:border-zinc-400 hover:bg-zinc-50 hover:scale-[1.03]"
+          >
+            Sign up
+          </a>
+          <a
+            href="https://app.teanote.xyz"
+            class="w-full rounded-full border border-zinc-300 px-4 py-2 text-center text-sm font-extrabold text-[#202121] transition hover:border-zinc-400 hover:bg-zinc-50 hover:scale-[1.03]"
+          >
+            Log in →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById('mobile-menu-button');
+    const panel = document.getElementById('mobile-menu');
+
+    if (btn && panel) {
+      btn.addEventListener('click', () => {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!isOpen));
+        panel.classList.toggle('hidden');
+      });
+
+      // close menu when a link is clicked
+      panel.querySelectorAll('a').forEach((a) => {
+        a.addEventListener('click', () => {
+          btn.setAttribute('aria-expanded', 'false');
+          panel.classList.add('hidden');
+        });
+      });
+    }
+
+    // Sticky header: become transparent + shrink on scroll (desktop)
+    const header = document.getElementById('site-header');
+    const inner = document.getElementById('header-inner');
+
+    function onScroll() {
+      const scrolled = window.scrollY > 8;
+      if (header) {
+        header.classList.toggle('backdrop-blur-md', scrolled);
+        header.classList.toggle('bg-white/70', scrolled);
+        header.classList.toggle('bg-white', !scrolled);
+        header.classList.toggle('header-elevated', scrolled);
+      }
+      if (inner) {
+        // shrink vertical padding on desktop when scrolled
+        inner.classList.toggle('md:py-2', scrolled);
+        inner.classList.toggle('md:py-5', !scrolled);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+</header>
