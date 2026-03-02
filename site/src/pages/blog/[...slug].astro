@@ -26,6 +26,11 @@ const canonical = `https://teanote.xyz/blog/${post.slug}`;
     <meta property="og:description" content={description} />
     <meta property="og:image" content={post.data.heroImage ? `https://teanote.xyz${post.data.heroImage}` : 'https://teanote.xyz/img/og_teanote.jpg'} />
 
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={post.data.heroImage ? `https://teanote.xyz${post.data.heroImage}` : 'https://teanote.xyz/img/og_teanote.jpg'} />
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CPMZ66BNG7"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const title = 'MyTeaPal Alternative | Teanote';
+const description = 'Looking for a MyTeaPal alternative? Teanote is a calm tea journal + gongfu timer with cross-device sync and fast session logging (web app).';
+---
+
+<Layout title={title} description={description} canonical="https://teanote.xyz/myteapal-alternative" ogImage="https://teanote.xyz/img/og-myteapal-alternative-2026.jpg">
+  <Header />
+
+  <main class="mx-auto max-w-6xl px-4">
+    <section class="py-16 md:py-24">
+      <div class="mx-auto max-w-3xl">
+        <h1 class="text-4xl font-extrabold tracking-tight md:text-6xl">A calm MyTeaPal alternative</h1>
+        <p class="mt-5 text-lg text-zinc-700 md:text-xl">
+          If you want something quieter (and very gongfu-friendly), Teanote is built for fast session logging and revisiting notes.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button href="https://app.teanote.xyz/signup" variant="primary" data-track="cta_myteapal_alt_signup">Start your 30-day free trial</Button>
+          <Button href="/tea-journal-app" variant="outline">Tea journal app</Button>
+        </div>
+
+        <p class="mt-4 text-sm font-semibold text-zinc-600">Last updated: 2 Mar 2026</p>
+      </div>
+
+      <div class="mt-12 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div class="grid gap-0 md:grid-cols-2">
+          <div class="p-7">
+            <h2 class="text-2xl font-extrabold">Why people switch</h2>
+            <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-700">
+              <li>They want a calmer UI focused on the brewing ritual.</li>
+              <li>They want a web app that works on desktop and mobile.</li>
+              <li>They log gongfu sessions (infusions) and want that workflow to feel natural.</li>
+            </ul>
+          </div>
+          <div class="border-t border-zinc-200 p-7 md:border-l md:border-t-0">
+            <h2 class="text-2xl font-extrabold">What to know</h2>
+            <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-700">
+              <li>Teanote currently does <strong>not</strong> have a self-serve export button (it’s being added).</li>
+              <li>If you need an export immediately, email <a class="font-extrabold text-[#898565] hover:underline" href="mailto:info@teanote.xyz">info@teanote.xyz</a>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 mx-auto max-w-3xl">
+        <h2 class="text-3xl font-extrabold md:text-4xl">FAQ</h2>
+        <div class="mt-6 space-y-3">
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm" open>
+            <summary class="cursor-pointer font-extrabold">Is Teanote free?</summary>
+            <p class="mt-2 text-zinc-700">Teanote includes a 30-day free trial. Pricing is on the <a class="font-extrabold text-[#898565] hover:underline" href="/pricing">pricing page</a>.</p>
+          </details>
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <summary class="cursor-pointer font-extrabold">Does Teanote work on iPhone and Android?</summary>
+            <p class="mt-2 text-zinc-700">Yes — it’s a web app, so it works in your browser on mobile and desktop.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

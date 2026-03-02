@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const title = 'Gongfu Timer (Web) + Brew Log | Teanote';
+const description = 'A minimal gongfu timer that also tracks infusions and tasting notes. Brew on your phone, review on desktop — no install needed.';
+---
+
+<Layout title={title} description={description} canonical="https://teanote.xyz/gongfu-timer">
+  <Header />
+
+  <main class="mx-auto max-w-6xl px-4">
+    <section class="py-16 md:py-24">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="text-4xl font-extrabold tracking-tight md:text-6xl">A gongfu timer designed for real sessions</h1>
+        <p class="mt-5 text-lg text-zinc-700 md:text-xl">
+          Start an infusion, log it, taste, reflect — and build a history of each tea over time.
+        </p>
+        <div class="mt-8">
+          <Button href="https://app.teanote.xyz/signup" variant="primary" data-track="cta_gongfu_timer_signup">Start your 30-day free trial</Button>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-zinc-600">Works on mobile + desktop. Cancel anytime.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Infusion tracking</h2>
+          <p class="mt-3 text-zinc-700">Track number, time, and your notes per infusion — not just the final cup.</p>
+        </div>
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Presets</h2>
+          <p class="mt-3 text-zinc-700">Save starting points for teas and tweak them as you learn.</p>
+        </div>
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Cross-device sync</h2>
+          <p class="mt-3 text-zinc-700">Brew on your phone. Read your session history later on your laptop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16">
+      <div class="mx-auto max-w-3xl rounded-2xl border border-[#898565]/40 bg-gradient-to-br from-[#bdb695]/15 to-white p-7">
+        <h2 class="text-2xl font-extrabold">Want the timer + journal together?</h2>
+        <p class="mt-2 text-zinc-700">Teanote combines a gongfu timer with tasting notes, tea profiles, and a personal library.</p>
+        <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Button href="https://app.teanote.xyz/signup" variant="primary">Start free trial</Button>
+          <Button href="/tea-journal-app" variant="outline">Tea journal app page</Button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

@@ -5,9 +5,15 @@ export interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  ogImage?: string;
 }
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, ogImage } = Astro.props;
+
+const siteUrl = Astro.site?.toString()?.replace(/\/$/, '') ?? 'https://teanote.xyz';
+const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
+const metaDescription = description ?? 'Teanote is a calm tea journal app and gongfu timer with cross-device sync. Log tasting notes, track brews, and remember your teas.';
+const ogImageUrl = ogImage ?? `${siteUrl}/img/og-home-2026.jpg`;
 ---
 
 <!doctype html>
@@ -17,8 +23,21 @@ const { title, description, canonical } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>{title}</title>
-    {description && <meta name="description" content={description} />}
-    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Social defaults (can be overridden/extended per-page via slot=head) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Teanote" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <link rel="icon" href="/favicon.ico" />
     <meta name="theme-color" content="#bdb695" />

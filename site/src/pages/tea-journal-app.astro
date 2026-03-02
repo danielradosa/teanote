@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const title = 'Tea Journal App (Web) + Tasting Notes | Teanote';
+const description = 'A calm tea journal app that works on any device. Capture tasting notes, track tea sessions, and build a personal tea library — with cross-device sync.';
+---
+
+<Layout title={title} description={description} canonical="https://teanote.xyz/tea-journal-app">
+  <Header />
+
+  <main class="mx-auto max-w-6xl px-4">
+    <section class="py-16 md:py-24">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="text-4xl font-extrabold tracking-tight md:text-6xl">A calm tea journal app that you’ll actually use</h1>
+        <p class="mt-5 text-lg text-zinc-700 md:text-xl">
+          Teanote helps you log tasting notes and brewing sessions without the noise — and syncs across phone + desktop.
+        </p>
+        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button href="https://app.teanote.xyz/signup" variant="primary" data-track="cta_tea_journal_signup">Start your 30-day free trial</Button>
+          <a class="text-sm font-extrabold text-[#898565] hover:underline" href="/blog/how-to-write-tea-tasting-notes">Read: how to write tasting notes →</a>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-zinc-600">No app install required. Cancel anytime.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Tasting notes that stay searchable</h2>
+          <p class="mt-3 text-zinc-700">Log aroma, taste, aftertaste, energy, and your own descriptors — then find them later.</p>
+        </div>
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Brew sessions (gongfu-friendly)</h2>
+          <p class="mt-3 text-zinc-700">Track infusions and refine a tea over multiple sessions, not just one “review.”</p>
+        </div>
+        <div class="tilt-card rounded-2xl border border-zinc-200 bg-white p-7 shadow-sm">
+          <h2 class="text-xl font-extrabold">Your tea library</h2>
+          <p class="mt-3 text-zinc-700">Keep tea profiles and notes together so you can compare and remember what you loved.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16">
+      <div class="mx-auto max-w-3xl rounded-2xl border border-[#898565]/40 bg-gradient-to-br from-[#bdb695]/15 to-white p-7">
+        <h2 class="text-2xl font-extrabold">Try Teanote in 60 seconds</h2>
+        <p class="mt-2 text-zinc-700">Open the web app, create a tea profile, then log a brew session while you’re brewing. That’s it.</p>
+        <div class="mt-5">
+          <Button href="https://app.teanote.xyz/signup" variant="primary" data-track="cta_tea_journal_bottom_signup">Start free trial</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16">
+      <div class="mx-auto max-w-3xl">
+        <h2 class="text-3xl font-extrabold md:text-4xl">FAQ</h2>
+        <div class="mt-6 space-y-3">
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm" open>
+            <summary class="cursor-pointer font-extrabold">Is Teanote an iPhone/Android app?</summary>
+            <p class="mt-2 text-zinc-700">Teanote is a web app — it runs in your browser on iOS, Android, and desktop.</p>
+          </details>
+          <details class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <summary class="cursor-pointer font-extrabold">Can I export my tea notes?</summary>
+            <p class="mt-2 text-zinc-700">Export is being added. If you need an export immediately, email info@teanote.xyz and we’ll help.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

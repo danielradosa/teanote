@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from '../stores/useAuthStore'
 import { useSettingsStore } from '../stores/useSettingsStore'
 import { t } from 'i18next'
+import { exportTeanoteDataAsJson } from '../helpers/export'
 
 function SettingsPage() {
     const { user, isSubscribed, trialDaysLeft } = useAuthStore()
@@ -67,6 +68,25 @@ function SettingsPage() {
                                 <span className="arr-down"></span>
                             </div>
                         </label>
+                    </div>
+                </section>
+
+                <section className="quick-actions">
+                    <h2>Data</h2>
+                    <div className="quick-action-btns settings-form">
+                        <label>
+                            <span className="basic-label">Export your data:</span>
+                            <button
+                                onClick={() => exportTeanoteDataAsJson()}
+                                className="btn btn-dark"
+                                style={{ width: '100%' }}
+                            >
+                                Download JSON export
+                            </button>
+                        </label>
+                        <p className="subtitle" style={{ marginTop: 10 }}>
+                            This downloads your teas, brews, presets, journals, and settings as a JSON file.
+                        </p>
                     </div>
                 </section>
             </div>
