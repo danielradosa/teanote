@@ -72,20 +72,20 @@ function SettingsPage() {
                 </section>
 
                 <section className="quick-actions">
-                    <h2>Data</h2>
+                    <h2>{t('settings_data_title')}</h2>
                     <div className="quick-action-btns settings-form">
                         <label>
-                            <span className="basic-label">Export your data:</span>
+                            <span className="basic-label">{t('settings_export_label')}</span>
                             <button
                                 onClick={() => exportTeanoteDataAsJson()}
                                 className="btn btn-dark"
                                 style={{ width: '100%' }}
                             >
-                                Download JSON export
+                                {t('settings_export_btn')}
                             </button>
                         </label>
                         <p className="subtitle" style={{ marginTop: 10 }}>
-                            This downloads your teas, brews, presets, journals, and settings as a JSON file.
+                            {t('settings_export_help')}
                         </p>
                     </div>
                 </section>
