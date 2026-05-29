@@ -1,6 +1,6 @@
 export interface Journal {
-    type: string
-    name: string
+    type?: string
+    name?: string
     id: string
     user_id?: string
     teaId: string

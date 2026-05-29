@@ -1,12 +1,10 @@
-'use client'
-
 import { useState, useMemo, useEffect, useRef } from 'react'
-import { useTeasStore } from '../stores/useTeasStore'
-import TeaFilters from '../components/tea/TeaFilters'
-import TeaList from '../components/tea/TeaList'
-import TeaForm from '../components/tea/TeaForm'
-import { useToggleFilters } from '../hooks/toggleFilters'
-import type { Tea } from '../types/Tea'
+import { useTeasStore } from '@/stores/useTeasStore'
+import TeaFilters from '@/components/tea/TeaFilters'
+import TeaList from '@/components/tea/TeaList'
+import TeaForm from '@/components/tea/TeaForm'
+import { useToggleFilters } from '@/hooks/toggleFilters'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
 export default function TeaProfilesPage() {
@@ -73,8 +71,8 @@ export default function TeaProfilesPage() {
 
                 <TeaList
                     teas={orderedTeas}
-                    deleteTea={(id: string | undefined) => {
-                        deleteTea(id!)
+                    deleteTea={(id: string) => {
+                        deleteTea(id)
                         if (editingTea?.id === id) setEditingTea(null)
                     }}
                     onEdit={setEditingTea}
@@ -85,7 +83,6 @@ export default function TeaProfilesPage() {
                         tea={editingTea}
                         onChange={setEditingTea}
                         onSubmit={() => { updateTea(editingTea.id, editingTea); setEditingTea(null) }}
-                        showMoreToggle
                         isEditing
                         onCancel={() => setEditingTea(null)}
                     />
@@ -95,7 +92,6 @@ export default function TeaProfilesPage() {
                     tea={null}
                     onChange={() => { }}
                     onSubmit={addTea}
-                    showMoreToggle
                     isEditing={false}
                 />
             </div>

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { useBrewsStore } from '../../stores/useBrewsStore'
-import { useTeasStore } from '../../stores/useTeasStore'
-import type { Preset } from '../../types/Brew'
+import { useBrewsStore } from '@/stores/useBrewsStore'
+import { useTeasStore } from '@/stores/useTeasStore'
+import type { Preset } from '@/types/Brew'
 import { t } from 'i18next'
 
 interface BrewTimerProps {
@@ -25,7 +25,7 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
 
     const [secs, setSecs] = useState(timerMode === 'down' && planned ? planned : 0)
     const [running, setRunning] = useState(false)
-    const timerRef = useRef<NodeJS.Timeout | null>(null)
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
     const { visibleTeas } = useTeasStore()
     const teas = visibleTeas()
@@ -57,14 +57,14 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
     }
 
     const handleStart = () => {
-        if (infusionsDone || running) return;
-        hasSavedRef.current = false;
-        setRunning(true);
+        if (infusionsDone || running) return
+        hasSavedRef.current = false
+        setRunning(true)
         if (timerMode === 'down' && planned) {
             setSecs(planned)
             timerRef.current = setInterval(() => setSecs(s => {
                 if (s <= 1 && !hasSavedRef.current) {
-                    hasSavedRef.current = true;
+                    hasSavedRef.current = true
                     clearInterval(timerRef.current!)
                     setRunning(false)
                     addInfusion(brewId, { actualTime: planned })
@@ -81,40 +81,40 @@ const BrewTimer: React.FC<BrewTimerProps> = ({ brewId, onClose, reportLive, pres
     }
 
     const handleStop = () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-        setRunning(false);
-        let actualTime = 0;
+        if (timerRef.current) clearInterval(timerRef.current)
+        setRunning(false)
+        let actualTime = 0
         if (timerMode === 'down' && planned) {
-            actualTime = planned - secs;
+            actualTime = planned - secs
         } else {
-            actualTime = secs;
+            actualTime = secs
         }
         if (actualTime > 0 && !hasSavedRef.current) {
-            hasSavedRef.current = true;
-            addInfusion(brewId, { actualTime });
+            hasSavedRef.current = true
+            addInfusion(brewId, { actualTime })
         }
-        setSecs(timerMode === 'down' && planned ? planned : 0);
+        setSecs(timerMode === 'down' && planned ? planned : 0)
     }
 
     const handleEndSession = () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-        let actualTime = 0;
+        if (timerRef.current) clearInterval(timerRef.current)
+        let actualTime = 0
         if (running) {
             if (timerMode === 'down' && planned) {
-                actualTime = planned - secs;
+                actualTime = planned - secs
             } else {
-                actualTime = secs;
+                actualTime = secs
             }
             if (actualTime > 0 && !hasSavedRef.current) {
-                hasSavedRef.current = true;
-                addInfusion(brewId, { actualTime });
+                hasSavedRef.current = true
+                addInfusion(brewId, { actualTime })
             }
         }
-        setSecs(0);
-        setRunning(false);
-        updateBrew(brewId, { finishedAt: new Date() });
-        toast.success(`${t('toast_brew_ended')}`, { duration: 3000 });
-        onClose();
+        setSecs(0)
+        setRunning(false)
+        updateBrew(brewId, { finishedAt: new Date() })
+        toast.success(`${t('toast_brew_ended')}`, { duration: 3000 })
+        onClose()
     }
 
     const fillPercent = (() => {

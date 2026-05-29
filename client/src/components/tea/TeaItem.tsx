@@ -1,12 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
 import { useState } from 'react'
-import MdDisplay from '../MdDisplay'
+import MdDisplay from '@/components/MdDisplay'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
-export default function TeaItem({ tea, deleteTea, onEdit }: any) {
+interface TeaItemProps {
+    tea: Tea
+    deleteTea: (id: string) => void
+    onEdit: (tea: Tea) => void
+}
+
+export default function TeaItem({ tea, deleteTea, onEdit }: TeaItemProps) {
     const [openDetails, setOpenDetails] = useState(false)
 
     return (

@@ -1,13 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
-import InfiniteScroll from 'react-infinite-scroll-component'
-import JournalItem from './JournalItem'
 import { useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import JournalItem from '@/components/journal/JournalItem'
+import type { Journal } from '@/types/Journal'
+import type { Tea } from '@/types/Tea'
+import type { Brew, Preset } from '@/types/Brew'
 import { t } from 'i18next'
 
-export default function JournalList({ journals, teas, brews, presets, getBrewName, onEdit, onDelete }: any) {
+interface JournalListProps {
+    journals: Journal[]
+    teas: Tea[]
+    brews: Brew[]
+    presets: Preset[]
+    getBrewName: (id: string) => string
+    onEdit: (journal: Journal) => void
+    onDelete: (id: string) => void
+}
+
+export default function JournalList({ journals, teas, getBrewName, onEdit, onDelete }: JournalListProps) {
     const batchSize = 6
     const [journalItemsToShow, setJournalItemsToShow] = useState(batchSize)
 
@@ -15,7 +24,7 @@ export default function JournalList({ journals, teas, brews, presets, getBrewNam
         if (a.dateAdded && b.dateAdded) {
             return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
         }
-        return b.id - a.id
+        return b.id.localeCompare(a.id)
     })
 
     const fetchMore = () => setJournalItemsToShow(prev => prev + batchSize)
@@ -33,15 +42,13 @@ export default function JournalList({ journals, teas, brews, presets, getBrewNam
                     endMessage={<div>{t('journals_no_more')}</div>}
                 >
                     <ul className="journal-list">
-                        {sortedJournals.slice(0, journalItemsToShow).map((journal: any) => {
-                            const tea = teas.find((t: any) => t.id === journal.teaId)
+                        {sortedJournals.slice(0, journalItemsToShow).map(journal => {
+                            const tea = teas.find(t => t.id === journal.teaId)
                             return (
                                 <JournalItem
                                     key={journal.id}
                                     journal={journal}
                                     tea={tea}
-                                    brews={brews}
-                                    presets={presets}
                                     getBrewName={getBrewName}
                                     onEdit={onEdit}
                                     onDelete={onDelete}

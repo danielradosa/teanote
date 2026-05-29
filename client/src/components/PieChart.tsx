@@ -1,23 +1,44 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
-import { t } from "i18next"
+import { t } from 'i18next'
+import type { Tea } from '@/types/Tea'
 
-function TeaTypePieChart({ teas }: { teas: any[] }) {
-    const counts = teas.reduce((acc, tea) => {
+interface PieChartProps {
+    teas: Tea[]
+}
+
+interface CustomLabelProps {
+    x?: number
+    y?: number
+    value?: number
+    name?: string
+}
+
+const TEA_COLORS: Record<string, string> = {
+    green: '#9BD77D',
+    white: '#e8e8e8ff',
+    black: '#C86B2A',
+    oolong: '#A28D5B',
+    sheng: '#C9D67C',
+    shou: '#4A2F1B',
+    yellow: '#F4D36B',
+    purple: '#8B6F9C',
+}
+
+function TeaTypePieChart({ teas }: PieChartProps) {
+    const counts = teas.reduce<Record<string, number>>((acc, tea) => {
         acc[tea.type] = (acc[tea.type] || 0) + 1
         return acc
     }, {})
 
     const data = Object.entries(counts).map(([type, count]) => ({
         name: type,
-        value: count as number,
+        value: count,
     }))
 
-    const CustomLabel = (props: any) => {
-        const { x, y, value, name } = props;
-        const translated = t(`tea_tag_${name}`);
-        const label = `${translated} (${value})`;
+    const CustomLabel = (props: CustomLabelProps) => {
+        const { x = 0, y = 0, value, name = '' } = props
+        const translated = t(`tea_tag_${name}`)
+        const label = `${translated} (${value})`
 
         return (
             <g>
@@ -40,18 +61,7 @@ function TeaTypePieChart({ teas }: { teas: any[] }) {
                     {label}
                 </text>
             </g>
-        );
-    };
-
-    const TEA_COLORS: Record<string, string> = {
-        green: "#9BD77D",
-        white: "#e8e8e8ff",
-        black: "#C86B2A",
-        oolong: "#A28D5B",
-        sheng: "#C9D67C",
-        shou: "#4A2F1B",
-        yellow: "#F4D36B",
-        purple: "#8B6F9C",
+        )
     }
 
     return (
@@ -69,7 +79,7 @@ function TeaTypePieChart({ teas }: { teas: any[] }) {
                         {data.map((item) => (
                             <Cell
                                 key={item.name}
-                                fill={TEA_COLORS[item.name] ?? "#ccc"}
+                                fill={TEA_COLORS[item.name] ?? '#ccc'}
                             />
                         ))}
                     </Pie>

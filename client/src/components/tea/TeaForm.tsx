@@ -1,30 +1,42 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
 import { useState, useRef, useEffect } from 'react'
-import RichToolbar from '../RichToolbar'
-import { uploadImage, deleteImage } from '../../helpers/upload'
-import { useAuthStore } from '../../stores/useAuthStore'
-import { useTeasStore } from '../../stores/useTeasStore'
-import Loader from '../Loader'
+import RichToolbar from '@/components/RichToolbar'
+import { uploadImage, deleteImage } from '@/helpers/upload'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useTeasStore } from '@/stores/useTeasStore'
+import Loader from '@/components/Loader'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
-export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, onCancel }: any) {
+type TeaFormShape = Partial<Tea> & {
+    name: string
+    type: Tea['type']
+    inventory: string
+}
 
-    const emptyForm = {
-        name: '',
-        type: 'green',
-        inventory: '',
-        origin: '',
-        year: '',
-        vendor: '',
-        notes: '',
-        image: '',
-        link: ''
-    }
+type NewTeaInput = Omit<Tea, 'id' | 'user_id' | 'updated_at' | 'deleted_at'>
 
-    const [form, setForm] = useState(tea || emptyForm)
+interface TeaFormProps {
+    tea: Tea | null
+    onChange: (tea: Tea) => void
+    onSubmit: (tea: NewTeaInput) => void
+    isEditing?: boolean
+    onCancel?: () => void
+}
+
+const emptyForm: TeaFormShape = {
+    name: '',
+    type: 'green',
+    inventory: '',
+    origin: '',
+    year: '',
+    vendor: '',
+    notes: '',
+    image: '',
+    link: '',
+}
+
+export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, onCancel }: TeaFormProps) {
+    const [form, setForm] = useState<TeaFormShape>(tea ? { ...emptyForm, ...tea } : emptyForm)
     const [showMoreFields, setShowMoreFields] = useState(false)
     const [uploading, setUploading] = useState(false)
     const [preview, setPreview] = useState('')
@@ -39,7 +51,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
 
     useEffect(() => {
         if (tea) {
-            setForm(tea)
+            setForm({ ...emptyForm, ...tea })
             if (tea.image) setPreview(tea.image)
         }
     }, [tea])
@@ -57,7 +69,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
             handleChange({
                 ...form,
                 image: res.signedUrl,
-                image_path: res.path
+                image_path: res.path,
             })
             setPreview(res.signedUrl)
             setPendingImageDeletion(false)
@@ -70,15 +82,16 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
     }
 
     const handleImageDelete = () => {
-        setForm({ ...form, image: '', image_path: undefined })
+        const next: TeaFormShape = { ...form, image: '', image_path: undefined }
+        setForm(next)
         setPreview('')
-        onChange?.({ ...form, image: '', image_path: undefined })
+        if (tea) onChange({ ...tea, ...next })
         setPendingImageDeletion(true)
     }
 
-    const handleChange = (updatedForm: any) => {
-        if (isEditing) {
-            onChange(updatedForm)
+    const handleChange = (updatedForm: TeaFormShape) => {
+        if (isEditing && tea) {
+            onChange({ ...tea, ...updatedForm })
         } else {
             setForm(updatedForm)
         }
@@ -98,7 +111,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
             }
         }
 
-        onSubmit(form)
+        onSubmit(form as NewTeaInput)
 
         if (!isEditing) {
             setForm(emptyForm)
@@ -139,7 +152,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                     <div className='select-wrap'>
                         <select
                             value={form.type}
-                            onChange={e => handleChange({ ...form, type: e.target.value })}
+                            onChange={e => handleChange({ ...form, type: e.target.value as Tea['type'] })}
                         >
                             <option value="green">{t('teas_select_type_green')}</option>
                             <option value="oolong">{t('teas_select_type_oolong')}</option>
@@ -168,7 +181,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                     <input
                         type="text"
                         placeholder={t('teas_form_year_p')}
-                        value={form.year}
+                        value={form.year ?? ''}
                         onChange={e => handleChange({ ...form, year: e.target.value })}
                     />
                 </label>
@@ -180,7 +193,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                             <input
                                 type="text"
                                 placeholder={t('teas_form_origin_p')}
-                                value={form.origin}
+                                value={form.origin ?? ''}
                                 onChange={e => handleChange({ ...form, origin: e.target.value })}
                             />
                         </label>
@@ -190,7 +203,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                             <input
                                 type="text"
                                 placeholder={t('teas_form_vendor_p')}
-                                value={form.vendor}
+                                value={form.vendor ?? ''}
                                 onChange={e => handleChange({ ...form, vendor: e.target.value })}
                             />
                         </label>
@@ -201,7 +214,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                                 <input
                                     type="text"
                                     placeholder={t('teas_form_img_p')}
-                                    value={form.image}
+                                    value={form.image ?? ''}
                                     onChange={e => handleChange({ ...form, image: e.target.value })}
                                 />
                                 <input
@@ -250,7 +263,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                 )}
 
                 <RichToolbar
-                    value={form.notes || ''}
+                    value={form.notes ?? ''}
                     setValue={v => handleChange({ ...form, notes: v })}
                     textareaRef={textareaRef}
                 />
@@ -260,7 +273,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                     <textarea
                         ref={textareaRef}
                         placeholder={t('teas_form_notes_p')}
-                        value={form.notes || ''}
+                        value={form.notes ?? ''}
                         onChange={e => handleChange({ ...form, notes: e.target.value })}
                     />
                 </label>

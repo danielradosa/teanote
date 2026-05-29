@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import { storage } from '../helpers/storage'
+import { storage } from '@/helpers/storage'
 import { v4 as uuid } from 'uuid'
-import { useAuthStore } from './useAuthStore'
-import { syncData } from '../helpers/sync'
-import type { Tea } from '../types/Tea'
-import { subscribeTable } from '../helpers/realtime'
-import { useSyncStore } from './useSyncStore'
-import { deleteImage } from '../helpers/upload'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { syncData } from '@/helpers/sync'
+import type { Tea } from '@/types/Tea'
+import { subscribeTable } from '@/helpers/realtime'
+import { useSyncStore } from '@/stores/useSyncStore'
+import { deleteImage } from '@/helpers/upload'
 
 interface TeasState {
     teas: Tea[]

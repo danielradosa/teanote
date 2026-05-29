@@ -1,11 +1,9 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../stores/useAuthStore'
-import SubscribeMonthly from '../components/payment/SubscribeMonthly'
-import SubscribeYearly from '../components/payment/SubscribeYearly'
-import { t } from 'i18next';
+import { useAuthStore } from '@/stores/useAuthStore'
+import SubscribeMonthly from '@/components/payment/SubscribeMonthly'
+import SubscribeYearly from '@/components/payment/SubscribeYearly'
+import { t } from 'i18next'
 
 export default function AccountPage() {
     const { user, trialDaysLeft, signOut, isSubscribed, subscriptionEnd, checkAccess } = useAuthStore()

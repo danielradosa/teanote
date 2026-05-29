@@ -1,11 +1,9 @@
-'use client'
-
-import { t } from 'i18next';
-import TeaTypePieChart from '../components/PieChart';
-import { useTeasStore } from '../stores/useTeasStore'
+import { t } from 'i18next'
+import TeaTypePieChart from '@/components/PieChart'
+import { useTeasStore } from '@/stores/useTeasStore'
 
 function DashboardPage() {
-    const savedTeas = useTeasStore().visibleTeas();
+    const savedTeas = useTeasStore().visibleTeas()
 
     return (
         <section className="page-wrap dashboard-page">

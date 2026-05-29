@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import supabase from '../utils/supa'
+import supabase from '@/utils/supa'
 import type { User, Session, AuthError } from '@supabase/supabase-js'
 
 interface AuthState {

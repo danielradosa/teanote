@@ -1,8 +1,8 @@
-import { useAuthStore } from '../stores/useAuthStore'
-import { useTeasStore } from '../stores/useTeasStore'
-import { useBrewsStore } from '../stores/useBrewsStore'
-import { useJournalsStore } from '../stores/useJournalsStore'
-import { useSettingsStore } from '../stores/useSettingsStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useTeasStore } from '@/stores/useTeasStore'
+import { useBrewsStore } from '@/stores/useBrewsStore'
+import { useJournalsStore } from '@/stores/useJournalsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 
 function downloadBlob(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob)
@@ -26,7 +26,7 @@ export function exportTeanoteDataAsJson() {
   const payload = {
     schema: 'teanote.export.v1',
     exportedAt: new Date().toISOString(),
-    user: user ? { id: user.id, email: (user as any)?.email } : null,
+    user: user ? { id: user.id, email: user.email } : null,
     data: {
       teas: teasState.teas,
       brews: brewsState.brews,

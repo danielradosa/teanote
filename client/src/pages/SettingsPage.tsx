@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
 import { useEffect } from 'react'
-import { useAuthStore } from '../stores/useAuthStore'
-import { useSettingsStore } from '../stores/useSettingsStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import { t } from 'i18next'
-import { exportTeanoteDataAsJson } from '../helpers/export'
+import { exportTeanoteDataAsJson } from '@/helpers/export'
+import type { Settings } from '@/types/Settings'
 
 function SettingsPage() {
     const { user, isSubscribed, trialDaysLeft } = useAuthStore()
@@ -41,7 +38,7 @@ function SettingsPage() {
                             <div className="select-wrap">
                                 <select
                                     value={settings?.theme || 'Teanote Default'}
-                                    onChange={e => setTheme(e.target.value as any)}
+                                    onChange={e => setTheme(e.target.value as Settings['theme'])}
                                 >
                                     <option>Teanote Default</option>
                                     <option>Teanote Cozy</option>
@@ -57,7 +54,7 @@ function SettingsPage() {
                             <div className="select-wrap">
                                 <select
                                     value={settings?.language || 'en'}
-                                    onChange={e => setLanguage(e.target.value as any)}
+                                    onChange={e => setLanguage(e.target.value as Settings['language'])}
                                 >
                                     <option value="en">English</option>
                                     <option value="sk">Slovenčina</option>

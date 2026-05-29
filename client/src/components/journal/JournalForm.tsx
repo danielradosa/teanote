@@ -1,9 +1,31 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
-
 import { useRef, useEffect, useState, useMemo } from 'react'
-import RichToolbar from '../RichToolbar'
+import RichToolbar from '@/components/RichToolbar'
+import type { Journal } from '@/types/Journal'
+import type { Tea } from '@/types/Tea'
+import type { Brew, Preset } from '@/types/Brew'
 import { t } from 'i18next'
+
+type JournalFormShape = Partial<Journal> & {
+    title: string
+    teaId: string
+    content: string
+    brew_preset_id?: string
+    rating?: number
+    images?: string[]
+}
+
+type NewJournalInput = Omit<Journal, 'id' | 'user_id' | 'updated_at' | 'deleted_at'>
+
+interface JournalFormProps {
+    journal: Journal | null
+    onChange?: (j: Journal) => void
+    onSubmit: (j: NewJournalInput) => void
+    onCancel?: () => void
+    teas?: Tea[]
+    brews?: Brew[]
+    presets?: Preset[]
+    isEditing?: boolean
+}
 
 export default function JournalForm({
     journal,
@@ -13,32 +35,32 @@ export default function JournalForm({
     teas = [],
     brews = [],
     presets = [],
-    isEditing = false
-}: any) {
+    isEditing = false,
+}: JournalFormProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-    const emptyForm = useMemo(() => ({
+    const emptyForm = useMemo<JournalFormShape>(() => ({
         title: '',
         teaId: '',
         content: '',
         rating: undefined,
         brew_preset_id: '',
-        images: [] as string[]
+        images: [],
     }), [])
 
-    const [local, setLocal] = useState({
+    const [local, setLocal] = useState<JournalFormShape>({
         ...emptyForm,
-        ...journal
+        ...(journal ?? {}),
     })
 
     useEffect(() => {
-        setLocal({ ...emptyForm, ...journal})
+        setLocal({ ...emptyForm, ...(journal ?? {}) })
     }, [journal, emptyForm])
 
-    const handleChange = (updates: any) => {
+    const handleChange = (updates: Partial<JournalFormShape>) => {
         const updated = { ...local, ...updates }
         setLocal(updated)
-        if (isEditing && onChange) onChange(updated)
+        if (isEditing && onChange && journal) onChange({ ...journal, ...updated })
     }
 
     const handleSubmit = async () => {
@@ -47,9 +69,7 @@ export default function JournalForm({
             return
         }
 
-        onSubmit({
-            ...local
-        })
+        onSubmit({ ...local } as NewJournalInput)
 
         if (!isEditing) {
             setLocal(emptyForm)
@@ -85,9 +105,9 @@ export default function JournalForm({
                             onChange={e => handleChange({ brew_preset_id: e.target.value })}
                         >
                             <option value="">-</option>
-                            {brews.map((b: any) => {
-                                const tea = teas.find((t: any) => t.id === b.teaId)
-                                const preset = presets.find((p: any) => p.id === b.presetId)
+                            {brews.map(b => {
+                                const tea = teas.find(t => t.id === b.teaId)
+                                const preset = presets.find(p => p.id === b.presetId)
                                 const teaName = tea?.name || 'Unknown Tea'
                                 const presetName = preset?.name ? ` [${preset.name}]` : ''
                                 const date = new Date(b.startedAt).toLocaleDateString()
@@ -110,7 +130,7 @@ export default function JournalForm({
                             onChange={e => handleChange({ teaId: e.target.value })}
                         >
                             <option value="">-</option>
-                            {teas.map((tea: any) => (
+                            {teas.map(tea => (
                                 <option key={tea.id} value={tea.id}>{tea.name}</option>
                             ))}
                         </select>
@@ -132,7 +152,6 @@ export default function JournalForm({
 
                 <label>
                     <span className="basic-label">{t('journal_img_upload')} max. 3:</span>
-                    
                 </label>
 
                 <RichToolbar

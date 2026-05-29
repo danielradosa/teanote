@@ -1,9 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
-import SearchBar from '../SearchBar'
+import SearchBar from '@/components/SearchBar'
+import type { Journal } from '@/types/Journal'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
+
+interface JournalFiltersProps {
+    journals: Journal[]
+    teas: Tea[]
+    typeFilter: string
+    setTypeFilter: (v: string) => void
+    ratingFilter: number | ''
+    setRatingFilter: (v: number | '') => void
+    search: string
+    setSearch: (v: string) => void
+    showFilters: boolean
+    toggleFilters: () => void
+}
 
 export default function JournalFilters({
     journals,
@@ -15,12 +26,12 @@ export default function JournalFilters({
     search,
     setSearch,
     showFilters,
-    toggleFilters
-}: any) {
+    toggleFilters,
+}: JournalFiltersProps) {
     const teaTypesInJournals = [...new Set(
-        (journals || [])
-            .map((j: any) => teas.find((t: any) => t.id === j.teaId)?.type)
-            .filter(Boolean)
+        journals
+            .map(j => teas.find(tea => tea.id === j.teaId)?.type)
+            .filter((type): type is Tea['type'] => !!type)
     )]
 
     return (
@@ -37,7 +48,7 @@ export default function JournalFilters({
                     <div className="select-wrap">
                         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
                             <option value="">{t('journal_select_types')}</option>
-                            {teaTypesInJournals.map((type: any) => <option value={type} key={type}>{t(`tea_tag_${type}`)}</option>)}
+                            {teaTypesInJournals.map(type => <option value={type} key={type}>{t(`tea_tag_${type}`)}</option>)}
                         </select>
                         <span className='arr-down'></span>
                     </div>
@@ -59,7 +70,7 @@ export default function JournalFilters({
                     <SearchBar value={search} setValue={setSearch} placeholder={t('journal_search_placeholder')} />
                 </label>
 
-                <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch(''); }}>
+                <button className="btn btn-dark" onClick={() => { setTypeFilter(''); setRatingFilter(''); setSearch('') }}>
                     <i className="bxr bx-eraser" /> {t('general_search_clear_btn')}
                 </button>
             </div>

@@ -1,14 +1,12 @@
-'use client'
-
 import { useState, useMemo, useEffect, useRef } from 'react'
-import { useJournalsStore } from '../stores/useJournalsStore'
-import { useBrewsStore } from '../stores/useBrewsStore'
-import { useTeasStore } from '../stores/useTeasStore'
-import JournalFilters from '../components/journal/JournalFilters'
-import JournalList from '../components/journal/JournalList'
-import JournalForm from '../components/journal/JournalForm'
-import { useToggleFilters } from '../hooks/toggleFilters'
-import type { Journal } from '../types/Journal'
+import { useJournalsStore } from '@/stores/useJournalsStore'
+import { useBrewsStore } from '@/stores/useBrewsStore'
+import { useTeasStore } from '@/stores/useTeasStore'
+import JournalFilters from '@/components/journal/JournalFilters'
+import JournalList from '@/components/journal/JournalList'
+import JournalForm from '@/components/journal/JournalForm'
+import { useToggleFilters } from '@/hooks/toggleFilters'
+import type { Journal } from '@/types/Journal'
 import { t } from 'i18next'
 
 export default function JournalPage() {

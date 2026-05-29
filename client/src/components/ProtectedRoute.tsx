@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../stores/useAuthStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { user, isSubscribed, subscriptionEnd, trialDaysLeft, initialized } = useAuthStore()

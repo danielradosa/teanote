@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import supabase from '../utils/supa'
-import { useAuthStore } from './useAuthStore'
-import type { Settings } from '../types/Settings'
-import { useSyncStore } from './useSyncStore'
+import supabase from '@/utils/supa'
+import { useAuthStore } from '@/stores/useAuthStore'
+import type { Settings } from '@/types/Settings'
+import { useSyncStore } from '@/stores/useSyncStore'
 
 interface SettingsState {
     settings: Settings | null

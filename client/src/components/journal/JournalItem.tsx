@@ -1,13 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
 import { useState } from 'react'
-import MdDisplay from '../MdDisplay'
+import MdDisplay from '@/components/MdDisplay'
+import type { Journal } from '@/types/Journal'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
-export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelete }: any) {
+interface JournalItemProps {
+    journal: Journal
+    tea: Tea | undefined
+    getBrewName: (id: string) => string
+    onEdit: (journal: Journal) => void
+    onDelete: (id: string) => void
+}
+
+interface JournalWithImages extends Journal {
+    images?: string[]
+}
+
+export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelete }: JournalItemProps) {
     const [openDetails, setOpenDetails] = useState(false)
+    const withImages = journal as JournalWithImages
 
     return (
         <li className="journal-item">
@@ -48,9 +59,9 @@ export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelet
                             {t('journals_brew_preset')}: <strong>{getBrewName(journal.brew_preset_id ?? '') || `${t('journal_preset_none')}`}</strong>
                         </p>
                         <MdDisplay content={journal.content} />
-                        {Array.isArray(journal.images) && journal.images.length > 0 && (
-                            <div className="journal-images" style={{ display: 'flex', gap: 10, }}>
-                                {journal.images.map((img: string, idx: number) => (
+                        {Array.isArray(withImages.images) && withImages.images.length > 0 && (
+                            <div className="journal-images" style={{ display: 'flex', gap: 10 }}>
+                                {withImages.images.map((img, idx) => (
                                     <img
                                         key={img}
                                         src={img}

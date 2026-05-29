@@ -1,4 +1,4 @@
-import supabase from '../utils/supa'
+import supabase from '@/utils/supa'
 
 export type BucketType = 'teas' | 'sessions'
 

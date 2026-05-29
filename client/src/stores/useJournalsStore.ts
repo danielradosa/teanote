@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import { storage } from '../helpers/storage'
+import { storage } from '@/helpers/storage'
 import { v4 as uuid } from 'uuid'
-import { useAuthStore } from './useAuthStore'
-import { syncData } from '../helpers/sync'
-import type { Journal } from '../types/Journal'
-import { subscribeTable } from '../helpers/realtime'
-import { useSyncStore } from './useSyncStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { syncData } from '@/helpers/sync'
+import type { Journal } from '@/types/Journal'
+import { subscribeTable } from '@/helpers/realtime'
+import { useSyncStore } from '@/stores/useSyncStore'
 
 interface JournalsState {
     journals: Journal[]
@@ -77,7 +77,7 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
 
         const { startSync, finishSync } = useSyncStore.getState()
 
-        const unsubscribe = subscribeTable<Journal>('journals', user.id, async(updatedJournal) => {
+        const unsubscribe = subscribeTable<Journal>('journals', user.id, async (updatedJournal) => {
             startSync()
             set((state) => {
                 const exists = state.journals.find(j => j.id === updatedJournal.id)

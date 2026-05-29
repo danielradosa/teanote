@@ -1,7 +1,7 @@
-import { useTeasStore } from '../stores/useTeasStore'
-import { useJournalsStore } from '../stores/useJournalsStore'
-import { useBrewsStore } from '../stores/useBrewsStore'
-import { useSettingsStore } from '../stores/useSettingsStore'
+import { useTeasStore } from '@/stores/useTeasStore'
+import { useJournalsStore } from '@/stores/useJournalsStore'
+import { useBrewsStore } from '@/stores/useBrewsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 
 const stores = [
   useTeasStore,

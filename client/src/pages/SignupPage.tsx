@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAuthStore } from '../stores/useAuthStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { Link, Navigate } from 'react-router-dom'
-import Loader from '../components/Loader'
+import Loader from '@/components/Loader'
 
 export default function SignupPage() {
   const { signUp, user } = useAuthStore()

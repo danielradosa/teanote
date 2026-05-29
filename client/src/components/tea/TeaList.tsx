@@ -1,13 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-'use client'
-
-import InfiniteScroll from 'react-infinite-scroll-component'
-import TeaItem from './TeaItem'
 import { useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import TeaItem from '@/components/tea/TeaItem'
+import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
-export default function TeaList({ teas, deleteTea, onEdit }: any) {
+interface TeaListProps {
+    teas: Tea[]
+    deleteTea: (id: string) => void
+    onEdit: (tea: Tea) => void
+}
+
+export default function TeaList({ teas, deleteTea, onEdit }: TeaListProps) {
     const batchSize = 6
     const [teaItemsToShow, setTeaItemsToShow] = useState(batchSize)
 
@@ -15,7 +18,7 @@ export default function TeaList({ teas, deleteTea, onEdit }: any) {
         if (a.dateAdded && b.dateAdded) {
             return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
         }
-        return b.id - a.id
+        return b.id.localeCompare(a.id)
     })
 
     const fetchMoreTeas = () => setTeaItemsToShow(prev => prev + batchSize)
@@ -32,7 +35,7 @@ export default function TeaList({ teas, deleteTea, onEdit }: any) {
                     endMessage={<div>{t('teas_no_more')}</div>}
                 >
                     <ul className="tea-list">
-                        {sortedTeas.slice(0, teaItemsToShow).map((tea: any) => (
+                        {sortedTeas.slice(0, teaItemsToShow).map(tea => (
                             <TeaItem key={tea.id} tea={tea} deleteTea={deleteTea} onEdit={onEdit} />
                         ))}
                     </ul>

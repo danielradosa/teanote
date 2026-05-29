@@ -1,4 +1,4 @@
-import supabase from '../utils/supa'
+import supabase from '@/utils/supa'
 
 export function subscribeTable<T>(
   table: string,
@@ -7,10 +7,9 @@ export function subscribeTable<T>(
 ) {
   const channel = supabase.channel(`realtime-${table}-${userId}`)
     .on(
-      'postgres_changes',
+      'postgres_changes' as never,
       { event: '*', schema: 'public', table, filter: `user_id=eq.${userId}` },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (payload: any) => {
+      (payload: { new: T }) => {
         onUpdate(payload.new)
       }
     )

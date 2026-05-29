@@ -2,22 +2,22 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import AppInitializer from './AppInitializer'
-import ProtectedRoute from './components/ProtectedRoute'
-import PublicRoute from './components/PublicRoute'
-import App from './App'
+import AppInitializer from '@/AppInitializer'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import PublicRoute from '@/components/PublicRoute'
+import App from '@/App'
 
-import DashboardPage from './pages/DashboardPage'
-import BrewPage from './pages/BrewPage'
-import JournalPage from './pages/JournalPage'
-import TeaProfilesPage from './pages/TeaProfilesPage'
-import SettingsPage from './pages/SettingsPage'
-import AccountPage from './pages/AccountPage'
-import LoginPage from './pages/LoginPage'
-import SignupPage from './pages/SignupPage'
+import DashboardPage from '@/pages/DashboardPage'
+import BrewPage from '@/pages/BrewPage'
+import JournalPage from '@/pages/JournalPage'
+import TeaProfilesPage from '@/pages/TeaProfilesPage'
+import SettingsPage from '@/pages/SettingsPage'
+import AccountPage from '@/pages/AccountPage'
+import LoginPage from '@/pages/LoginPage'
+import SignupPage from '@/pages/SignupPage'
 
-import './styles/index.css'
-import "./lang"
+import '@/styles/index.css'
+import '@/lang'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

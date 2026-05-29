@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { MoonLoader } from 'react-spinners';
-import { useAuthStore } from '../../stores/useAuthStore';
-import { t } from 'i18next';
+import { useState } from 'react'
+import { MoonLoader } from 'react-spinners'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { t } from 'i18next'
 
 export default function SubscribeYearly() {
-    const { session, user } = useAuthStore();
-    const [loading, setLoading] = useState(false);
+    const { session, user } = useAuthStore()
+    const [loading, setLoading] = useState(false)
 
     const handleSubscribe = async () => {
-        if (!user || !session) return alert('You must be logged in');
+        if (!user || !session) return alert('You must be logged in')
 
-        setLoading(true);
+        setLoading(true)
         try {
-            const FUNCTION_URL = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL;
+            const FUNCTION_URL = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
             const res = await fetch(`${FUNCTION_URL}/create-checkout-session`, {
                 method: 'POST',
                 headers: {
@@ -23,21 +23,21 @@ export default function SubscribeYearly() {
                     userId: user.id,
                     priceId: 'price_1SRGXjBHWIp9OjfCQjL3kPcP',
                 }),
-            });
+            })
 
-            const data = await res.json();
-            if (data.url) window.location.href = data.url;
-            else console.error('No checkout URL returned', data);
+            const data = await res.json()
+            if (data.url) window.location.href = data.url
+            else console.error('No checkout URL returned', data)
         } catch (err) {
-            console.error('Checkout session error', err);
+            console.error('Checkout session error', err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return (
         <button className="btn btn-subscribe" onClick={handleSubscribe} disabled={loading}>
             {loading ? <MoonLoader size={16} color="#fff" /> : `${t('subscribe_btn_yearly')}`}
         </button>
-    );
+    )
 }

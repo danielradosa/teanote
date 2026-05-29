@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import { storage } from '../helpers/storage'
+import { storage } from '@/helpers/storage'
 import { v4 as uuid } from 'uuid'
-import { useAuthStore } from './useAuthStore'
-import { syncData } from '../helpers/sync'
-import type { Brew, Infusion, Preset } from '../types/Brew'
-import { useTeasStore } from './useTeasStore'
-import { subscribeTable } from '../helpers/realtime'
-import { useSyncStore } from './useSyncStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { syncData } from '@/helpers/sync'
+import type { Brew, Infusion, Preset } from '@/types/Brew'
+import { useTeasStore } from '@/stores/useTeasStore'
+import { subscribeTable } from '@/helpers/realtime'
+import { useSyncStore } from '@/stores/useSyncStore'
 
 interface BrewsState {
     brews: Brew[]

@@ -1,7 +1,5 @@
-'use client'
-
 import { useEffect } from 'react'
-import { useSettingsStore } from '../../stores/useSettingsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 
 export default function ThemeManager() {
     const { settings } = useSettingsStore()

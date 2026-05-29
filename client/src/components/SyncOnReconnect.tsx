@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useTeasStore } from '../stores/useTeasStore'
-import { useJournalsStore } from '../stores/useJournalsStore'
-import { useBrewsStore } from '../stores/useBrewsStore'
-import { useSettingsStore } from '../stores/useSettingsStore'
-import { useAuthStore } from '../stores/useAuthStore'
-import { initAllRealtime, stopAllRealtime } from '../helpers/realtimeStores'
-import { t } from 'i18next';
+import { useTeasStore } from '@/stores/useTeasStore'
+import { useJournalsStore } from '@/stores/useJournalsStore'
+import { useBrewsStore } from '@/stores/useBrewsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { initAllRealtime, stopAllRealtime } from '@/helpers/realtimeStores'
+import { t } from 'i18next'
 
 function SyncOnReconnect() {
     const { syncTeas } = useTeasStore()
@@ -77,8 +77,8 @@ function SyncOnReconnect() {
             alignItems: 'center',
         }}>
             <small className='synced-at'>
-                {status === 'offline' && `❌ ${t("sidebar_connection_lost")}`}
-                {status === 'online' && `🌐 ${t("sidebar_connection_back")}`}
+                {status === 'offline' && `❌ ${t('sidebar_connection_lost')}`}
+                {status === 'online' && `🌐 ${t('sidebar_connection_back')}`}
             </small>
         </div>
     )

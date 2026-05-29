@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useAuthStore } from './stores/useAuthStore'
-import { useSettingsStore } from './stores/useSettingsStore'
-import DesktopNavDummy from './components/layout/DesktopNavDummy'
-import DesktopSidebarDummy from './components/layout/DesktopSidebarDummy'
-import i18n from './lang'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import DesktopNavDummy from '@/components/layout/DesktopNavDummy'
+import DesktopSidebarDummy from '@/components/layout/DesktopSidebarDummy'
+import i18n from '@/lang'
 
 export default function AppInitializer({ children }: { children: React.ReactNode }) {
     const initAuth = useAuthStore((s) => s.initAuth)
