@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom'
 import DesktopNav from '@/components/layout/DesktopNav'
 import DesktopSidebar from '@/components/layout/DesktopSidebar'
 import { Toaster } from 'react-hot-toast'
-import ThemeManager from '@/components/layout/ThemeManager'
 
 export default function App() {
     return (
@@ -15,7 +14,6 @@ export default function App() {
                 </main>
             </div>
             <Toaster />
-            <ThemeManager />
         </div>
     )
 }

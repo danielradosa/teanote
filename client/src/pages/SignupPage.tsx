@@ -19,7 +19,8 @@ export default function SignupPage() {
 
   if (user) return <Navigate to="/" replace />
 
-  const handleSignup = async () => {
+  const handleSignup = async (e?: React.FormEvent) => {
+    e?.preventDefault()
     setError('')
     setSuccess('')
 
@@ -48,7 +49,7 @@ export default function SignupPage() {
 
   return (
     <section className="signup">
-      <div className="signup-form">
+      <form className="signup-form" onSubmit={handleSignup}>
         <div className="logo-signup">🍵</div>
 
         {isSubmitting && (
@@ -125,7 +126,7 @@ export default function SignupPage() {
         </label>
 
         <button
-          onClick={handleSignup}
+          type="submit"
           className="btn btn-quick signup-btn"
           disabled={isSubmitting}
         >
@@ -135,7 +136,7 @@ export default function SignupPage() {
         <span className="existing-account">
           Already have an account? <Link to="/login">Log in</Link>.
         </span>
-      </div>
+      </form>
     </section>
   )
 }

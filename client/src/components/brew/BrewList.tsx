@@ -34,7 +34,12 @@ export default function BrewList({
     const [brewItemsToShow, setBrewItemsToShow] = useState(batchSize)
 
     useEffect(() => {
+        // Auto-fill the list until it becomes scrollable, so InfiniteScroll has
+        // something to react to. Bounded so a tiny viewport can't loop forever.
+        let cancelled = false
+        let iterations = 0
         const ensureScrollable = () => {
+            if (cancelled || iterations++ > 50) return
             const ul = document.querySelector('.brew-list')
             if (!ul) return
             const rect = ul.getBoundingClientRect()
@@ -43,7 +48,11 @@ export default function BrewList({
                 requestAnimationFrame(ensureScrollable)
             }
         }
-        requestAnimationFrame(ensureScrollable)
+        const raf = requestAnimationFrame(ensureScrollable)
+        return () => {
+            cancelled = true
+            cancelAnimationFrame(raf)
+        }
     }, [brewItemsToShow, brews, orderedBrews.length])
 
     const fetchMoreBrews = () => setBrewItemsToShow(prev => prev + batchSize)

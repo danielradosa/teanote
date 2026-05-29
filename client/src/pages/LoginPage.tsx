@@ -12,7 +12,8 @@ export default function LoginPage() {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
-    const handleLogin = async () => {
+    const handleLogin = async (e?: React.FormEvent) => {
+        e?.preventDefault()
         setError('')
         setSuccess('')
         setIsSubmitting(true)
@@ -31,7 +32,7 @@ export default function LoginPage() {
 
     return (
         <section className="login">
-            <div className="login-form">
+            <form className="login-form" onSubmit={handleLogin}>
                 <div className="logo-login">🍵</div>
 
                 {isSubmitting && <Loader />}
@@ -71,7 +72,7 @@ export default function LoginPage() {
                 </a>
 
                 <button
-                    onClick={handleLogin}
+                    type="submit"
                     className="btn btn-quick"
                     disabled={isSubmitting}
                 >
@@ -81,7 +82,7 @@ export default function LoginPage() {
                 <span className="new-account">
                     No account yet? <Link to="/signup">Create one</Link>.
                 </span>
-            </div>
+            </form>
         </section>
     )
 }

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import RichToolbar from '@/components/RichToolbar'
 import { uploadImage, deleteImage } from '@/helpers/upload'
+import { compressImageIfNeeded, validateImage } from '@/helpers/image'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useTeasStore } from '@/stores/useTeasStore'
 import Loader from '@/components/Loader'
@@ -57,13 +59,25 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
     }, [tea])
 
     const handleImageUpload = async (file: File) => {
+        const validationError = validateImage(file)
+        if (validationError) {
+            toast.error(
+                validationError.kind === 'too-big'
+                    ? t('tea_form_image_too_big')
+                    : t('tea_form_image_bad_type')
+            )
+            if (fileInputRef.current) fileInputRef.current.value = ''
+            return
+        }
+
         try {
             if (!user) throw new Error('No user logged in')
 
             setUploading(true)
-            setPreview(URL.createObjectURL(file))
+            const compressed = await compressImageIfNeeded(file)
+            setPreview(URL.createObjectURL(compressed))
 
-            const res = await uploadImage('teas', file, user.id)
+            const res = await uploadImage('teas', compressed, user.id)
             setImagePath(res.path)
 
             handleChange({
@@ -75,7 +89,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
             setPendingImageDeletion(false)
         } catch (err) {
             console.error(err)
-            alert('Image upload failed')
+            toast.error('Image upload failed')
         } finally {
             setUploading(false)
         }

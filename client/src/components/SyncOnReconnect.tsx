@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTeasStore } from '@/stores/useTeasStore'
 import { useJournalsStore } from '@/stores/useJournalsStore'
 import { useBrewsStore } from '@/stores/useBrewsStore'
@@ -32,6 +33,7 @@ function SyncOnReconnect() {
                 ])
             } catch (err) {
                 console.error('❌ Sync error:', err)
+                toast.error(t('sync_failed_toast'), { duration: 4000 })
                 setStatus('offline')
             } finally {
                 setTimeout(() => setStatus(null), 2000)
