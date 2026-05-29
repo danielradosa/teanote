@@ -13,14 +13,14 @@ export interface SuggestPresetInput {
     year?: string
 }
 
-const FUNCTION_URL = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
+const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL
 
 export async function suggestPreset(input: SuggestPresetInput): Promise<PresetSuggestion> {
     const { session } = useAuthStore.getState()
     if (!session) throw new Error('not authenticated')
-    if (!FUNCTION_URL) throw new Error('VITE_SUPABASE_FUNCTIONS_URL not set')
+    if (!AI_SERVICE_URL) throw new Error('VITE_AI_SERVICE_URL not set')
 
-    const res = await fetch(`${FUNCTION_URL}/ai-suggest-preset`, {
+    const res = await fetch(`${AI_SERVICE_URL}/ai-suggest-preset`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
