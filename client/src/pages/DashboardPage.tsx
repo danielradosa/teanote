@@ -1,5 +1,6 @@
 import { t } from 'i18next'
 import TeaTypePieChart from '@/components/PieChart'
+import AiInsights from '@/components/dashboard/AiInsights'
 import { useTeasStore } from '@/stores/useTeasStore'
 
 function DashboardPage() {
@@ -19,13 +20,11 @@ function DashboardPage() {
                 </section>
 
                 <section className="stats">
-                    <h2>-</h2>
-                    <p>...</p>
+                    <AiInsights slot="profile" />
                 </section>
 
                 <section className="stats">
-                    <h2>-</h2>
-                    <p>...</p>
+                    <AiInsights slot="patterns" />
                 </section>
             </div>
         </section>

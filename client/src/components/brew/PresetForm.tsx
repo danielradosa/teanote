@@ -1,9 +1,6 @@
 import { useState } from 'react'
-import toast from 'react-hot-toast'
 import type { Preset } from '@/types/Brew'
 import type { Tea } from '@/types/Tea'
-import { suggestPreset } from '@/helpers/ai'
-import { useSettingsStore } from '@/stores/useSettingsStore'
 import { t } from 'i18next'
 
 type NewPresetInput = Omit<Preset, 'id' | 'created_at' | 'updated_at' | 'user_id' | 'deleted_at'>
@@ -19,38 +16,6 @@ export default function PresetForm({ teas, onSubmit }: PresetFormProps) {
     const [presetTeaType, setPresetTeaType] = useState('')
     const [presetInfusionsAmount, setPresetInfusionsAmount] = useState<number>(1)
     const [presetInfusionTimes, setPresetInfusionTimes] = useState('')
-    const [aiLoading, setAiLoading] = useState(false)
-
-    const aiEnabled = useSettingsStore(s => s.settings?.ai_enabled ?? false)
-
-    const handleAiSuggest = async () => {
-        const linkedTea = presetTeaId ? teas.find(t => t.id === presetTeaId) : undefined
-        const teaName = linkedTea?.name ?? ''
-        const teaType = linkedTea?.type ?? presetTeaType
-
-        if (!teaName && !teaType) {
-            toast(t('ai_suggest_btn'))
-            return
-        }
-
-        setAiLoading(true)
-        try {
-            const suggestion = await suggestPreset({
-                teaName,
-                teaType,
-                origin: linkedTea?.origin,
-                year: linkedTea?.year,
-            })
-            setPresetInfusionsAmount(suggestion.infusionsAmount)
-            setPresetInfusionTimes(suggestion.infusionTimes.join(', '))
-            if (suggestion.rationale) toast.success(suggestion.rationale)
-        } catch (err) {
-            console.error('AI suggest failed:', err)
-            toast.error(t('ai_suggest_error'))
-        } finally {
-            setAiLoading(false)
-        }
-    }
 
     const handleAddPreset = (e: React.FormEvent) => {
         e.preventDefault()
@@ -169,17 +134,6 @@ export default function PresetForm({ teas, onSubmit }: PresetFormProps) {
                     <button className="btn btn-quick" onClick={handleAddPreset}>
                         <i className="bxr bx-plus" /> {t('brews_form_add_preset')}
                     </button>
-                    {aiEnabled && (
-                        <button
-                            type="button"
-                            className="btn btn-info"
-                            onClick={handleAiSuggest}
-                            disabled={aiLoading}
-                            aria-label={t('ai_suggest_btn')}
-                        >
-                            {aiLoading ? `✨ ${t('ai_suggest_loading')}` : `✨ ${t('ai_suggest_btn')}`}
-                        </button>
-                    )}
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import express, { type Request, type Response, type NextFunction } from 'express'
 import cors from 'cors'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 const PORT = Number(process.env.PORT) || 8080
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -17,38 +17,43 @@ const SUPABASE_URL = requireEnv('SUPABASE_URL')
 const SUPABASE_ANON_KEY = requireEnv('SUPABASE_ANON_KEY')
 const CORS_ORIGIN = process.env.CORS_ORIGIN ?? '*'
 
-const VALID_TEA_TYPES = new Set([
-    'green', 'oolong', 'red', 'white', 'yellow', 'puerh', 'purple', 'any',
-])
+// --- types ----------------------------------------------------------------
 
-interface PresetSuggestion {
-    infusionsAmount: number
-    infusionTimes: number[]
-    rationale?: string
+interface DashboardInsights {
+    profile: string
+    patterns: string
 }
 
-function isValidSuggestion(value: unknown): value is PresetSuggestion {
-    if (!value || typeof value !== 'object') return false
-    const v = value as Record<string, unknown>
-    if (typeof v.infusionsAmount !== 'number') return false
-    if (v.infusionsAmount < 1 || v.infusionsAmount > 15) return false
-    if (!Array.isArray(v.infusionTimes)) return false
-    if (v.infusionTimes.length !== v.infusionsAmount) return false
-    return v.infusionTimes.every(
-        (t) => typeof t === 'number' && t > 0 && t <= 600,
-    )
+interface DashboardInput {
+    language?: string
+    teas?: {
+        total?: number
+        byType?: Record<string, number>
+        recentlyAdded?: Array<{ name?: string; type?: string }>
+    }
+    brews?: {
+        totalLast30Days?: number
+        totalAllTime?: number
+        mostBrewedTea?: { name?: string; count?: number } | null
+        averageInfusionsPerSession?: number
+    }
+    journals?: {
+        total?: number
+        averageRating?: number | null
+        recentTitles?: string[]
+    }
 }
 
-const app = express()
-app.disable('x-powered-by')
-app.use(cors({ origin: CORS_ORIGIN }))
-app.use(express.json({ limit: '8kb' }))
+declare module 'express-serve-static-core' {
+    interface Request {
+        supabase?: SupabaseClient
+        userId?: string
+    }
+}
 
-app.get('/healthz', (_req, res) => {
-    res.json({ ok: true })
-})
+// --- auth middleware ------------------------------------------------------
 
-app.post('/ai-suggest-preset', async (req: Request, res: Response, next: NextFunction) => {
+async function requireAuthorizedUser(req: Request, res: Response, next: NextFunction) {
     try {
         const authHeader = req.header('authorization')
         if (!authHeader) {
@@ -86,76 +91,146 @@ app.post('/ai-suggest-preset', async (req: Request, res: Response, next: NextFun
             return
         }
 
-        const teaName = String(req.body?.teaName ?? '').trim().slice(0, 200)
-        const teaTypeRaw = String(req.body?.teaType ?? '').trim().toLowerCase().slice(0, 32)
-        const teaType = VALID_TEA_TYPES.has(teaTypeRaw) ? teaTypeRaw : 'any'
-        const origin = String(req.body?.origin ?? '').trim().slice(0, 200)
-        const year = String(req.body?.year ?? '').trim().slice(0, 16)
+        req.supabase = supabase
+        req.userId = userData.user.id
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
 
-        if (!teaName && teaType === 'any') {
-            res.status(400).json({ error: 'teaName or teaType required' })
-            return
+// --- helpers --------------------------------------------------------------
+
+async function callGroq(systemPrompt: string, userPrompt: string, maxTokens = 600): Promise<unknown> {
+    const aiRes = await fetch(GROQ_URL, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model: MODEL,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.6,
+            max_tokens: maxTokens,
+        }),
+    })
+
+    if (!aiRes.ok) {
+        const errText = await aiRes.text()
+        console.error('Groq error:', aiRes.status, errText)
+        throw new Error(`groq returned ${aiRes.status}`)
+    }
+
+    const aiJson = (await aiRes.json()) as { choices?: Array<{ message?: { content?: string } }> }
+    const content = aiJson.choices?.[0]?.message?.content
+    if (!content) throw new Error('empty AI response')
+
+    return JSON.parse(content)
+}
+
+const VALID_LANGUAGES = new Set(['en', 'sk', 'ja', 'zh', 'ko'])
+const LANGUAGE_LABELS: Record<string, string> = {
+    en: 'English',
+    sk: 'Slovak',
+    ja: 'Japanese',
+    zh: 'Mandarin Chinese',
+    ko: 'Korean',
+}
+
+function safeLanguage(raw: unknown): string {
+    const v = typeof raw === 'string' ? raw.toLowerCase() : 'en'
+    return VALID_LANGUAGES.has(v) ? v : 'en'
+}
+
+function isValidInsights(value: unknown): value is DashboardInsights {
+    if (!value || typeof value !== 'object') return false
+    const v = value as Record<string, unknown>
+    return (
+        typeof v.profile === 'string' &&
+        v.profile.length > 0 &&
+        v.profile.length <= 2000 &&
+        typeof v.patterns === 'string' &&
+        v.patterns.length > 0 &&
+        v.patterns.length <= 2000
+    )
+}
+
+// --- app ------------------------------------------------------------------
+
+const app = express()
+app.disable('x-powered-by')
+app.use(cors({ origin: CORS_ORIGIN }))
+app.use(express.json({ limit: '16kb' }))
+
+app.get('/healthz', (_req, res) => {
+    res.json({ ok: true })
+})
+
+app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next) => {
+    try {
+        const body = req.body as DashboardInput
+        const language = safeLanguage(body.language)
+        const langLabel = LANGUAGE_LABELS[language] ?? 'English'
+
+        const summary = {
+            teas: {
+                total: clampInt(body.teas?.total, 0, 10000),
+                byType: sanitizeByType(body.teas?.byType),
+                recentlyAdded: sanitizeTeaList(body.teas?.recentlyAdded),
+            },
+            brews: {
+                totalLast30Days: clampInt(body.brews?.totalLast30Days, 0, 10000),
+                totalAllTime: clampInt(body.brews?.totalAllTime, 0, 100000),
+                mostBrewedTea: body.brews?.mostBrewedTea
+                    ? {
+                        name: safeStr(body.brews.mostBrewedTea.name, 200),
+                        count: clampInt(body.brews.mostBrewedTea.count, 0, 10000),
+                    }
+                    : null,
+                averageInfusionsPerSession: clampFloat(body.brews?.averageInfusionsPerSession, 0, 50),
+            },
+            journals: {
+                total: clampInt(body.journals?.total, 0, 10000),
+                averageRating:
+                    typeof body.journals?.averageRating === 'number'
+                        ? clampFloat(body.journals.averageRating, 0, 5)
+                        : null,
+                recentTitles: (body.journals?.recentTitles ?? [])
+                    .slice(0, 5)
+                    .map((t) => safeStr(t, 200))
+                    .filter(Boolean),
+            },
         }
 
-        const userPrompt = [
-            `Tea name: ${teaName || '(unknown)'}`,
-            `Tea type: ${teaType}`,
-            origin ? `Origin: ${origin}` : null,
-            year ? `Year: ${year}` : null,
-            '',
-            'Return a gongfu-style brewing preset for a 100ml gaiwan.',
-            'Output JSON only, exact shape:',
-            '{"infusionsAmount": number 1-15, "infusionTimes": number[] (seconds, same length as infusionsAmount), "rationale": short string}',
-        ].filter(Boolean).join('\n')
+        const totalActivity =
+            summary.teas.total + summary.brews.totalAllTime + summary.journals.total
+        if (totalActivity === 0) {
+            res.json({
+                profile: 'No teas yet — add a tea on the Teas page to start building your collection.',
+                patterns: 'No brews or journal entries yet. Start a session on the Brews page when you sit down with a cup.',
+            } satisfies DashboardInsights)
+            return
+        }
 
         const systemPrompt =
-            'You are a tea brewing assistant for gongfu-style infusions. ' +
-            'Always reply with valid JSON only — no prose, no markdown. ' +
-            'Times are in seconds, between 1 and 600. ' +
-            'Typical gongfu has 4-10 infusions starting short (5-15s) and lengthening. ' +
-            'Aged puerh and oolong tolerate more infusions than green or yellow tea.'
+            `You are writing a friendly, personalized two-paragraph dashboard overview for a tea-journal user. ` +
+            `Write in ${langLabel}. Be warm but specific — reference their actual data. ` +
+            `Avoid platitudes. No headings, no bullets, plain prose. Each paragraph 2-4 sentences. ` +
+            `Output JSON only, exact shape: ` +
+            `{"profile": "string (about their collection)", "patterns": "string (about their brewing + journaling activity)"}`
 
-        const aiRes = await fetch(GROQ_URL, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${GROQ_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: MODEL,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userPrompt },
-                ],
-                response_format: { type: 'json_object' },
-                temperature: 0.4,
-                max_tokens: 400,
-            }),
-        })
+        const userPrompt =
+            `User data summary (JSON):\n${JSON.stringify(summary, null, 2)}\n\n` +
+            `Write the two paragraphs based on this.`
 
-        if (!aiRes.ok) {
-            const errText = await aiRes.text()
-            console.error('Groq error:', aiRes.status, errText)
-            res.status(502).json({ error: 'AI request failed' })
-            return
-        }
+        const parsed = await callGroq(systemPrompt, userPrompt, 700)
 
-        const aiJson = (await aiRes.json()) as { choices?: Array<{ message?: { content?: string } }> }
-        const content = aiJson.choices?.[0]?.message?.content
-        if (!content) {
-            res.status(502).json({ error: 'empty AI response' })
-            return
-        }
-
-        let parsed: unknown
-        try {
-            parsed = JSON.parse(content)
-        } catch {
-            res.status(502).json({ error: 'AI returned invalid JSON' })
-            return
-        }
-
-        if (!isValidSuggestion(parsed)) {
+        if (!isValidInsights(parsed)) {
             res.status(502).json({ error: 'AI returned invalid shape' })
             return
         }
@@ -175,3 +250,42 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 app.listen(PORT, () => {
     console.log(`ai-service listening on :${PORT}`)
 })
+
+// --- sanitizers -----------------------------------------------------------
+
+function safeStr(v: unknown, max: number): string {
+    if (typeof v !== 'string') return ''
+    return v.trim().slice(0, max)
+}
+
+function clampInt(v: unknown, lo: number, hi: number): number {
+    if (typeof v !== 'number' || !Number.isFinite(v)) return 0
+    return Math.max(lo, Math.min(hi, Math.floor(v)))
+}
+
+function clampFloat(v: unknown, lo: number, hi: number): number {
+    if (typeof v !== 'number' || !Number.isFinite(v)) return 0
+    return Math.max(lo, Math.min(hi, v))
+}
+
+function sanitizeByType(input: unknown): Record<string, number> {
+    if (!input || typeof input !== 'object') return {}
+    const out: Record<string, number> = {}
+    for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+        const key = safeStr(k, 32)
+        const count = clampInt(v, 0, 10000)
+        if (key && count > 0) out[key] = count
+    }
+    return out
+}
+
+function sanitizeTeaList(input: unknown): Array<{ name: string; type: string }> {
+    if (!Array.isArray(input)) return []
+    return input
+        .slice(0, 5)
+        .map((item) => ({
+            name: safeStr((item as { name?: unknown })?.name, 200),
+            type: safeStr((item as { type?: unknown })?.type, 32),
+        }))
+        .filter((t) => t.name)
+}
