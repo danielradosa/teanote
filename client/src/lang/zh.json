@@ -26,8 +26,6 @@
     "dash_ai_patterns_title": "最近的冲泡",
     "dash_ai_loading": "正在冲泡总览…",
     "dash_ai_error": "无法加载 AI 总览。",
-    "dash_ai_retry": "重试",
-    "dash_ai_refresh": "刷新",
     "dash_ai_empty": "暂时没有可总结的内容。",
     "dash_ai_disabled": "在设置中开启 AI 即可看到个性化总览。",
     "dashboard_title": "仪表板",

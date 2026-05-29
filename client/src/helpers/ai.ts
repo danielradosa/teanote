@@ -4,8 +4,8 @@ import type { Brew } from '@/types/Brew'
 import type { Journal } from '@/types/Journal'
 
 export interface DashboardInsights {
-    profile: string
-    patterns: string
+    profile: string[]
+    patterns: string[]
 }
 
 const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL

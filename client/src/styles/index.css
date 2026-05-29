@@ -163,6 +163,25 @@ header .logo a {
   color: var(--brand-primary);
 }
 
+.ai-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ai-card-body p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.ai-card-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .subscription button {
   margin-top: 10px;
 }

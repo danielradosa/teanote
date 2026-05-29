@@ -26,8 +26,6 @@
   "dash_ai_patterns_title": "최근 우림 활동",
   "dash_ai_loading": "개요를 우려내는 중…",
   "dash_ai_error": "AI 개요를 불러오지 못했습니다.",
-  "dash_ai_retry": "다시 시도",
-  "dash_ai_refresh": "새로 고침",
   "dash_ai_empty": "아직 요약할 내용이 없습니다.",
   "dash_ai_disabled": "설정에서 AI를 켜면 맞춤 개요를 확인할 수 있습니다.",
   "dashboard_title": "대시보드",

@@ -20,8 +20,8 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN ?? '*'
 // --- types ----------------------------------------------------------------
 
 interface DashboardInsights {
-    profile: string
-    patterns: string
+    profile: string[]
+    patterns: string[]
 }
 
 interface DashboardInput {
@@ -101,7 +101,12 @@ async function requireAuthorizedUser(req: Request, res: Response, next: NextFunc
 
 // --- helpers --------------------------------------------------------------
 
-async function callGroq(systemPrompt: string, userPrompt: string, maxTokens = 600): Promise<unknown> {
+async function callGroq(
+    systemPrompt: string,
+    userPrompt: string,
+    maxTokens = 600,
+    temperature = 0.9,
+): Promise<unknown> {
     const aiRes = await fetch(GROQ_URL, {
         method: 'POST',
         headers: {
@@ -115,7 +120,7 @@ async function callGroq(systemPrompt: string, userPrompt: string, maxTokens = 60
                 { role: 'user', content: userPrompt },
             ],
             response_format: { type: 'json_object' },
-            temperature: 0.6,
+            temperature,
             max_tokens: maxTokens,
         }),
     })
@@ -147,18 +152,28 @@ function safeLanguage(raw: unknown): string {
     return VALID_LANGUAGES.has(v) ? v : 'en'
 }
 
+function isValidParagraphList(value: unknown): value is string[] {
+    if (!Array.isArray(value)) return false
+    if (value.length < 1 || value.length > 4) return false
+    return value.every(p => typeof p === 'string' && p.length > 0 && p.length <= 1000)
+}
+
 function isValidInsights(value: unknown): value is DashboardInsights {
     if (!value || typeof value !== 'object') return false
     const v = value as Record<string, unknown>
-    return (
-        typeof v.profile === 'string' &&
-        v.profile.length > 0 &&
-        v.profile.length <= 2000 &&
-        typeof v.patterns === 'string' &&
-        v.patterns.length > 0 &&
-        v.patterns.length <= 2000
-    )
+    return isValidParagraphList(v.profile) && isValidParagraphList(v.patterns)
 }
+
+const STYLE_ANGLES = [
+    'pick something concrete to call out',
+    'open with a small observation about variety',
+    'lead with their most-brewed tea',
+    'comment on recency or rhythm',
+    'note balance or imbalance across types',
+    'mention a gap or invitation to explore',
+    'highlight ratings as a thread',
+    'frame it as a tea-keeper noticing a pattern',
+]
 
 // --- app ------------------------------------------------------------------
 
@@ -211,24 +226,38 @@ app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next)
             summary.teas.total + summary.brews.totalAllTime + summary.journals.total
         if (totalActivity === 0) {
             res.json({
-                profile: 'No teas yet — add a tea on the Teas page to start building your collection.',
-                patterns: 'No brews or journal entries yet. Start a session on the Brews page when you sit down with a cup.',
+                profile: [
+                    'No teas in your collection yet.',
+                    'Add a tea on the Teas page to start building your library.',
+                ],
+                patterns: [
+                    'No brews or journal entries yet.',
+                    'Start a session on the Brews page when you sit down with a cup.',
+                ],
             } satisfies DashboardInsights)
             return
         }
 
+        const angle = STYLE_ANGLES[Math.floor(Math.random() * STYLE_ANGLES.length)]
+        const nonce = Math.random().toString(36).slice(2, 8)
+
         const systemPrompt =
-            `You are writing a friendly, personalized two-paragraph dashboard overview for a tea-journal user. ` +
-            `Write in ${langLabel}. Be warm but specific — reference their actual data. ` +
-            `Avoid platitudes. No headings, no bullets, plain prose. Each paragraph 2-4 sentences. ` +
+            `You are writing a friendly, personalized dashboard overview for a tea-journal user. ` +
+            `Write in ${langLabel}. Be warm but specific — reference their actual data with names and numbers. ` +
+            `Avoid platitudes and generic tea-blogger language. No headings, no bullets, plain prose. ` +
+            `Vary your phrasing and opening each time you write — never repeat the same lead sentence. ` +
             `Output JSON only, exact shape: ` +
-            `{"profile": "string (about their collection)", "patterns": "string (about their brewing + journaling activity)"}`
+            `{"profile": [string, string], "patterns": [string, string]} ` +
+            `— each array contains exactly 2 short paragraphs (1-2 sentences each). ` +
+            `"profile" is about their collection. "patterns" is about their brewing + journaling activity.`
 
         const userPrompt =
             `User data summary (JSON):\n${JSON.stringify(summary, null, 2)}\n\n` +
-            `Write the two paragraphs based on this.`
+            `Style angle for this response: ${angle}.\n` +
+            `Request id (use for variety): ${nonce}.\n` +
+            `Write the two short paragraphs for each section.`
 
-        const parsed = await callGroq(systemPrompt, userPrompt, 700)
+        const parsed = await callGroq(systemPrompt, userPrompt, 800, 0.95)
 
         if (!isValidInsights(parsed)) {
             res.status(502).json({ error: 'AI returned invalid shape' })

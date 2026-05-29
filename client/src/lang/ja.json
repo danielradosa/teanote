@@ -26,8 +26,6 @@
   "dash_ai_patterns_title": "最近のお茶時間",
   "dash_ai_loading": "概要を抽出中…",
   "dash_ai_error": "AI概要を取得できませんでした。",
-  "dash_ai_retry": "再試行",
-  "dash_ai_refresh": "更新",
   "dash_ai_empty": "まだまとめる情報がありません。",
   "dash_ai_disabled": "設定でAIをオンにすると、パーソナライズされた概要を表示できます。",
   "dashboard_title": "ダッシュボード",
