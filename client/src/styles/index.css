@@ -30,6 +30,44 @@ summary {
 
 body {
   background-color: var(--bg-color);
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: var(--surface-pattern, none);
+  background-attachment: fixed;
+}
+
+.app,
+.login,
+.signup {
+  position: relative;
+  z-index: 1;
+}
+
+.login::before,
+.signup::before {
+  content: var(--theme-watermark, '🍵');
+  position: absolute;
+  bottom: -56px;
+  right: -32px;
+  font-size: 320px;
+  line-height: 1;
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.login-form,
+.signup-form {
+  position: relative;
+  z-index: 1;
 }
 
 h1 {

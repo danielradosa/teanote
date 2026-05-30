@@ -15,4 +15,6 @@
     --color: var(--text-color);
     --btn-color: var(--text-color);
     --placeholder-color: #c0c0c0;
+    --surface-pattern: radial-gradient(56rem 32rem at 8% 28%, color-mix(in srgb, var(--brand-primary) 28%, transparent), transparent 70%);
+    --theme-watermark: '🌸';
 }

@@ -15,4 +15,6 @@
     --btn-color: #fff;
     --bg-color: #fff;
     --placeholder-color: #c0c0c0;
+    --surface-pattern: radial-gradient(60rem 32rem at 92% -8%, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 60%);
+    --theme-watermark: '🍵';
 }
