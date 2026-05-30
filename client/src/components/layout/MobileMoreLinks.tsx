@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { t } from 'i18next'
 
 interface HiddenLink {
@@ -26,9 +26,9 @@ const MobileMoreLinks = () => {
             {show && (
                 <div className="more-links">
                     {hiddenLinks.map(link => (
-                        <Link key={link.to} to={link.to} className="btn btn-sidebar">
+                        <NavLink key={link.to} to={link.to} end={link.to === '/'} className="btn btn-sidebar">
                             {link.label}
-                        </Link>
+                        </NavLink>
                     ))}
                 </div>
             )}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MoonLoader } from 'react-spinners'
+import Loader from '@/components/Loader'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { t } from 'i18next'
 
@@ -37,7 +37,7 @@ export default function SubscribeYearly() {
 
     return (
         <button className="btn btn-subscribe" onClick={handleSubscribe} disabled={loading}>
-            {loading ? <MoonLoader size={16} color="#fff" /> : `${t('subscribe_btn_yearly')}`}
+            {loading ? <Loader size={16} color="#fff" inline /> : `${t('subscribe_btn_yearly')}`}
         </button>
     )
 }

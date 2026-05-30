@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useSyncStore } from '@/stores/useSyncStore'
 import MobileMoreLinks from '@/components/layout/MobileMoreLinks'
@@ -19,15 +19,15 @@ function DesktopSidebar() {
         <aside className="sidebar">
             {hasActiveSubscription || hasTrial ? (
                 <>
-                    <Link to="/" className="btn btn-sidebar hide-mobile">🏠 {t('sidebar_link_home')}</Link>
-                    <Link to="/teas" className="btn btn-sidebar">🍃 {t('sidebar_link_teas')}</Link>
-                    <Link to="/journal" className="btn btn-sidebar">📔 {t('sidebar_link_journal')}</Link>
-                    <Link to="/brews" className="btn btn-sidebar">⏱️ {t('sidebar_link_brews')}</Link>
+                    <NavLink to="/" end className="btn btn-sidebar hide-mobile">🏠 {t('sidebar_link_home')}</NavLink>
+                    <NavLink to="/teas" className="btn btn-sidebar">🍃 {t('sidebar_link_teas')}</NavLink>
+                    <NavLink to="/journal" className="btn btn-sidebar">📔 {t('sidebar_link_journal')}</NavLink>
+                    <NavLink to="/brews" className="btn btn-sidebar">⏱️ {t('sidebar_link_brews')}</NavLink>
                     <MobileMoreLinks />
-                    <Link to="/settings" className="btn btn-sidebar hide-mobile">⚙️ {t('sidebar_link_settings')}</Link>
+                    <NavLink to="/settings" className="btn btn-sidebar hide-mobile">⚙️ {t('sidebar_link_settings')}</NavLink>
                 </>
             ) : null}
-            <Link to="/account" className="btn btn-sidebar hide-mobile">👨🏻‍🔧 {t('sidebar_link_account')}</Link>
+            <NavLink to="/account" className="btn btn-sidebar hide-mobile">👨🏻‍🔧 {t('sidebar_link_account')}</NavLink>
 
             <footer className="sidebar-footer">
                 {isSyncing ? (
