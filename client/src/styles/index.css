@@ -657,6 +657,47 @@ input[type="checkbox"] {
   }
 }
 
+/* Sync wave — borrows the brew timer's horizontal-motion vocabulary
+ * for the "syncing…" indicator. A short gradient sweep travels across a
+ * 4px track in the sidebar footer. */
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.sync-wave {
+  position: relative;
+  width: 32px;
+  height: 4px;
+  background: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sync-wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--brand-secondary), transparent);
+  border-radius: 2px;
+  animation: sync-wave-slide 1.4s cubic-bezier(.45, .05, .55, .95) infinite;
+}
+
+@keyframes sync-wave-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
 .tea-time {
   position: relative;
   z-index: 2;

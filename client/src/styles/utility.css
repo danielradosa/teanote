@@ -260,6 +260,22 @@ small {
     color: #673988 !important;
 }
 
+/* Tea-type accent vocabulary — when a parent declares its tea type,
+ * descendants opt-in via .btn-tea-tinted or color: var(--tea-accent).
+ * Mirrors the .tea-tag-* palette so brand identity stays consistent. */
+[data-tea-type="green"] { --tea-accent: #27622a; --tea-accent-bg: #dbffd2; }
+[data-tea-type="oolong"] { --tea-accent: #7c5c2e; --tea-accent-bg: #ffeccc; }
+[data-tea-type="red"] { --tea-accent: #a52d44; --tea-accent-bg: #ffd6db; }
+[data-tea-type="white"] { --tea-accent: #474747; --tea-accent-bg: #fff; }
+[data-tea-type="yellow"] { --tea-accent: #907e00; --tea-accent-bg: #fffaa6; }
+[data-tea-type="puerh"] { --tea-accent: #6b4b26; --tea-accent-bg: #e7dbbd; }
+[data-tea-type="purple"] { --tea-accent: #673988; --tea-accent-bg: #f1e4ff; }
+
+.btn-tea-tinted {
+    background-color: var(--tea-accent-bg, var(--brand-secondary-light));
+    color: var(--tea-accent, var(--btn-color));
+}
+
 .tea-tag {
     vertical-align: bottom;
 }

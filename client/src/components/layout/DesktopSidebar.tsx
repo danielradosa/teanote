@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useSyncStore } from '@/stores/useSyncStore'
 import MobileMoreLinks from '@/components/layout/MobileMoreLinks'
-import Loader from '@/components/Loader'
 import SyncOnReconnect from '@/components/SyncOnReconnect'
 import { t } from 'i18next'
 
@@ -31,8 +30,8 @@ function DesktopSidebar() {
 
             <footer className="sidebar-footer">
                 {isSyncing ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
-                        <Loader size={16} inline={true} color='var(--text-color)' />
+                    <div className="sync-status">
+                        <span className="sync-wave" aria-hidden="true" />
                         <small className='synced-at'>{t('sidebar_text_syncing')}...</small>
                     </div>
                 ) : justSynced ? (
