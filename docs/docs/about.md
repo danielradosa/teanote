@@ -2,7 +2,7 @@
 
 ***
 
-_Last updated: 8th November 2025 at 17:10 CEST_
+_Last updated: 14th November 2026 at 20:47 CET_
 
 ***
 
@@ -31,31 +31,9 @@ The main features are:
 
 ### Frequently asked questions
 
-#### Why is there no lifetime pricing option?
+#### Is Teanote free?
 
-Because it wouldn't be sustainable. Teanote is meant to grow with you over time &mdash; 
-you log & try new teas, change infusion times, experiment, make journal entries, and 
-explore more as your tea journey evolves.
-
-A one-time payment model might seem like a good deal upfront, but it usually leads 
-to apps becoming abandoned or rarely used (e.g. VSCO or Ulysses &mdash; they both 
-had to switch to a subscription model eventually to keep up with server costs and survive). 
-With a small ongoing subscription, Teanote can keep improving and you stay more engaged 
-in using it regularly.
-
-#### Do you offer student or teacher discount?
-
-No.
-
-#### What are available payment methods?
-
-You can pay with any Visa, MasterCard or AmericanExpress card via [Stripe](https://stripe.com).
-
-#### Is it secure to use my card information?
-
-With Teanote [Stripe.com](https://stripe.com) is used for online payments. Stripe has been
-audited and certified to [PCI Service Provider Level 1](https://www.visa.com/splisting/searchGrsp.do?companyNameCriteria=stripe).
-That is the most strict level of certification available in the payment industry.
+Yes. Teanote is free to use, with all features included. No payment details are needed.
 
 ***
 

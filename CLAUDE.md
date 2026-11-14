@@ -8,11 +8,11 @@ This is a monorepo of four independent sub-projects with no top-level package ma
 
 - `client/` — React 19 + Vite + TypeScript SPA, the actual Teanote app (served at `app.teanote.xyz`).
 - `site/` — Astro 5 marketing site + blog (served at `teanote.xyz`).
-- `ai-service/` — Node 22 + Express 5 + TypeScript proxy to Groq, deployed on Railway. Handles personalized AI dashboard insights.
-- `supabase/` — Supabase config + Deno-based Edge Functions (Stripe checkout + webhook). **Gitignored** — exists only on Daniel's machine.
+- `ai-service/` — Node 22 + Express 5 + TypeScript proxy to the Anthropic API (Claude Opus 5.5, `claude-opus-5-5`, via `@anthropic-ai/sdk`), deployed on Railway. Handles personalized AI dashboard insights.
+- `supabase/` — Supabase config + Deno-based Edge Functions (legacy Stripe checkout + webhook, no longer called by the app; see "Payments: none"). **Gitignored** — exists only on Daniel's machine.
 - `docs/` — MkDocs project (separate Python venv).
 
-> **README.md is stale.** It describes an Express/GraphQL/Lemon Squeezy backend that no longer exists. The real backend is Supabase (Postgres + Auth + Edge Functions) and payments are Stripe. Trust the code, not the README's "Tech Stack" or "Project Structure" sections.
+> **README.md is stale.** It describes an Express/GraphQL backend that no longer exists. The real backend is Supabase (Postgres + Auth + Edge Functions). Trust the code, not the README's "Tech Stack" or "Project Structure" sections.
 
 For visual/design conventions (color tokens, spacing rhythm, theming, component patterns, marketing-site stack), see **`DESIGN.md`** at the repo root. Read it before adding any UI.
 
@@ -39,9 +39,9 @@ npm run test:ui      # vitest browser UI
 
 Requires `client/.env` (gitignored) with:
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-- `VITE_SUPABASE_FUNCTIONS_URL` (for Stripe)
 - `VITE_AI_SERVICE_URL` (Railway URL for dashboard AI)
-- `VITE_GOOGLE_CLIENT_ID`, `VITE_APPLE_CLIENT_ID` (OAuth)
+
+No code in `client/` reads `VITE_GOOGLE_CLIENT_ID` or `VITE_APPLE_CLIENT_ID`: Google/Apple sign-in goes through `supabase.auth.signInWithOAuth`, whose providers are configured in Supabase, not in this repo.
 
 ### site/ (Astro marketing site)
 
@@ -64,8 +64,8 @@ npm start            # tsx (production)
 ```
 
 Local dev needs `ai-service/.env` (gitignored — see `.env.example`):
-- `GROQ_API_KEY`
-- `SUPABASE_URL`, `SUPABASE_ANON_KEY` (for JWT verification + profile lookup)
+- `ANTHROPIC_API_KEY` (required: the service throws at start-up without it, so set it on Railway before deploying)
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` (for JWT verification)
 - `PORT` (optional, defaults 8080), `CORS_ORIGIN` (defaults `*`)
 
 Endpoint: `POST /ai-dashboard-insights` — returns `{profile: string[], patterns: string[]}` (1-4 short paragraphs each). Health: `GET /healthz`.
@@ -99,28 +99,34 @@ The first test of merge behaviour lives in `src/__tests__/helpers/merge.test.ts`
 ## Architecture: auth & access
 
 - `utils/supa.ts` exports a single shared Supabase client.
-- `stores/useAuthStore.ts` is the single source of truth for the current user. It reads a cached session from `localStorage` synchronously on init (so first paint isn't blank), then refreshes from `supabase.auth.getSession()`.
-- Access gating uses a `profiles` row with `trial_start`, `subscription_end`, `is_subscribed`. The 30-day trial is computed client-side from `trial_start`. `is_subscribed` is set by the Stripe webhook edge function.
+- `stores/useAuthStore.ts` is the single source of truth for the current user. On init it tries a synchronous read of a cached session from `localStorage`, then refreshes from `supabase.auth.getSession()`. That cached read (`getCachedSession()`) looks for a supabase-js v1 `currentSession` field, which the installed `@supabase/auth-js` 2.79.0 does not write (it stores the session object itself), so it currently always returns `null`: the user is known only once `getSession()` resolves, and until then `AppInitializer` renders the dummy nav/sidebar shell.
+- Access needs only a signed-in user: there is no trial or subscription check, and the client never reads the `profiles` table. `ProtectedRoute` and `PublicRoute` check `user` (once `initialized`) and nothing else; `useAuthStore` has no separate access flag. `src/__tests__/components/ProtectedRoute.test.tsx` pins that `ProtectedRoute` lets any signed-in user through, sends a signed-out user to `/login` with `state.from`, and renders nothing before auth is initialized. `PublicRoute` has no test.
 - `ProtectedRoute` / `PublicRoute` components guard the router tree in `main.tsx`.
 - Sign-in supports email/password and Google/Apple OAuth (`signInWithProvider`).
 - `signOut()` removes only **app-owned** localStorage keys (`teas`, `brews`, `presets`, `journals`, `theme`, and any `sb-*` / `auth-token` keys). It does **not** call `localStorage.clear()` — that wiped unrelated keys and other tabs' data.
 
-## Architecture: payments
+## Payments: none
 
-- `supabase/functions/create-checkout-session` — takes `{ userId, priceId }`, looks up the user's email, returns a Stripe Checkout URL. Auth header required.
-- `supabase/functions/stripe-webhook` — handles `checkout.session.completed`, `invoice.payment_succeeded`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`, `subscription_schedule.updated`. Updates `profiles.is_subscribed` / `subscription_start` / `subscription_end` by email.
-- `components/payment/Subscribe{Monthly,Yearly}.tsx` invoke the edge function and redirect to the returned URL.
+Teanote has been free since 2026-11-14: every signed-in user gets every feature, including the AI dashboard insights.
+
+- No code path in `client/` or `ai-service/` reads trial or subscription state.
+- The `profiles` columns `trial_start`, `subscription_start`, `subscription_end` and `is_subscribed` still exist in the database but are unused.
+- The Stripe edge functions (`create-checkout-session`, `stripe-webhook`) still exist in the local-only `supabase/` folder and may still be deployed until Daniel retires them.
+- The marketing site's `/pricing` page (`site/src/pages/pricing.astro`) shows the one free plan; its Product JSON-LD has a single Offer at price `"0"`.
 
 ## Architecture: AI dashboard insights
 
-The two `<section className="stats">` cards on the Dashboard render personalized AI commentary on the user's tea collection and recent brewing patterns.
+Two of the `<section className="stats">` cards on the Dashboard (`pages/DashboardPage.tsx`) render personalized AI commentary on the user's tea collection and recent brewing patterns.
 
-- **Client**: `components/dashboard/AiInsights.tsx` is rendered twice with `slot="profile"` and `slot="patterns"`. Both instances share a single in-flight request via module-level state (`sharedInFlight` / `sharedResult` / `sharedError` + a Set of subscribers) — one Groq call per dashboard mount, not two. No cache: every dashboard visit gets a fresh overview.
-- **Helper**: `helpers/ai.ts::getDashboardInsights` builds a compact, anonymized summary (tea counts by type, recently added, brew totals + most-brewed + avg infusions, journal totals + avg rating + recent titles) and POSTs to `${VITE_AI_SERVICE_URL}/ai-dashboard-insights` with the Supabase JWT.
-- **Service**: `ai-service/src/index.ts` verifies the JWT via Supabase, checks subscription/trial via the `profiles` table (402 if neither active), re-sanitizes every input, calls Groq `llama-3.3-70b-versatile` with `response_format: json_object`, validates the returned shape, and returns `{profile: string[], patterns: string[]}` (1-4 short paragraphs each).
-- **Variety**: temperature 0.95 + a random pick from `STYLE_ANGLES` + a random nonce in the user prompt make each response noticeably different. Don't lower these without expecting "same opening line every reload".
+- **Client**: `components/dashboard/AiInsights.tsx` is rendered twice with `slot="profile"` and `slot="patterns"`. Both instances share a single in-flight request via module-level state (`sharedInFlight` / `sharedResult` / `sharedError` + a Set of subscribers) — one ai-service request for both cards, not two. A successful result stays in that module state until a full page reload: later dashboard visits reuse it instead of fetching (a failed request is retried on the next visit), so a language change shows only after a reload.
+- **Helper**: `helpers/ai.ts::getDashboardInsights` builds a compact summary (tea counts by type, recently added, brew totals + most-brewed + avg infusions, journal totals + avg rating + recent titles) and POSTs to `${VITE_AI_SERVICE_URL}/ai-dashboard-insights` with the Supabase JWT. The body has no email or user id, but it does carry tea names, journal titles and the language, and the service passes them on to Anthropic.
+- **Service**: `ai-service/src/index.ts` verifies the JWT via Supabase, re-sanitizes every input, and answers a fixed empty-state text without calling the model when the user has no teas, brews or journals. Otherwise it calls `claude-opus-5-5` through `@anthropic-ai/sdk` (`anthropic.beta.messages.create`) with `output_config.effort: 'low'` and structured outputs (`output_config.format` with a JSON schema) for the `{profile, patterns}` shape. The schema can't express item counts or lengths, so `isValidInsights()` still checks for 1-4 paragraphs of 1-1000 characters each before it returns `{profile: string[], patterns: string[]}`.
+- **Bounds**: `max_tokens` 4096, 30 s per HTTP attempt, `maxRetries: 1`, and a 60 s `AbortSignal.timeout` on the whole call (retry and any `retry-after` wait included). The server-side refusal fallback is on (`betas: ['server-side-fallback-2026-07-01']`, `fallbacks: 'default'`): a request the safety classifiers decline is re-run on the model Anthropic picks for that category, and the service logs when a fallback model answered. `ANTHROPIC_API_KEY` goes through `requireEnv`, so the process throws at start-up when it is missing.
+- **Per-user limit**: 10 model calls per account per hour (`AI_CALLS_PER_WINDOW` / `AI_WINDOW_MS`), counted before the call, so failed calls count and parallel requests can't overshoot; the empty-state answer doesn't count. Over the limit, the account's last good result from that hour is returned again with 200, or 429 with `Retry-After` when there is none. Counters live in memory in one process: a restart resets them, and each replica would keep its own.
+- **Statuses**: 401 without a valid session; 429 as above; 502 when `stop_reason` is `refusal` ("AI declined the request") or `max_tokens` ("AI response was cut off"), or when the reply doesn't parse or fails `isValidInsights()` ("AI returned invalid shape"); 500 "internal error" for everything else, including every SDK error (auth, rate limit, timeout, deadline, connection), which `logAnthropicError()` logs by type without the key. The client shows `dash_ai_error` for any non-2xx.
+- **Variety**: no `temperature` is sent — `claude-opus-5-5` rejects sampling parameters (`temperature` / `top_p` / `top_k` return a 400), and the request type in `@anthropic-ai/sdk` 1.8.0 has no such field. Variety now comes only from the prompt: a random pick from `STYLE_ANGLES`, a random nonce in the user prompt, and the system prompt's "vary your phrasing and opening" line. Don't remove any of these without expecting "same opening line every reload"; there is no sampling knob to fall back on.
 - **Locale**: the user's `settings.language` is passed through; the AI responds in that language (en/sk/ja/zh/ko).
-- **AI toggle**: gated on `settings.ai_enabled`. When off, the cards show a "turn on in Settings" hint instead of fetching.
+- **AI toggle**: gated on `settings.ai_enabled`. When off, the cards show a "turn on in Settings" hint instead of fetching. The gate is client-only: the service never reads `ai_enabled`.
 
 ## Theming
 

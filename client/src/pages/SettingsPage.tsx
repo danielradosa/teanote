@@ -6,14 +6,12 @@ import { exportTeanoteDataAsJson } from '@/helpers/export'
 import type { Settings } from '@/types/Settings'
 
 function SettingsPage() {
-    const { user, isSubscribed, trialDaysLeft } = useAuthStore()
+    const { user } = useAuthStore()
     const { settings, toggleAI, setTheme, setLanguage, loadSettings } = useSettingsStore()
 
     useEffect(() => {
         if (user) loadSettings()
     }, [user, loadSettings])
-
-    if (!isSubscribed && trialDaysLeft === 0) return null
 
     return (
         <section className="page-wrap settings-page">

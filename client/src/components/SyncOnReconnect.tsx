@@ -13,7 +13,7 @@ function SyncOnReconnect() {
     const { syncJournals } = useJournalsStore()
     const { syncBrews, syncPresets } = useBrewsStore()
     const { syncSettings } = useSettingsStore()
-    const { user, checkAccess } = useAuthStore()
+    const { user } = useAuthStore()
     const [status, setStatus] = useState<'offline' | 'syncing' | 'online' | null>(null)
 
     useEffect(() => {
@@ -29,7 +29,6 @@ function SyncOnReconnect() {
                     syncBrews(),
                     syncPresets(),
                     syncSettings(),
-                    checkAccess(user.id),
                 ])
             } catch (err) {
                 console.error('❌ Sync error:', err)
@@ -66,7 +65,7 @@ function SyncOnReconnect() {
             clearInterval(interval)
             stopAllRealtime()
         }
-    }, [user, syncTeas, syncJournals, syncBrews, syncPresets, checkAccess, syncSettings])
+    }, [user, syncTeas, syncJournals, syncBrews, syncPresets, syncSettings])
 
     if (!status) return null
 

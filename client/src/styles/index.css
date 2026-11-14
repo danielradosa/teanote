@@ -86,8 +86,7 @@ h2 {
 .tea-time,
 .brew-finished-badge,
 .synced-at,
-.stat-value,
-.trial-badge {
+.stat-value {
   font-variant-numeric: tabular-nums;
 }
 
@@ -245,30 +244,6 @@ header .logo a {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.subscription button {
-  margin-top: 10px;
-}
-
-.subscription details {
-  background-color: var(--brand-primary-light);
-  margin-top: 10px;
-  border-radius: 8px;
-  padding: 6px 16px;
-  cursor: pointer;
-}
-
-.subscription details summary {
-  font-weight: bold;
-}
-
-.subscription details[open] {
-  padding: 10px;
-}
-
-.subscription ul li {
-  list-style-position: inside;
 }
 
 .tea-list,
@@ -523,16 +498,6 @@ input[type="checkbox"] {
 
 .toggle-label {
   display: none;
-}
-
-.subscription-wrap {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-
-  .btn {
-    width: max-content;
-  }
 }
 
 .manage-account {

@@ -2,7 +2,7 @@
 
 **Mindful Tea Journal & Gongfu Brewing Timer**
 
-Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, track infusions, and reflect on each brew. Pro users unlock AI summaries / recommendations and cloud syncing across all devices.
+Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, track infusions, and reflect on each brew. Teanote is free to use with all features, including AI summaries / recommendations and cloud syncing across all devices.
 
 ---
 
@@ -18,7 +18,6 @@ Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, t
 - Language: GraphQL
 - Auth: Google + Apple OAuth
 - Sessions: JWT
-- Payments: Lemon Squeezy
 - Database: PostgreSQL
 
 ---
@@ -43,8 +42,6 @@ Teanote is a minimal, elegant web app for tea enthusiasts to log tea sessions, t
 │  ├─ /graphql
 │  │  ├─ schema.js                  # GraphQL type definitions
 │  │  └─ resolvers.js               # GraphQL resolvers
-│  ├─ /routes
-│  │  └─ lemon-squeezy-webhook.js   # Webhook for payment updates
 │  ├─ /utils
 │  │  └─ helpers.js                 # Helper functions (JWT, validation, etc.)
 │  └─ server.js                     # Express + Apollo Server entry point

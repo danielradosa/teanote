@@ -332,24 +332,6 @@ small {
     padding-left: 8px;
 }
 
-.trial-badge {
-    border: 1px solid var(--brand-secondary);
-    padding: 4px 12px;
-    border-radius: 22px;
-    background-color: white;
-    color: var(--brand-secondary);
-    margin-left: 32px;
-    font-size: 13px;
-}
-
-.sub-status {
-    font-weight: bold;
-}
-
-.btn-subscribe {
-    background-color: var(--success-color);
-}
-
 .hide-desktop {
     display: none;
 }

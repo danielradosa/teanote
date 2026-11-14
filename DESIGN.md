@@ -24,7 +24,7 @@ Same brand colors (`#bdb695` warm tan, `#898565` deeper olive), different machin
 | `--success` / `--danger` / `--info` | `#24be33` / `#ed1244` / `#3239ff` | semantic |
 | `--shadow-container` | `-2px 4px 16px #20212128` | the one shadow, used everywhere |
 
-**Mood:** calm, earthy, matcha-tea palette. Warm beige > cool gray. Round corners. Soft shadows. Emoji are part of the visual language (🍵 🍃 ⏱️ 📔 ⚙️ 👨🏻‍🔧 ⏳ ✅) — they live in nav labels, badges, and toasts. Don't strip them.
+**Mood:** calm, earthy, matcha-tea palette. Warm beige > cool gray. Round corners. Soft shadows. Emoji are part of the visual language (🍵 🍃 ⏱️ 📔 ⚙️ 👨🏻‍🔧 ⏳ ✅) — they live in nav labels and toasts. Don't strip them.
 
 ---
 
@@ -50,7 +50,6 @@ Common compound: `padding: 8px 16px` for buttons/inputs/selects, `padding: 16px`
 ### Radius
 
 - **`8px`** for everything — buttons, inputs, cards, tags, modals, item rows.
-- **`22px`** for the trial pill badge (only exception).
 - **`50%`** for the brew timer disc.
 - Mobile-only: `16px` top corners on the `.more-links` slide-up panel.
 
@@ -95,7 +94,7 @@ The `.btn` class is the base — `flex`, `align-items: center`, `gap: 5px`, `pad
 |---|---|---|
 | `.btn-action` | brand-secondary-light | header CTAs, generic actions |
 | `.btn-sidebar` | brand-primary-light | sidebar links |
-| `.btn-quick` / `.btn-subscribe` | success-color | positive primary CTA |
+| `.btn-quick` | success-color | positive primary CTA |
 | `.btn-danger` | danger-color | destructive |
 | `.btn-info` | info-color | info CTAs |
 | `.btn-dark` | dark-color | strong neutral |

@@ -2,7 +2,7 @@
 
 ***
 
-_Last updated: 5th November 2025 at 23:13 CEST_
+_Last updated: 14th November 2026 at 20:47 CET_
 
 ***
 
@@ -49,14 +49,9 @@ which are considered part of your account and cannot be opted out of.
 
 ***
 
-## Payment and refunds
+## Payment
 
-The Service includes a 30-day free trial period. Continued usage beyond this trial requires prepaid subscription. 
-Failure to pay suspends your account until payment is received.
-No refunds or credits are provided for partial billing periods. 
-All fees exclude applicable taxes, which are your responsibility.
-Your payment method will be charged automatically at the start of each billing cycle. 
-Changes in subscription plans with different billing cycles may adjust your billing date accordingly.
+The Service is provided free of charge. No payment is required to use it.
 
 ***
 
@@ -73,18 +68,15 @@ Access to your Service data via Teanote's API is subject to these Terms and spec
 You are solely responsible for canceling your account via https://app.teanote.xyz/account. 
 Email or phone requests do not qualify as cancellation.
 Upon cancellation, all your content becomes immediately inaccessible and permanently deleted with no recovery options.
-If cancellation occurs before the end of the billing period, it takes effect immediately without further charges.
 We reserve the right to suspend or terminate any account at our discretion for any reason, 
 including violations of these Terms or unlawful behavior. Termination results in loss of access and content.
-Accounts deactivated due to non-payment will be terminated after 6 months.
 
 ***
 
-## Modifications to service and pricing
+## Modifications to service
 
 We may modify or discontinue any aspect of the Service temporarily or permanently with or without notice.
-Prices are subject to change with 30 days' advance notice via our site or the Service.
-We are not liable for any loss arising from service changes, price adjustments, suspensions, or discontinuations.
+We are not liable for any loss arising from service changes, suspensions, or discontinuations.
 
 ***
 

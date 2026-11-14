@@ -2,7 +2,7 @@
 
 ***
 
-_Last updated: 4th November 2025 at 23:15 CEST_
+_Last updated: 14th November 2026 at 20:47 CET_
 
 ***
 
@@ -45,7 +45,7 @@ We currently do not use marketing or advertising cookies. If this changes, we wi
 We only use third-party cookies from trusted partners who assist us with analytics and hosting:
 
 - **Google Analytics** (optional, with consent)
-- **Stripe and LemonSqueezy** for secure payment processing (no direct tracking here)
+- **Stripe and LemonSqueezy**, which processed past payments and retain those records under their own policies; no new payment data is collected (no direct tracking here)
 - Hosting providers such as Railway and hostcreators.sk
 
 We disclose any third-party cookies and link to their privacy policies where applicable.

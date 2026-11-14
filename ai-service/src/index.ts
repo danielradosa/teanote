@@ -1,10 +1,13 @@
 import express, { type Request, type Response, type NextFunction } from 'express'
 import cors from 'cors'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import Anthropic from '@anthropic-ai/sdk'
 
 const PORT = Number(process.env.PORT) || 8080
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL = 'llama-3.3-70b-versatile'
+const MODEL = 'claude-opus-5-5'
+const MAX_TOKENS = 4096 // adaptive thinking + two short sections
+const ATTEMPT_TIMEOUT_MS = 30_000 // per HTTP attempt
+const REQUEST_DEADLINE_MS = 60_000 // whole call, retry and any retry-after wait included
 
 function requireEnv(name: string): string {
     const v = process.env[name]
@@ -12,7 +15,7 @@ function requireEnv(name: string): string {
     return v
 }
 
-const GROQ_API_KEY = requireEnv('GROQ_API_KEY')
+const ANTHROPIC_API_KEY = requireEnv('ANTHROPIC_API_KEY')
 const SUPABASE_URL = requireEnv('SUPABASE_URL')
 const SUPABASE_ANON_KEY = requireEnv('SUPABASE_ANON_KEY')
 const CORS_ORIGIN = process.env.CORS_ORIGIN ?? '*'
@@ -71,26 +74,6 @@ async function requireAuthorizedUser(req: Request, res: Response, next: NextFunc
             return
         }
 
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('is_subscribed, subscription_end, trial_start')
-            .eq('id', userData.user.id)
-            .maybeSingle()
-
-        const now = Date.now()
-        const subActive =
-            !!profile?.is_subscribed &&
-            !!profile?.subscription_end &&
-            new Date(profile.subscription_end).getTime() > now
-        const trialActive =
-            !!profile?.trial_start &&
-            now - new Date(profile.trial_start).getTime() < 30 * 24 * 60 * 60 * 1000
-
-        if (!subActive && !trialActive) {
-            res.status(402).json({ error: 'subscription required' })
-            return
-        }
-
         req.supabase = supabase
         req.userId = userData.user.id
         next()
@@ -101,41 +84,99 @@ async function requireAuthorizedUser(req: Request, res: Response, next: NextFunc
 
 // --- helpers --------------------------------------------------------------
 
-async function callGroq(
-    systemPrompt: string,
-    userPrompt: string,
-    maxTokens = 600,
-    temperature = 0.9,
-): Promise<unknown> {
-    const aiRes = await fetch(GROQ_URL, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${GROQ_API_KEY}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: MODEL,
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt },
-            ],
-            response_format: { type: 'json_object' },
-            temperature,
-            max_tokens: maxTokens,
-        }),
-    })
+const anthropic = new Anthropic({
+    apiKey: ANTHROPIC_API_KEY,
+    timeout: ATTEMPT_TIMEOUT_MS,
+    maxRetries: 1,
+})
 
-    if (!aiRes.ok) {
-        const errText = await aiRes.text()
-        console.error('Groq error:', aiRes.status, errText)
-        throw new Error(`groq returned ${aiRes.status}`)
+// Structured outputs accept no minItems/maxItems/minLength/maxLength, so the
+// 1-4 items and 1-1000 characters limits live in isValidInsights() only.
+const INSIGHTS_SCHEMA = {
+    type: 'object',
+    properties: {
+        profile: { type: 'array', items: { type: 'string' } },
+        patterns: { type: 'array', items: { type: 'string' } },
+    },
+    required: ['profile', 'patterns'],
+    additionalProperties: false,
+}
+
+type ClaudeResult =
+    | { kind: 'ok'; value: unknown }
+    | { kind: 'refusal' }
+    | { kind: 'max_tokens' }
+
+async function callClaude(systemPrompt: string, userPrompt: string): Promise<ClaudeResult> {
+    let response: Anthropic.Beta.BetaMessage
+    try {
+        response = await anthropic.beta.messages.create(
+            {
+                model: MODEL,
+                max_tokens: MAX_TOKENS,
+                // Thinking is always on for this model and sampling parameters
+                // are rejected, so effort is the only control sent.
+                output_config: {
+                    effort: 'low',
+                    format: { type: 'json_schema', schema: INSIGHTS_SCHEMA },
+                },
+                betas: ['server-side-fallback-2026-07-01'],
+                fallbacks: 'default',
+                system: systemPrompt,
+                messages: [{ role: 'user', content: userPrompt }],
+            },
+            { signal: AbortSignal.timeout(REQUEST_DEADLINE_MS) },
+        )
+    } catch (err) {
+        logAnthropicError(err)
+        throw new Error('AI provider request failed')
     }
 
-    const aiJson = (await aiRes.json()) as { choices?: Array<{ message?: { content?: string } }> }
-    const content = aiJson.choices?.[0]?.message?.content
-    if (!content) throw new Error('empty AI response')
+    if (response.stop_reason === 'refusal') {
+        console.warn('Anthropic refusal, category:', response.stop_details?.category ?? 'none')
+        return { kind: 'refusal' }
+    }
+    if (response.stop_reason === 'max_tokens') {
+        console.warn(`Anthropic response hit max_tokens (${MAX_TOKENS})`)
+        return { kind: 'max_tokens' }
+    }
+    if ((response.usage.iterations ?? []).some((it) => it.type === 'fallback_message')) {
+        console.info('Anthropic fallback model served the insights:', response.model)
+    }
 
-    return JSON.parse(content)
+    // Thinking blocks are ignored. Text before a fallback block belongs to a
+    // model that declined, so only text after the last switch point counts.
+    let text = ''
+    for (const block of response.content) {
+        if (block.type === 'fallback') text = ''
+        else if (block.type === 'text') text += block.text
+    }
+
+    try {
+        return { kind: 'ok', value: JSON.parse(text) }
+    } catch {
+        return { kind: 'ok', value: null }
+    }
+}
+
+// TypeScript SDK: APIConnectionError and APIUserAbortError are subclasses of
+// APIError, so they are checked before it. No branch logs the key or the prompt.
+function logAnthropicError(err: unknown): void {
+    if (err instanceof Anthropic.AuthenticationError) {
+        console.error(`Anthropic authentication failed (401, request ${err.requestID ?? 'n/a'}): check ANTHROPIC_API_KEY`)
+    } else if (err instanceof Anthropic.RateLimitError) {
+        console.error(`Anthropic rate limit hit (429, request ${err.requestID ?? 'n/a'})`)
+    } else if (err instanceof Anthropic.APIUserAbortError) {
+        console.error(`Anthropic call abandoned at the ${REQUEST_DEADLINE_MS} ms deadline`)
+    } else if (err instanceof Anthropic.APIConnectionTimeoutError) {
+        console.error(`Anthropic request timed out after ${ATTEMPT_TIMEOUT_MS} ms per attempt`)
+    } else if (err instanceof Anthropic.APIConnectionError) {
+        console.error('Anthropic connection error:', err.message)
+    } else if (err instanceof Anthropic.APIError) {
+        console.error(`Anthropic API error (${err.status ?? 'n/a'} ${err.type ?? 'unknown'}, request ${err.requestID ?? 'n/a'}): ${err.message}`)
+    } else {
+        console.error('Anthropic call failed:', err instanceof Error ? err.message : String(err))
+    }
 }
 
 const VALID_LANGUAGES = new Set(['en', 'sk', 'ja', 'zh', 'ko'])
@@ -174,6 +215,40 @@ const STYLE_ANGLES = [
     'highlight ratings as a thread',
     'frame it as a tea-keeper noticing a pattern',
 ]
+
+// --- per-user model budget ------------------------------------------------
+
+// Any signed-in account may reach the paid model, so each account gets a fixed
+// number of model calls per window. Over it, the account's last good result in
+// the window is repeated, or 429 when there is none. In memory, per process.
+const AI_CALLS_PER_WINDOW = 10
+const AI_WINDOW_MS = 60 * 60 * 1000
+
+interface AiBudget {
+    windowStart: number
+    calls: number
+    last: DashboardInsights | null
+}
+
+const aiBudgets = new Map<string, AiBudget>()
+
+function aiBudgetFor(userId: string): AiBudget {
+    const now = Date.now()
+    let budget = aiBudgets.get(userId)
+    if (!budget || now - budget.windowStart >= AI_WINDOW_MS) {
+        budget = { windowStart: now, calls: 0, last: null }
+        aiBudgets.set(userId, budget)
+    }
+    return budget
+}
+
+// Drop closed windows so the map does not grow with every account ever seen.
+setInterval(() => {
+    const now = Date.now()
+    for (const [userId, budget] of aiBudgets) {
+        if (now - budget.windowStart >= AI_WINDOW_MS) aiBudgets.delete(userId)
+    }
+}, AI_WINDOW_MS).unref()
 
 // --- app ------------------------------------------------------------------
 
@@ -238,6 +313,21 @@ app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next)
             return
         }
 
+        if (!req.userId) throw new Error('requireAuthorizedUser did not set userId')
+        // Checked and counted before any await, so parallel requests can't overshoot.
+        const budget = aiBudgetFor(req.userId)
+        if (budget.calls >= AI_CALLS_PER_WINDOW) {
+            if (budget.last) {
+                res.json(budget.last)
+            } else {
+                const retryAfterMs = budget.windowStart + AI_WINDOW_MS - Date.now()
+                res.set('Retry-After', String(Math.max(1, Math.ceil(retryAfterMs / 1000))))
+                res.status(429).json({ error: 'AI request limit reached, try again later' })
+            }
+            return
+        }
+        budget.calls += 1
+
         const angle = STYLE_ANGLES[Math.floor(Math.random() * STYLE_ANGLES.length)]
         const nonce = Math.random().toString(36).slice(2, 8)
 
@@ -246,9 +336,7 @@ app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next)
             `Write in ${langLabel}. Be warm but specific — reference their actual data with names and numbers. ` +
             `Avoid platitudes and generic tea-blogger language. No headings, no bullets, plain prose. ` +
             `Vary your phrasing and opening each time you write — never repeat the same lead sentence. ` +
-            `Output JSON only, exact shape: ` +
-            `{"profile": [string, string], "patterns": [string, string]} ` +
-            `— each array contains exactly 2 short paragraphs (1-2 sentences each). ` +
+            `"profile" and "patterns" each contain exactly 2 short paragraphs (1-2 sentences each), one paragraph per array item. ` +
             `"profile" is about their collection. "patterns" is about their brewing + journaling activity.`
 
         const userPrompt =
@@ -257,14 +345,23 @@ app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next)
             `Request id (use for variety): ${nonce}.\n` +
             `Write the two short paragraphs for each section.`
 
-        const parsed = await callGroq(systemPrompt, userPrompt, 800, 0.95)
+        const result = await callClaude(systemPrompt, userPrompt)
 
-        if (!isValidInsights(parsed)) {
+        if (result.kind === 'refusal') {
+            res.status(502).json({ error: 'AI declined the request' })
+            return
+        }
+        if (result.kind === 'max_tokens') {
+            res.status(502).json({ error: 'AI response was cut off' })
+            return
+        }
+        if (!isValidInsights(result.value)) {
             res.status(502).json({ error: 'AI returned invalid shape' })
             return
         }
 
-        res.json(parsed)
+        budget.last = result.value
+        res.json(result.value)
     } catch (err) {
         next(err)
     }

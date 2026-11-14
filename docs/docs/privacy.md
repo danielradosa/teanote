@@ -2,7 +2,7 @@
 
 ***
 
-_Last updated: 5th November 2025 at 23:13 CEST_
+_Last updated: 14th November 2026 at 20:47 CET_
 
 ***
 
@@ -41,8 +41,8 @@ We periodically review and update this policy to ensure GDPR compliance and bett
 
 ### 2.3 Payment Data
 
-- Payment card details processed securely by Stripe or LemonSqueezy
-- Billing address (only for tax purposes, stored securely via Stripe/LemonSqueezy)
+- No new payment data is collected.
+- Past payments, including payment card details and billing addresses, were processed by Stripe or LemonSqueezy, which retain those records under their own policies.
 
 ### 2.4 Support & Communications
 
@@ -83,7 +83,7 @@ You can exercise these rights by contacting us at [info@teanote.xyz](mailto:info
 
 - Data is shared only with trusted third parties necessary for service delivery:
   - Railway (hosting services)
-  - Stripe or LemonSqueezy (payment processors)
+  - Stripe or LemonSqueezy (processed past payments and retain those records under their own policies; no new payment data is collected)
   - hostcreators.sk (website hosting)
 - We do not sell your data.
 - We implement appropriate technical and organizational measures to protect your data. However, no method of transmission over the internet or electronic storage is 100% secure.
