@@ -5,10 +5,15 @@ export interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  ogType?: string;
+  ogTitle?: string;
+  ogDescription?: string;
   ogImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
 }
 
-const { title, description, canonical, ogImage } = Astro.props;
+const { title, description, canonical, ogType, ogTitle, ogDescription, ogImage, twitterTitle, twitterDescription } = Astro.props;
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, '') ?? 'https://teanote.xyz';
 const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
@@ -26,17 +31,17 @@ const ogImageUrl = ogImage ?? `${siteUrl}/img/og-home-2026.jpg`;
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalUrl} />
 
-    <!-- Social defaults (can be overridden/extended per-page via slot=head) -->
-    <meta property="og:type" content="website" />
+    <!-- Social tags: pages override them through props, never with og:/twitter: tags in slot=head -->
+    <meta property="og:type" content={ogType ?? 'website'} />
     <meta property="og:site_name" content="Teanote" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={metaDescription} />
+    <meta property="og:title" content={ogTitle ?? title} />
+    <meta property="og:description" content={ogDescription ?? metaDescription} />
     <meta property="og:image" content={ogImageUrl} />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:title" content={twitterTitle ?? title} />
+    <meta name="twitter:description" content={twitterDescription ?? metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 
     <link rel="icon" href="/favicon.ico" />

@@ -10,10 +10,13 @@ before calling the model, then validates the JSON shape coming back.
 - `GET /healthz` — liveness probe.
 - `POST /ai-dashboard-insights` — personalized dashboard overview. Returns
   `{ profile: string[], patterns: string[] }` (1-4 short paragraphs each).
-  Answers 401 without a valid Supabase session, 502 when the model declines,
-  runs out of tokens or returns an invalid shape, 429 (with `Retry-After`) when
-  the account is over its model-call limit and has no earlier result to repeat,
-  and 500 on any other failure.
+  Answers 400 when the body is not a JSON object or one of its objects or
+  lists (`teas`, `brews`, `journals`, `teas.byType`, `teas.recentlyAdded`,
+  `brews.mostBrewedTea`, `journals.recentTitles`) has the wrong type, before
+  anything counts against the limit; 401 without a valid Supabase session;
+  502 when the model declines, runs out of tokens or returns an invalid shape;
+  429 (with `Retry-After`) when the account is over its model-call limit and
+  has no earlier result to repeat; and 500 on any other failure.
 
 ## Per-user limit
 
@@ -52,11 +55,16 @@ restart resets them and each replica would keep its own.
 
 ## Local dev
 
+`npm run dev` is plain `tsx watch src/index.ts` and does not load a `.env` file, so run it through
+the Railway CLI, which injects the service's variables into the local process:
+
 ```sh
-cp .env.example .env  # fill in values
 npm install
-npm run dev
+railway run --service ai-service -- npm run dev
 ```
+
+These are the deployed service's real values, so a local model call is billed to the same
+Anthropic key. The service listens on 8080 locally.
 
 ## Deploy
 

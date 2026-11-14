@@ -89,7 +89,7 @@ Cookies may be session-based (deleted after you close your browser) or persisten
 
 ## 7. Updates to This Cookie Policy
 
-We may update this policy to reflect changes in our practices or legal requirements. The latest version is always available at [https://docs.teanote.xyz/privacy](https://docs.teanote.xyz/privacy). Continued use of Teanote services signifies acceptance of updated policies.
+We may update this policy to reflect changes in our practices or legal requirements. The latest version is always available at [https://docs.teanote.xyz/cookies](https://docs.teanote.xyz/cookies). Continued use of Teanote services signifies acceptance of updated policies.
 
 ***
 

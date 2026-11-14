@@ -5,22 +5,20 @@ import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
 
 const title = 'Tea Journal App & Gongfu Timer | Teanote';
-const description = 'Teanote &mdash; your mindful tea journal app and gongfu timer. Track tasting notes, leaf appearance, and brewing sessions on any device. Free forever.';
+const description = 'Teanote — your mindful tea journal app and gongfu timer. Track tasting notes, leaf appearance, and brewing sessions on any device. Free forever.';
 ---
 
-<Layout title={title} description={description} canonical="https://teanote.xyz/">
+<Layout
+  title={title}
+  description={description}
+  canonical="https://teanote.xyz/"
+  ogTitle="Teanote | Mindful Tea Journal & Gongfu Brewing Timer"
+  ogDescription="A mindful tea companion to capture your tea notes, brewing sessions, and reflections. Start, it's free forever."
+  ogImage="https://teanote.xyz/img/og-home-2026.jpg"
+  twitterTitle="Teanote | Mindful Tea Journal & Gongfu Brewing Timer"
+  twitterDescription="Track your tea sessions, perfect your brews, and reflect on every cup with Teanote."
+>
   <Fragment slot="head">
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://teanote.xyz/" />
-    <meta property="og:title" content="Teanote | Mindful Tea Journal & Gongfu Brewing Timer" />
-    <meta property="og:description" content="A mindful tea companion to capture your tea notes, brewing sessions, and reflections. Start, it's free forever." />
-    <meta property="og:image" content="https://teanote.xyz/img/og-home-2026.jpg" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Teanote | Mindful Tea Journal & Gongfu Brewing Timer" />
-    <meta name="twitter:description" content="Track your tea sessions, perfect your brews, and reflect on every cup with Teanote." />
-    <meta name="twitter:image" content="https://teanote.xyz/img/og-home-2026.jpg" />
-
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -44,7 +42,7 @@ const description = 'Teanote &mdash; your mindful tea journal app and gongfu tim
           {
             "@type": "Question",
             "name": "Can I export my data later?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Export is on the roadmap. If you need an export today, email info@teanote.xyz and we’ll help." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. If you need help exporting, just use the contact form and we will help quickly." }
           }
         ]
       }

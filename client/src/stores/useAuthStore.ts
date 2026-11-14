@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import supabase from '@/utils/supa'
+import { isAuthRetryableFetchError } from '@supabase/supabase-js'
 import type { User, Session, AuthError } from '@supabase/supabase-js'
 
 interface AuthState {
@@ -14,12 +15,15 @@ interface AuthState {
     signOut: () => Promise<void>
 }
 
+// supabase-js 2.x keeps the session object itself, as JSON, under
+// `sb-<project ref>-auth-token`.
 function getCachedSession(): Session | null {
     try {
-        const key = Object.keys(localStorage).find((k) => k.includes('auth-token'))
+        const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'))
         const raw = key ? localStorage.getItem(key) : null
         const data = raw ? JSON.parse(raw) : null
-        return data?.currentSession ?? null
+        const isSession = typeof data?.access_token === 'string' && typeof data?.user?.id === 'string'
+        return isSession ? data : null
     } catch {
         return null
     }
@@ -40,11 +44,17 @@ export const useAuthStore = create<AuthState>((set) => ({
             loading: false,
         })
 
-        const { data } = await supabase.auth.getSession()
-        const session = data.session ?? cached
+        // Keep the cached session only when the auth server could not be reached
+        // (offline cold start). No session for any other reason means signed out.
+        const { data, error } = await supabase.auth.getSession()
+        const keptOffline = !data.session && cached !== null && isAuthRetryableFetchError(error)
+        const session = data.session ?? (keptOffline ? cached : null)
         set({ user: session?.user ?? null, session })
 
-        supabase.auth.onAuthStateChange((_event, newSession) => {
+        supabase.auth.onAuthStateChange((event, newSession) => {
+            // auth-js reports that same failed refresh as an INITIAL_SESSION
+            // without a session; it must not sign out the user kept above.
+            if (keptOffline && event === 'INITIAL_SESSION' && !newSession) return
             const user = newSession?.user ?? null
             set({ user, session: newSession })
         })

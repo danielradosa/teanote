@@ -96,6 +96,7 @@
     "teas_form_vendor_p": "例如：YunnanSourcing",
     "teas_form_img_p": "例如：https://sometea.com/product1.png",
     "teas_form_link_p": "例如：https://teastore.com/bai-mu-dan",
+    "tea_tag_any": "通用",
     "tea_tag_green": "绿茶",
     "tea_tag_oolong": "乌龙茶",
     "tea_tag_red": "红茶",
@@ -201,5 +202,7 @@
   "sidebar_link_more": "更多",
   "sidebar_link_less": "更少",
   "or": "或者",
-  "upload": "上传"
+  "upload": "上传",
+  "journal_img_upload": "上传图片 (可选)",
+  "delete": "删除"
 }

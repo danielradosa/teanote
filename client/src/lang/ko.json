@@ -96,6 +96,7 @@
   "teas_form_vendor_p": "예: YunnanSourcing",
   "teas_form_img_p": "예: https://sometea.com/product1.png",
   "teas_form_link_p": "예: https://teastore.com/bai-mu-dan",
+  "tea_tag_any": "일반",
   "tea_tag_green": "녹차",
   "tea_tag_oolong": "우롱차",
   "tea_tag_red": "홍차",
@@ -201,5 +202,7 @@
   "sidebar_link_more": "더보기",
   "sidebar_link_less": "간략히",
   "or": "또는",
-  "upload": "업로드"
+  "upload": "업로드",
+  "journal_img_upload": "이미지 업로드 (선택)",
+  "delete": "삭제"
 }

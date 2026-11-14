@@ -7,7 +7,7 @@ import i18n from '@/lang'
 
 export default function AppInitializer({ children }: { children: React.ReactNode }) {
     const initAuth = useAuthStore((s) => s.initAuth)
-    const { settings, loadSettings } = useSettingsStore()
+    const { settings } = useSettingsStore()
     const [ready, setReady] = useState(false)
 
     const applyTheme = (themeName: string | null | undefined) => {
@@ -51,13 +51,15 @@ export default function AppInitializer({ children }: { children: React.ReactNode
         }
     }, [settings?.theme])
 
+    // Settings are not loaded here: SyncOnReconnect's first sync loads them once
+    // auth is initialised and a user is signed in, without holding up first paint.
     useEffect(() => {
         const init = async () => {
-            await Promise.all([initAuth(), loadSettings()])
+            await initAuth()
             setReady(true)
         }
         init()
-    }, [initAuth, loadSettings])
+    }, [initAuth])
 
     if (!ready) {
         return (

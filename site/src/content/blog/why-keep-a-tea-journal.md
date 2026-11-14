@@ -2,7 +2,6 @@
 title: "Why keeping a tea journal changes how you taste tea"
 description: "How notes build memory and help you notice patterns over time."
 pubDate: 2026-01-22T14:10:00+01:00
-heroImage: "/img/tea_journal_mindful.jpg"
 tags: ["tea journal", "mindfulness"]
 ---
 

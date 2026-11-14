@@ -106,7 +106,7 @@ Your data may be stored and processed in Slovakia, Denmark, or other countries w
 
 ## 8. Cookies & Tracking Technologies
 
-We use cookies, pixels, and similar tools to enhance your experience. You can manage your preferences through your browser settings. For detailed cookie management and related controls, see our [Cookies Policy](https://docs.teanote.xyz/privacy).
+We use cookies, pixels, and similar tools to enhance your experience. You can manage your preferences through your browser settings. For detailed cookie management and related controls, see our [Cookies Policy](https://docs.teanote.xyz/cookies).
 
 ***
 

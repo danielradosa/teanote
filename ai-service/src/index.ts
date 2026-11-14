@@ -263,6 +263,12 @@ app.get('/healthz', (_req, res) => {
 
 app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next) => {
     try {
+        // Before the budget and the model: a malformed body costs nothing.
+        const shapeError = bodyShapeError(req.body)
+        if (shapeError) {
+            res.status(400).json({ error: `invalid request body: ${shapeError}` })
+            return
+        }
         const body = req.body as DashboardInput
         const language = safeLanguage(body.language)
         const langLabel = LANGUAGE_LABELS[language] ?? 'English'
@@ -369,6 +375,12 @@ app.post('/ai-dashboard-insights', requireAuthorizedUser, async (req, res, next)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    // express.json() rejects malformed JSON and, being strict, any top-level
+    // value that is not an object or array. Not logged: the error holds the body.
+    if ((err as { type?: unknown } | null | undefined)?.type === 'entity.parse.failed') {
+        res.status(400).json({ error: 'invalid request body: expected a JSON object' })
+        return
+    }
     console.error('unhandled error:', err)
     res.status(500).json({ error: 'internal error' })
 })
@@ -378,6 +390,38 @@ app.listen(PORT, () => {
 })
 
 // --- sanitizers -----------------------------------------------------------
+
+function isJsonObject(v: unknown): v is Record<string, unknown> {
+    return typeof v === 'object' && v !== null && !Array.isArray(v)
+}
+
+// A present field of the wrong container kind; absent and null count as empty.
+function wrongKind(v: unknown, kind: 'object' | 'array'): boolean {
+    if (v === undefined || v === null) return false
+    return kind === 'array' ? !Array.isArray(v) : !isJsonObject(v)
+}
+
+// Why the body can't be read as a DashboardInput, or null when it can. Only the
+// containers are checked: the sanitizers below zero or drop a scalar of the
+// wrong type, as before.
+function bodyShapeError(body: unknown): string | null {
+    if (!isJsonObject(body)) return 'expected a JSON object'
+    const { teas, brews, journals } = body
+    if (wrongKind(teas, 'object')) return 'teas must be an object'
+    if (wrongKind(brews, 'object')) return 'brews must be an object'
+    if (wrongKind(journals, 'object')) return 'journals must be an object'
+    if (isJsonObject(teas)) {
+        if (wrongKind(teas.byType, 'object')) return 'teas.byType must be an object'
+        if (wrongKind(teas.recentlyAdded, 'array')) return 'teas.recentlyAdded must be an array'
+    }
+    if (isJsonObject(brews) && wrongKind(brews.mostBrewedTea, 'object')) {
+        return 'brews.mostBrewedTea must be an object'
+    }
+    if (isJsonObject(journals) && wrongKind(journals.recentTitles, 'array')) {
+        return 'journals.recentTitles must be an array'
+    }
+    return null
+}
 
 function safeStr(v: unknown, max: number): string {
     if (typeof v !== 'string') return ''
@@ -394,6 +438,8 @@ function clampFloat(v: unknown, lo: number, hi: number): number {
     return Math.max(lo, Math.min(hi, v))
 }
 
+const BY_TYPE_LIMIT = 20
+
 function sanitizeByType(input: unknown): Record<string, number> {
     if (!input || typeof input !== 'object') return {}
     const out: Record<string, number> = {}
@@ -402,7 +448,14 @@ function sanitizeByType(input: unknown): Record<string, number> {
         const count = clampInt(v, 0, 10000)
         if (key && count > 0) out[key] = count
     }
-    return out
+    const entries = Object.entries(out)
+    if (entries.length <= BY_TYPE_LIMIT) return out
+    // Keep the largest counts; the sort is stable, so the earlier of two equal
+    // counts wins. The kept entries stay in input order.
+    const kept = new Set(
+        [...entries].sort((a, b) => b[1] - a[1]).slice(0, BY_TYPE_LIMIT).map(([k]) => k),
+    )
+    return Object.fromEntries(entries.filter(([k]) => kept.has(k)))
 }
 
 function sanitizeTeaList(input: unknown): Array<{ name: string; type: string }> {

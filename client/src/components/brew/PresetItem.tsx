@@ -41,7 +41,7 @@ export default function PresetItem({ preset, teas, onEdit, onDelete, onSyncType 
                         <span className={'tea-tag tea-tag-' + (preset.teaType || 'generic')}>
                             {preset.teaType
                                 ? t(`tea_tag_${preset.teaType}`)
-                                : t('preset_type_generic')}
+                                : t('presets_type_generic')}
                         </span>
                     </>
                 )}

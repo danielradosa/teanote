@@ -13,11 +13,13 @@ function SyncOnReconnect() {
     const { syncJournals } = useJournalsStore()
     const { syncBrews, syncPresets } = useBrewsStore()
     const { syncSettings } = useSettingsStore()
-    const { user } = useAuthStore()
+    // The store swaps in a new user object on every auth event (token refresh
+    // included); the sync below only needs to restart when the account changes.
+    const userId = useAuthStore((s) => s.user?.id)
     const [status, setStatus] = useState<'offline' | 'syncing' | 'online' | null>(null)
 
     useEffect(() => {
-        if (!user) return
+        if (!userId) return
 
         const doSync = async () => {
             setStatus('syncing')
@@ -65,7 +67,7 @@ function SyncOnReconnect() {
             clearInterval(interval)
             stopAllRealtime()
         }
-    }, [user, syncTeas, syncJournals, syncBrews, syncPresets, syncSettings])
+    }, [userId, syncTeas, syncJournals, syncBrews, syncPresets, syncSettings])
 
     if (!status) return null
 

@@ -8,7 +8,7 @@ export async function GET(context: any) {
 
   return rss({
     title: 'Teanote Blog',
-    description: 'Guides and updates for Teanote &mdash; a mindful tea journal and gongfu timer.',
+    description: 'Guides and updates for Teanote — a mindful tea journal and gongfu timer.',
     site: context.site ?? 'https://teanote.xyz',
     items: posts.map((post) => ({
       title: post.data.title,

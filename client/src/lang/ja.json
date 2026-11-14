@@ -96,6 +96,7 @@
   "teas_form_vendor_p": "例: YunnanSourcing",
   "teas_form_img_p": "例: https://sometea.com/product1.png",
   "teas_form_link_p": "例: https://teastore.com/bai-mu-dan",
+  "tea_tag_any": "汎用",
   "tea_tag_green": "緑茶",
   "tea_tag_oolong": "烏龍茶",
   "tea_tag_red": "紅茶",
@@ -201,5 +202,7 @@
   "sidebar_link_more": "もっと",
   "sidebar_link_less": "少なく",
   "or": "または",
-  "upload": "アップロード"
+  "upload": "アップロード",
+  "journal_img_upload": "画像をアップロード (任意)",
+  "delete": "削除"
 }
