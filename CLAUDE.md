@@ -9,7 +9,7 @@ This is a monorepo of four independent sub-projects with no top-level package ma
 - `client/` — React 19 + Vite + TypeScript SPA, the actual Teanote app (served at `app.teanote.xyz`).
 - `site/` — Astro 5 marketing site + blog (served at `teanote.xyz`).
 - `ai-service/` — Node 22 + Express 5 + TypeScript proxy to the Anthropic API (Claude Opus 5.5, `claude-opus-5-5`, via `@anthropic-ai/sdk`), deployed on Railway. Handles personalized AI dashboard insights.
-- `supabase/` — Supabase config + Deno-based Edge Functions (legacy Stripe checkout + webhook, no longer called by the app; see "Payments: none"). **Gitignored** — exists only on Daniel's machine.
+- `supabase/` — Deno-based Edge Functions (legacy Stripe checkout + webhook, no longer called by the app; see "Payments: none") and `schema-snapshot.sql`, a readable record of the hosted database. Both are tracked since 2026-11-14. `supabase/.env`, `config.toml` and the CLI's local state are **gitignored** and exist only on Daniel's machine. The repository is public: never un-ignore `supabase/.env`.
 - `docs/` — MkDocs project (separate Python venv).
 
 > **README.md is stale.** It describes an Express/GraphQL backend that no longer exists. The real backend is Supabase (Postgres + Auth + Edge Functions). Trust the code, not the README's "Tech Stack" or "Project Structure" sections.
@@ -74,7 +74,9 @@ Endpoint: `POST /ai-dashboard-insights` — returns `{profile: string[], pattern
 
 ### supabase/
 
-Edge functions are Deno scripts using import maps (`import_map.json`). The whole `supabase/` directory is gitignored — Daniel's local files only. Deploy via Supabase CLI. Local config is in `supabase/config.toml`.
+Edge functions are Deno scripts using import maps (`import_map.json`); their sources are tracked. Deploy via Supabase CLI. Local config is in `supabase/config.toml` (gitignored).
+
+`supabase/schema-snapshot.sql` records the hosted project's tables, indexes, row-level security, policies, functions, triggers, storage buckets and realtime publication, read from the Postgres catalog on 2026-11-14. It is a readable record, not a migration: the project has no migration history, and the file has never been run against an empty database. Every table has RLS on with owner-only policies, and both storage buckets (`teas`, `sessions`) are private with per-user-folder policies. Update the snapshot when the schema changes in the dashboard; for a baseline that can rebuild the database, run `supabase db pull` (needs Docker and the database password).
 
 ### Deploying
 
@@ -121,7 +123,7 @@ Teanote has been free since 2026-11-14: every signed-in user gets every feature,
 
 - No code path in `client/` or `ai-service/` reads trial or subscription state.
 - The `profiles` columns `trial_start`, `subscription_start`, `subscription_end` and `is_subscribed` still exist in the database but are unused.
-- The Stripe edge functions (`create-checkout-session`, `stripe-webhook`) still exist in the local-only `supabase/` folder and may still be deployed until Daniel retires them.
+- The Stripe edge functions (`create-checkout-session`, `stripe-webhook`) still exist in `supabase/functions/` and were both still deployed and active on 2026-11-14; they stay until Daniel retires them.
 - The marketing site's `/pricing` page (`site/src/pages/pricing.astro`) shows the one free plan; its Product JSON-LD has a single Offer at price `"0"`.
 
 ## Architecture: AI dashboard insights

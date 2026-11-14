@@ -1,0 +1,12 @@
+# Supabase
+.branches
+.temp
+
+# secrets: never commit (the repository is public)
+.env
+.env.*
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local

@@ -1,6 +1,13 @@
 client/.env
 server/.env
-supabase
+
+# supabase/: the edge functions and schema-snapshot.sql are tracked.
+# Secrets, local CLI state and the local config stay out of git.
+supabase/.env
+supabase/.env.*
+supabase/.temp/
+supabase/.branches/
+supabase/config.toml
 
 client/node_modules
 server/node_modules
