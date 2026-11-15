@@ -8,6 +8,7 @@ import { subscribeTable } from '@/helpers/realtime'
 import { useSyncStore } from '@/stores/useSyncStore'
 import { deleteImage } from '@/helpers/upload'
 import { deleteUnreferencedTeaImages } from '@/helpers/teaImages'
+import { toTeaRecord } from '@/helpers/records'
 
 interface TeasState {
     teas: Tea[]
@@ -41,6 +42,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
             ...tea,
             id: uuid(),
             user_id: user.id,
+            dateAdded: now,
             updated_at: now,
             deleted_at: null,
         }
@@ -58,8 +60,9 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         const previousPath = baseImagePath !== undefined
             ? baseImagePath
             : get().teas.find(t => t.id === id)?.image_path
+        // A tea stored without dateAdded is dated by its last write, not by this edit.
         const updated = get().teas.map(t =>
-            t.id === id ? { ...t, ...updates, updated_at: now } : t
+            t.id === id ? { ...toTeaRecord(t), ...updates, updated_at: now } : t
         )
         storage.set('teas', updated)
         set({ teas: updated })
@@ -102,7 +105,7 @@ export const useTeasStore = create<TeasState>((set, get) => ({
     },
 
     syncTeas: async () => {
-        const { records, ok } = await syncData<Tea>('teas', 'teas')
+        const { records, ok } = await syncData<Tea>('teas', 'teas', toTeaRecord)
         if (records) set({ teas: records })
         if (ok) set({ lastSync: new Date().toISOString() })
         return ok

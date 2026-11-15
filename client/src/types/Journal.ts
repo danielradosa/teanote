@@ -5,7 +5,8 @@ export interface Journal {
     /** The linked brew's id; null when none. Never '': the column is a uuid (see toJournalRecord). */
     brew_preset_id?: string | null
     title: string
-    rating?: number
+    /** null when none, never undefined: JSON drops undefined, so an upsert would leave the server's old rating in place. */
+    rating?: number | null
     images?: string[]
     content: string
     dateAdded?: string

@@ -97,4 +97,56 @@ describe('useBrewsStore: presets the integer[] infusionTimes column accepts', ()
         expect(server.row('presets', onServer.id)).toEqual(onServer)
         expect(storedPresets().sort((a, b) => a.id.localeCompare(b.id))).toEqual([repaired, onServer])
     })
+
+    it('an infusion time outside the integer range is kept within it, so the server takes the preset', async () => {
+        useBrewsStore.getState().addPreset({ name: 'Extreme', teaType: 'green', infusionsAmount: 3, infusionTimes: [10, 99999999999, -99999999999] })
+        const [added] = useBrewsStore.getState().presets
+        const clamped = [10, 2147483647, -2147483648]
+        expect(added.infusionTimes).toEqual(clamped)
+        expect(storedPresets()[0].infusionTimes).toEqual(clamped)
+
+        await syncsDone()
+        expect(server.row('presets', added.id)).toMatchObject({ infusionTimes: clamped })
+        expect(useSyncStore.getState().justSynced).toBe(true)
+    })
+})
+
+describe("useBrewsStore.updatePreset: the preset's tea link", () => {
+    it('changes teaId or teaType only when the update names it, and a named empty value means none (null)', async () => {
+        const linked = preset('p-linked', { teaId: 'tea-1', teaType: 'green' })
+        server.seed('presets', [linked] as unknown as Row[])
+        localStorage.setItem('presets', JSON.stringify([linked]))
+        useBrewsStore.setState({ presets: [linked] })
+        const link = () => {
+            const { teaId, teaType } = useBrewsStore.getState().presets[0]
+            return { teaId, teaType }
+        }
+
+        // The "sync type" button on the Brews page names only the type.
+        useBrewsStore.getState().updatePreset('p-linked', { teaType: 'oolong' })
+        expect(link()).toEqual({ teaId: 'tea-1', teaType: 'oolong' })
+
+        useBrewsStore.getState().updatePreset('p-linked', { name: 'Renamed' })
+        expect(link()).toEqual({ teaId: 'tea-1', teaType: 'oolong' })
+        await syncsDone()
+        expect(server.row('presets', 'p-linked')).toMatchObject({ name: 'Renamed', teaId: 'tea-1', teaType: 'oolong' })
+        expect(storedPresets()[0]).toMatchObject({ name: 'Renamed', teaId: 'tea-1', teaType: 'oolong' })
+
+        useBrewsStore.getState().updatePreset('p-linked', { teaId: '' })
+        expect(link()).toEqual({ teaId: null, teaType: 'oolong' })
+
+        // As PresetEditForm passes a tea with no type chosen: both named, the type empty.
+        useBrewsStore.getState().updatePreset('p-linked', { teaId: 'tea-2', teaType: undefined })
+        expect(link()).toEqual({ teaId: 'tea-2', teaType: null })
+        await syncsDone()
+        expect(server.row('presets', 'p-linked')).toMatchObject({ teaId: 'tea-2', teaType: null })
+        expect(storedPresets()[0]).toMatchObject({ teaId: 'tea-2', teaType: null })
+
+        // As PresetEditForm passes a tea being unlinked: the key named, its value undefined.
+        useBrewsStore.getState().updatePreset('p-linked', { teaId: undefined, teaType: 'green' })
+        expect(link()).toEqual({ teaId: null, teaType: 'green' })
+        await syncsDone()
+        expect(server.row('presets', 'p-linked')).toMatchObject({ teaId: null, teaType: 'green' })
+        expect(storedPresets()[0]).toMatchObject({ teaId: null, teaType: 'green' })
+    })
 })

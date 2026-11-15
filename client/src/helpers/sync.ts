@@ -50,6 +50,12 @@ async function pullAll<T extends SyncRow>(table: string, userId: string): Promis
  * `toRecord` (helpers/records) is applied to every stored record before the
  * merge, so a record an older version stored in a shape the table refuses is
  * repaired, sent, and stored repaired. It must leave updated_at alone.
+ *
+ * A stored record whose user_id is another account's (left in this browser by
+ * a session that ended without signOut) is never sent, as an upsert or as a
+ * tombstone, and is not a failed write; it stays in localStorage exactly as
+ * stored, and is returned in `records` like any other. A record without a
+ * user_id is sent as the signed-in user's.
  */
 export async function syncData<T extends SyncRow>(
     table: string,
@@ -64,9 +70,12 @@ export async function syncData<T extends SyncRow>(
         return { records: null, ok: false }
     }
 
+    const isOtherAccount = (record: T) => !!record.user_id && record.user_id !== user.id
+
     startSync()
     try {
-        const local = (storage.get<T[]>(key) || []).map(toRecord)
+        const stored = storage.get<T[]>(key) || []
+        const local = stored.map(toRecord)
         const remoteData = await pullAll<T>(table, user.id)
         const remoteById = new Map(remoteData.map(r => [r.id, r]))
 
@@ -74,7 +83,7 @@ export async function syncData<T extends SyncRow>(
         let failedWrites = 0
 
         for (const item of merged) {
-            if (item.deleted_at) continue
+            if (item.deleted_at || isOtherAccount(item)) continue
             const remoteItem = remoteById.get(item.id)
             const localTime = new Date(item.updated_at).getTime()
             const remoteTime = remoteItem ? new Date(remoteItem.updated_at).getTime() : 0
@@ -94,7 +103,7 @@ export async function syncData<T extends SyncRow>(
         // Tombstones the server rejected stay on this device, so the next sync sends them again.
         const unsentTombstones = new Set<string>()
         for (const del of merged) {
-            if (!del.deleted_at) continue
+            if (!del.deleted_at || isOtherAccount(del)) continue
             // Only a row the server has, and has not already marked deleted, needs its tombstone.
             const remoteItem = remoteById.get(del.id)
             if (!remoteItem || remoteItem.deleted_at) continue
@@ -112,7 +121,11 @@ export async function syncData<T extends SyncRow>(
             }
         }
 
-        storage.set(key, merged.filter(t => !t.deleted_at || unsentTombstones.has(t.id)))
+        // Another account's records stay exactly as stored, tombstones included.
+        const storedById = new Map(stored.map(r => [r.id, r]))
+        storage.set(key, merged
+            .filter(t => !t.deleted_at || unsentTombstones.has(t.id) || isOtherAccount(t))
+            .map(t => (isOtherAccount(t) ? storedById.get(t.id) ?? t : t)))
 
         const ok = failedWrites === 0
         finishSync(ok)

@@ -35,6 +35,7 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
             ...j,
             id: uuid(),
             user_id: user.id,
+            dateAdded: now,
             updated_at: now,
             deleted_at: null,
         })
@@ -48,8 +49,10 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
 
     updateJournal: (id, updates) => {
         const now = new Date().toISOString()
+        // Repaired before the edit too, so a journal stored without dateAdded is
+        // dated by its last write, not by this edit.
         const updated = get().journals.map(j =>
-            j.id === id ? toJournalRecord({ ...j, ...updates, updated_at: now }) : j
+            j.id === id ? toJournalRecord({ ...toJournalRecord(j), ...updates, updated_at: now }) : j
         )
         storage.set('journals', updated)
         set({ journals: updated })

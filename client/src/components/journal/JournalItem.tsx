@@ -16,6 +16,17 @@ interface JournalWithImages extends Journal {
     images?: string[]
 }
 
+/**
+ * Stars drawn for a stored rating: a whole number from 0 to 5, whatever the
+ * value is. The column takes any integer and older versions stored what was
+ * typed, and '⭐'.repeat throws for a negative or very large count, which
+ * would break the whole journal page.
+ */
+function starCount(rating: number): number {
+    if (Number.isNaN(rating)) return 0
+    return Math.min(5, Math.max(0, Math.round(rating)))
+}
+
 export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelete }: JournalItemProps) {
     const [openDetails, setOpenDetails] = useState(false)
     const withImages = journal as JournalWithImages
@@ -46,7 +57,7 @@ export default function JournalItem({ journal, tea, getBrewName, onEdit, onDelet
                         </>
                     )}
 
-                    {journal.rating !== undefined && <span style={{ marginLeft: 8, color: '#ffc21a', fontWeight: 600 }}>{'⭐'.repeat(journal.rating)}</span>}
+                    {journal.rating != null && <span style={{ marginLeft: 8, color: '#ffc21a', fontWeight: 600 }}>{'⭐'.repeat(starCount(journal.rating))}</span>}
 
                     <span className="journal-date" style={{ fontSize: '10px', marginLeft: 8 }}>
                         ({new Date(journal.dateAdded ?? Date.now()).toLocaleDateString()})

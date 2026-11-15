@@ -10,11 +10,26 @@ type JournalFormShape = Partial<Journal> & {
     teaId: string
     content: string
     brew_preset_id?: string | null
-    rating?: number
+    rating?: number | null
     images?: string[]
 }
 
 type NewJournalInput = Omit<Journal, 'id' | 'user_id' | 'updated_at' | 'deleted_at'>
+
+const RATING_MIN = 1
+const RATING_MAX = 5
+
+/**
+ * The rating the form submits once the user has typed into the rating box:
+ * null for none, otherwise a whole number within the input's min and max (a
+ * value outside is brought to the nearest one, a fraction is rounded). Nothing
+ * else enforces the input's limits. An edit that leaves the box alone submits
+ * the stored rating as it is.
+ */
+function formRating(rating: number | null | undefined): number | null {
+    if (typeof rating !== 'number' || Number.isNaN(rating)) return null
+    return Math.min(RATING_MAX, Math.max(RATING_MIN, Math.round(rating)))
+}
 
 interface JournalFormProps {
     journal: Journal | null
@@ -38,12 +53,14 @@ export default function JournalForm({
     isEditing = false,
 }: JournalFormProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    // Whether the rating box was changed in this form session (the edit form is keyed per journal).
+    const ratingTouched = useRef(false)
 
     const emptyForm = useMemo<JournalFormShape>(() => ({
         title: '',
         teaId: '',
         content: '',
-        rating: undefined,
+        rating: null,
         brew_preset_id: '',
         images: [],
     }), [])
@@ -69,7 +86,8 @@ export default function JournalForm({
             return
         }
 
-        onSubmit({ ...local } as NewJournalInput)
+        const rating = ratingTouched.current ? formRating(local.rating) : local.rating ?? null
+        onSubmit({ ...local, rating } as NewJournalInput)
 
         if (!isEditing) {
             setLocal(emptyForm)
@@ -143,10 +161,13 @@ export default function JournalForm({
                     <input
                         type="number"
                         placeholder={t('journal_form_rating_p')}
-                        min={1}
-                        max={5}
+                        min={RATING_MIN}
+                        max={RATING_MAX}
                         value={local.rating ?? ''}
-                        onChange={e => handleChange({ rating: e.target.value === '' ? undefined : Number(e.target.value) })}
+                        onChange={e => {
+                            ratingTouched.current = true
+                            handleChange({ rating: e.target.value === '' ? null : Number(e.target.value) })
+                        }}
                     />
                 </label>
 

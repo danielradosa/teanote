@@ -6,6 +6,7 @@ import { useTeasStore } from '@/stores/useTeasStore'
 import { useJournalsStore } from '@/stores/useJournalsStore'
 import { useBrewsStore } from '@/stores/useBrewsStore'
 import type { Tea } from '@/types/Tea'
+import type { Journal } from '@/types/Journal'
 
 vi.mock('@/utils/supa', async () => ({
     default: (await import('@/__tests__/support/fakeSupabase')).fakeSupabase.client,
@@ -232,5 +233,59 @@ describe('sync: paged pull (D4)', () => {
         expect(server.writes).toEqual([])
         expect(storedTeas()).toHaveLength(ids.length)
         expect(synced).toBe(false)
+    })
+})
+
+describe("sync: another account's records left in this browser (F5)", () => {
+    // A session of user-a ended without signOut, so its journals are still in
+    // localStorage when USER signs in on the same browser.
+    const OTHER = 'user-a'
+
+    function journal(id: string, overrides: Partial<Journal> = {}): Journal {
+        return { id, user_id: OTHER, teaId: 'tea-1', brew_preset_id: null, title: id, rating: 4, content: 'notes', images: [], updated_at: T0, deleted_at: null, ...overrides }
+    }
+
+    /** The id each write was for: an upsert's row, an update's id filter. */
+    function writtenIds() {
+        return server.writes.map(w => [w.op, w.op === 'update' ? w.filters.find(([column]) => column === 'id')?.[1] : (w.payload as Row[])[0].id])
+    }
+
+    it('never sends them, as upsert or tombstone, keeps them in localStorage exactly as stored, and does not fail the sync', async () => {
+        server.authUid = USER // the owner-only policies, as USER
+
+        const theirsSynced = journal('a-synced', { dateAdded: T0 })
+        // Never reached the server; the repair would make it valid ('' brew, fractional rating, no dateAdded).
+        const theirsUnsent = journal('a-unsent', { brew_preset_id: '', rating: 3.5 })
+        const theirsDeleted = journal('a-deleted', { dateAdded: T0, deleted_at: T1, updated_at: T1 })
+        // Deleted here by user-a; an older version had already copied it into USER's account.
+        const theirsCopiedDeleted = journal('a-copied', { dateAdded: T0, deleted_at: T1, updated_at: T1 })
+        const mine = journal('mine', { user_id: USER, dateAdded: T1, updated_at: T1 })
+        const untagged = journal('untagged', { dateAdded: T1, updated_at: T1 })
+        delete untagged.user_id
+        const copiedOnServer = { ...theirsCopiedDeleted, user_id: USER, deleted_at: null, updated_at: T0 }
+        server.seed('journals', [theirsSynced, { ...theirsDeleted, deleted_at: null, updated_at: T0 }, copiedOnServer] as unknown as Row[])
+        const serverBefore = JSON.parse(JSON.stringify(server.rows('journals').filter(r => r.user_id === OTHER)))
+        const stored = [theirsSynced, theirsUnsent, theirsDeleted, theirsCopiedDeleted, mine, untagged]
+        localStorage.setItem('journals', JSON.stringify(stored))
+        useJournalsStore.setState({ journals: JSON.parse(JSON.stringify(stored)) })
+
+        const first = await useJournalsStore.getState().syncJournals()
+        const second = await useJournalsStore.getState().syncJournals()
+
+        expect([first, second]).toEqual([true, true])
+        expect(useSyncStore.getState().justSynced).toBe(true)
+        // Only this account's journal and the one without an account tag (sent as USER's, as before).
+        expect(writtenIds()).toEqual([['upsert', 'mine'], ['upsert', 'untagged']])
+        expect(server.rows('journals').filter(r => r.user_id === OTHER)).toEqual(serverBefore)
+        expect(server.row('journals', 'a-unsent')).toBeUndefined()
+        expect(server.row('journals', 'a-copied')).toEqual(copiedOnServer)
+        expect(server.row('journals', 'untagged')?.user_id).toBe(USER)
+
+        const theirs = JSON.parse(localStorage.getItem('journals') ?? '[]').filter((j: Journal) => j.user_id === OTHER)
+        expect(theirs.sort((a: Journal, b: Journal) => a.id.localeCompare(b.id)))
+            .toEqual(JSON.parse(JSON.stringify([theirsCopiedDeleted, theirsDeleted, theirsSynced, theirsUnsent])))
+        // The journal list shows them as before.
+        expect(useJournalsStore.getState().visibleJournals().map(j => j.id).sort())
+            .toEqual(['a-synced', 'a-unsent', 'mine', 'untagged'])
     })
 })

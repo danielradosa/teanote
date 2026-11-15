@@ -9,7 +9,8 @@
  *
  * Writes to the synced tables are checked against their columns (`TABLES`,
  * from supabase/schema-snapshot.sql) the way the server checks them, so a
- * record the real server would refuse is refused here too.
+ * record the real server would refuse is refused here too. With `authUid`
+ * set, their owner-only row-level security policies apply as well.
  *
  * Wire it up at the top of a test file:
  *
@@ -258,6 +259,16 @@ export class FakeSupabase {
     failRead: (table: string) => FakeError | null = () => null
     /** Return an error to make that write fail (for a row-level check, `row` is the row written). */
     failWrite: WriteFailer = () => null
+    /**
+     * The signed-in user as the server sees it (auth.uid()); null leaves row-level
+     * security out. When set, the owner-only policies of supabase/schema-snapshot.sql
+     * apply to the tables in `TABLES`: a select or an update sees only rows whose
+     * user_id is this id (an update of another user's row changes nothing and is
+     * no error), and an insert or upsert is refused (42501) when its row's user_id
+     * is another (WITH CHECK) or when the upsert would overwrite a row another user
+     * owns (USING).
+     */
+    authUid: string | null = null
 
     /** Files in storage, per bucket. */
     files = new Map<string, Set<string>>()
@@ -315,6 +326,7 @@ export class FakeSupabase {
         this.writes = []
         this.failRead = () => null
         this.failWrite = () => null
+        this.authUid = null
         this.files = new Map()
         this.signCalls = []
         this.removeCalls = []
@@ -333,6 +345,24 @@ export class FakeSupabase {
 
     seed(table: string, rows: Row[]) {
         this.tables.set(table, rows.map(r => ({ ...r })))
+    }
+
+    /** Whether row-level security lets the signed-in user see this row. */
+    private owns(table: string, row: Row): boolean {
+        return this.authUid === null || !TABLES[table] || row.user_id === this.authUid
+    }
+
+    /** What the owner-only policies say about one row written to `table` (as it arrives, JSON). */
+    private rlsError(table: string, op: WriteCall['op'], row: Row): FakeError | null {
+        if (this.authUid === null || !TABLES[table]) return null
+        const existing = op === 'upsert' ? this.row(table, row.id) : undefined
+        if (existing && !this.owns(table, existing)) {
+            return { code: '42501', message: `new row violates row-level security policy (USING expression) for table "${table}"` }
+        }
+        if (row.user_id !== this.authUid) {
+            return { code: '42501', message: `new row violates row-level security policy for table "${table}"` }
+        }
+        return null
     }
 
     bucket(name: string): Set<string> {
@@ -354,7 +384,7 @@ export class FakeSupabase {
             const readError = this.failRead(table)
             if (readError) return { data: null, error: readError }
 
-            let rows = this.rows(table).filter(r => matches(r, q.filters))
+            let rows = this.rows(table).filter(r => matches(r, q.filters) && this.owns(table, r))
             if (q.order) {
                 const { column, ascending } = q.order
                 rows = [...rows].sort((a, b) => {
@@ -384,13 +414,14 @@ export class FakeSupabase {
             const patch = JSON.parse(JSON.stringify(q.payload)) as Record<string, unknown>
             const error = schemaError(table, patch) ?? this.failWrite(call, null)
             if (error) return { data: null, error }
-            this.tables.set(table, this.rows(table).map(r => matches(r, q.filters) ? { ...r, ...patch } : r))
+            this.tables.set(table, this.rows(table).map(r => matches(r, q.filters) && this.owns(table, r) ? { ...r, ...patch } : r))
             return { data: null, error: null }
         }
 
         const incoming = (Array.isArray(q.payload) ? q.payload : [q.payload]) as Row[]
         for (const row of incoming) {
-            const error = schemaError(table, JSON.parse(JSON.stringify(row))) ?? this.failWrite(call, row)
+            const wire = JSON.parse(JSON.stringify(row)) as Row
+            const error = schemaError(table, wire) ?? this.rlsError(table, q.op, wire) ?? this.failWrite(call, row)
             if (error) return { data: null, error }
         }
         const table_ = this.rows(table)

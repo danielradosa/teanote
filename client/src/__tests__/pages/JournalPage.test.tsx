@@ -1,8 +1,8 @@
 import '@/lang'
 import i18n from 'i18next'
 import type { User } from '@supabase/supabase-js'
-import { act, fireEvent, render, within } from '@testing-library/react'
-import { fakeSupabase as server } from '@/__tests__/support/fakeSupabase'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { fakeSupabase as server, type Row } from '@/__tests__/support/fakeSupabase'
 import JournalPage from '@/pages/JournalPage'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useSyncStore } from '@/stores/useSyncStore'
@@ -43,9 +43,9 @@ function newJournalForm() {
 }
 
 /** Fills in the new-journal form as a user does and presses "add journal". */
-async function addJournal({ brewId, rating }: { brewId?: string; rating?: string } = {}) {
+async function addJournal({ brewId, rating, title = 'Morning cup' }: { brewId?: string; rating?: string; title?: string } = {}) {
     const form = newJournalForm()
-    fireEvent.change(form.getByPlaceholderText(i18n.t('journal_form_name_p')), { target: { value: 'Morning cup' } })
+    fireEvent.change(form.getByPlaceholderText(i18n.t('journal_form_name_p')), { target: { value: title } })
     const [brewSelect, teaSelect] = form.getAllByRole('combobox')
     if (brewId) fireEvent.change(brewSelect, { target: { value: brewId } })
     fireEvent.change(teaSelect, { target: { value: tea.id } })
@@ -59,6 +59,47 @@ async function addJournal({ brewId, rating }: { brewId?: string; rating?: string
 
 function storedJournals(): Journal[] {
     return JSON.parse(localStorage.getItem('journals') ?? '[]')
+}
+
+function journal(id: string, overrides: Partial<Journal> = {}): Journal {
+    return {
+        id,
+        user_id: USER,
+        teaId: tea.id,
+        brew_preset_id: null,
+        title: id,
+        rating: null,
+        content: 'notes',
+        images: [],
+        dateAdded: T0,
+        updated_at: T0,
+        deleted_at: null,
+        ...overrides,
+    }
+}
+
+/** Journals on this device and on the server alike. */
+function given(journals: Journal[]) {
+    server.seed('journals', journals as unknown as Row[])
+    localStorage.setItem('journals', JSON.stringify(journals))
+    useJournalsStore.setState({ journals })
+}
+
+/** Opens the edit form of the journal with that title, as a user does. */
+function editForm(title: string) {
+    const item = screen.getByText(title).closest('li') as HTMLElement
+    fireEvent.click(item.querySelector('.btn-info') as HTMLElement)
+    return within(document.querySelector('.edit-panel') as HTMLElement)
+}
+
+async function save(form: ReturnType<typeof editForm>) {
+    fireEvent.click(form.getByRole('button', { name: i18n.t('journal_save_btn') }))
+    await settle()
+}
+
+/** Each journal's rating by title, with a missing rating shown as undefined. */
+function ratingsByTitle(journals: { id: string; title?: unknown; rating?: unknown }[]) {
+    return Object.fromEntries(journals.map(j => [j.title, j.rating]))
 }
 
 beforeAll(async () => {
@@ -120,5 +161,81 @@ describe('JournalPage: a new journal reaches the server', () => {
         expect(saved.rating).toBe(4)
         expect(server.row('journals', saved.id)).toMatchObject({ rating: 4, brew_preset_id: brew.id })
         expect(useSyncStore.getState().justSynced).toBe(true)
+    })
+})
+
+describe('JournalPage: the rating the journal form submits (none, or a whole number from 1 to 5)', () => {
+    it('a new journal is saved with no rating (null) or with what was typed brought into 1 to 5 and rounded', async () => {
+        render(<JournalPage />)
+        const typed: [title: string, rating: string | undefined][] = [
+            ['none typed', undefined],
+            ['typed 0', '0'],
+            ['typed -3', '-3'],
+            ['typed 7', '7'],
+            ['typed 99999999999', '99999999999'],
+            ['typed 2.4', '2.4'],
+            ['typed 4.5', '4.5'],
+            ['typed 3', '3'],
+        ]
+        for (const [title, rating] of typed) await addJournal({ title, rating })
+
+        const expected = {
+            'none typed': null,
+            'typed 0': 1,
+            'typed -3': 1,
+            'typed 7': 5,
+            'typed 99999999999': 5,
+            'typed 2.4': 2,
+            'typed 4.5': 5,
+            'typed 3': 3,
+        }
+        expect(ratingsByTitle(useJournalsStore.getState().journals)).toStrictEqual(expected)
+        expect(ratingsByTitle(storedJournals())).toStrictEqual(expected)
+        expect(ratingsByTitle(server.rows('journals'))).toStrictEqual(expected)
+        expect(useSyncStore.getState().justSynced).toBe(true)
+    })
+
+    it("an edit saves a typed rating within 1 to 5; a rating an older version stored is kept unless the user types into it, and a journal nobody edits keeps its own", async () => {
+        given([
+            journal('j-typed', { title: 'Typed into', rating: 4 }),
+            journal('j-older', { title: 'Older rating', rating: 7 }),
+            journal('j-untouched', { title: 'Untouched', rating: 8 }),
+        ])
+        render(<JournalPage />)
+
+        const typedInto = editForm('Typed into')
+        fireEvent.change(typedInto.getByPlaceholderText(i18n.t('journal_form_rating_p')), { target: { value: '9' } })
+        await save(typedInto)
+
+        const renamed = editForm('Older rating')
+        fireEvent.change(renamed.getByPlaceholderText(i18n.t('journal_form_name_p')), { target: { value: 'Older rating, renamed' } })
+        await save(renamed)
+
+        const expected = { 'Typed into': 5, 'Older rating, renamed': 7, Untouched: 8 }
+        expect(ratingsByTitle(useJournalsStore.getState().journals)).toStrictEqual(expected)
+        expect(ratingsByTitle(storedJournals())).toStrictEqual(expected)
+        expect(ratingsByTitle(server.rows('journals'))).toStrictEqual(expected)
+        const written = server.writes.filter(w => w.table === 'journals').map(w => (w.payload as Row[])[0].id)
+        expect(written).toEqual(['j-typed', 'j-older'])
+    })
+
+    it('clearing the rating saves "no rating" as null, and the next sync does not bring the old rating back', async () => {
+        given([journal('j-rated', { title: 'Rated', rating: 4 })])
+        render(<JournalPage />)
+
+        const form = editForm('Rated')
+        fireEvent.change(form.getByPlaceholderText(i18n.t('journal_form_rating_p')), { target: { value: '' } })
+        await save(form)
+
+        expect(useJournalsStore.getState().journals[0].rating).toBeNull()
+        expect(storedJournals()[0].rating).toBeNull()
+        const upserts = server.writes.filter(w => w.table === 'journals' && w.op === 'upsert')
+        expect(upserts).toHaveLength(1)
+        expect((upserts[0].payload as Row[])[0]).toHaveProperty('rating', null)
+        expect(server.row('journals', 'j-rated')?.rating).toBeNull()
+
+        await act(() => useJournalsStore.getState().syncJournals())
+        expect(useJournalsStore.getState().journals[0].rating).toBeNull()
+        expect(storedJournals()[0].rating).toBeNull()
     })
 })

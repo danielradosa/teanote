@@ -98,8 +98,9 @@ export default function JournalPage() {
                         key={`edit-${editingJournal.id}`}
                         journal={editingJournal}
                         onChange={setEditingJournal}
-                        onSubmit={() => {
-                            updateJournal(editingJournal.id, editingJournal)
+                        onSubmit={(submitted) => {
+                            // Saves what the form submits (a typed rating kept within the input's limits), not the live copy.
+                            updateJournal(editingJournal.id, submitted)
                             setEditingJournal(null)
                         }}
                         isEditing

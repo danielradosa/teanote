@@ -139,11 +139,11 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
     updatePreset: (id, updates) => {
         const now = new Date().toISOString()
 
-        const fixedUpdates = {
-            ...updates,
-            teaId: updates.teaId ? updates.teaId : null,
-            teaType: updates.teaType ? updates.teaType : null,
-        }
+        // The tea link changes only when the update names it ("sync type" names
+        // only teaType); a named empty value means none.
+        const fixedUpdates: Partial<Preset> = { ...updates }
+        if ('teaId' in updates) fixedUpdates.teaId = updates.teaId || null
+        if ('teaType' in updates) fixedUpdates.teaType = updates.teaType || null
 
         const updated = get().presets.map(p =>
             p.id === id ? toPresetRecord({ ...p, ...fixedUpdates, updated_at: now }) : p
