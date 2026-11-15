@@ -6,6 +6,7 @@ import { syncData } from '@/helpers/sync'
 import type { Brew, Infusion, Preset } from '@/types/Brew'
 import { useTeasStore } from '@/stores/useTeasStore'
 import { subscribeTable } from '@/helpers/realtime'
+import { toPresetRecord } from '@/helpers/records'
 import { useSyncStore } from '@/stores/useSyncStore'
 
 interface BrewsState {
@@ -29,8 +30,10 @@ interface BrewsState {
 
     getBrewName: (id: string) => string
 
-    syncBrews: () => Promise<void>
-    syncPresets: () => Promise<void>
+    /** Resolves true when the brews synced; never rejects. */
+    syncBrews: () => Promise<boolean>
+    /** Resolves true when the presets synced; never rejects. */
+    syncPresets: () => Promise<boolean>
 
     initRealtime: () => void
     stopRealtime: () => void
@@ -115,7 +118,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
         if (!user) return
 
         const now = new Date().toISOString()
-        const newPreset: Preset = {
+        const newPreset: Preset = toPresetRecord({
             ...p,
             id: uuid(),
             user_id: user.id,
@@ -124,7 +127,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
             created_at: now,
             updated_at: now,
             deleted_at: null,
-        }
+        })
 
         const updated = [...get().presets, newPreset]
         storage.set('presets', updated)
@@ -143,7 +146,7 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
         }
 
         const updated = get().presets.map(p =>
-            p.id === id ? { ...p, ...fixedUpdates, updated_at: now } : p
+            p.id === id ? toPresetRecord({ ...p, ...fixedUpdates, updated_at: now }) : p
         )
 
         storage.set('presets', updated)
@@ -183,13 +186,17 @@ export const useBrewsStore = create<BrewsState>((set, get) => ({
     },
 
     syncBrews: async () => {
-        const merged = await syncData<Brew>('brews', 'brews')
-        if (merged) set({ brews: merged, lastSync: new Date().toISOString() })
+        const { records, ok } = await syncData<Brew>('brews', 'brews')
+        if (records) set({ brews: records })
+        if (ok) set({ lastSync: new Date().toISOString() })
+        return ok
     },
 
     syncPresets: async () => {
-        const merged = await syncData<Preset>('presets', 'presets')
-        if (merged) set({ presets: merged, lastSync: new Date().toISOString() })
+        const { records, ok } = await syncData<Preset>('presets', 'presets', toPresetRecord)
+        if (records) set({ presets: records })
+        if (ok) set({ lastSync: new Date().toISOString() })
+        return ok
     },
 
     initRealtime: () => {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TeaItem from '@/components/tea/TeaItem'
+import { teaImageSrc, useSignedTeaImages } from '@/helpers/teaImages'
 import type { Tea } from '@/types/Tea'
 import { t } from 'i18next'
 
@@ -21,6 +22,9 @@ export default function TeaList({ teas, deleteTea, onEdit }: TeaListProps) {
         return b.id.localeCompare(a.id)
     })
 
+    const shownTeas = sortedTeas.slice(0, teaItemsToShow)
+    const signedImages = useSignedTeaImages(shownTeas)
+
     const fetchMoreTeas = () => setTeaItemsToShow(prev => prev + batchSize)
 
     return (
@@ -35,8 +39,14 @@ export default function TeaList({ teas, deleteTea, onEdit }: TeaListProps) {
                     endMessage={<div>{t('teas_no_more')}</div>}
                 >
                     <ul className="tea-list">
-                        {sortedTeas.slice(0, teaItemsToShow).map(tea => (
-                            <TeaItem key={tea.id} tea={tea} deleteTea={deleteTea} onEdit={onEdit} />
+                        {shownTeas.map(tea => (
+                            <TeaItem
+                                key={tea.id}
+                                tea={tea}
+                                imageSrc={teaImageSrc(tea, signedImages)}
+                                deleteTea={deleteTea}
+                                onEdit={onEdit}
+                            />
                         ))}
                     </ul>
                 </InfiniteScroll>

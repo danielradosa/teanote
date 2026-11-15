@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         await supabase.auth.signOut()
 
         // Clear only app-owned keys; leave unrelated localStorage intact.
-        const appKeys = ['teas', 'brews', 'presets', 'journals', 'theme']
+        const appKeys = ['teas', 'brews', 'presets', 'journals', 'theme', 'brewSession']
         for (const key of appKeys) localStorage.removeItem(key)
         for (const key of Object.keys(localStorage)) {
             if (key.includes('auth-token') || key.startsWith('sb-')) {

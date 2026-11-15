@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import RichToolbar from '@/components/RichToolbar'
-import { uploadImage, deleteImage } from '@/helpers/upload'
+import { uploadImage } from '@/helpers/upload'
+import { deleteUnreferencedTeaImages, teaImageSrc, useSignedTeaImages } from '@/helpers/teaImages'
 import { compressImageIfNeeded, validateImage } from '@/helpers/image'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useTeasStore } from '@/stores/useTeasStore'
@@ -41,20 +42,22 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
     const [form, setForm] = useState<TeaFormShape>(tea ? { ...emptyForm, ...tea } : emptyForm)
     const [showMoreFields, setShowMoreFields] = useState(false)
     const [uploading, setUploading] = useState(false)
+    // In-memory preview of a photo uploaded in this form session; never saved on the tea.
     const [preview, setPreview] = useState('')
-    const [imagePath, setImagePath] = useState<string | null>(null)
-    const [pendingImageDeletion, setPendingImageDeletion] = useState(false)
+    // Photos uploaded in this form session. Those the saved tea does not keep are deleted on submit.
+    const [sessionUploads, setSessionUploads] = useState<string[]>([])
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { user } = useAuthStore()
-    const { updateTea } = useTeasStore()
+
+    const signedImages = useSignedTeaImages(isEditing ? [form] : [])
+    const previewSrc = preview || (isEditing ? teaImageSrc(form, signedImages) : undefined)
 
     useEffect(() => {
         if (tea) {
             setForm({ ...emptyForm, ...tea })
-            if (tea.image) setPreview(tea.image)
         }
     }, [tea])
 
@@ -78,15 +81,15 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
             setPreview(URL.createObjectURL(compressed))
 
             const res = await uploadImage('teas', compressed, user.id)
-            setImagePath(res.path)
+            setSessionUploads(prev => [...prev, res.path])
 
+            // The tea keeps only the path; the signed link serves this preview, in memory.
             handleChange({
                 ...form,
-                image: res.signedUrl,
+                image: '',
                 image_path: res.path,
             })
             setPreview(res.signedUrl)
-            setPendingImageDeletion(false)
         } catch (err) {
             console.error(err)
             toast.error('Image upload failed')
@@ -96,11 +99,20 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
     }
 
     const handleImageDelete = () => {
-        const next: TeaFormShape = { ...form, image: '', image_path: undefined }
+        const next: TeaFormShape = { ...form, image: '', image_path: null }
         setForm(next)
         setPreview('')
         if (tea) onChange({ ...tea, ...next })
-        setPendingImageDeletion(true)
+    }
+
+    // Typing an image URL replaces an uploaded photo.
+    const handleImageUrlChange = (image: string) => {
+        if (form.image_path) {
+            setPreview('')
+            handleChange({ ...form, image, image_path: null })
+        } else {
+            handleChange({ ...form, image })
+        }
     }
 
     const handleChange = (updatedForm: TeaFormShape) => {
@@ -111,28 +123,22 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
         }
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!form.name.trim()) return alert('A tea name is required')
 
-        if (isEditing && form.id && pendingImageDeletion && imagePath) {
-            try {
-                await deleteImage('teas', imagePath)
-                updateTea(form.id, { image: '', image_path: undefined })
-                setImagePath(null)
-                setPendingImageDeletion(false)
-            } catch (err) {
-                console.error('Failed to delete old image:', err)
-            }
-        }
-
+        // Saving an existing tea: updateTea deletes the photo the tea had when the
+        // form opened, if the edit changed it, once the server copy no longer points at it.
         onSubmit(form as NewTeaInput)
+
+        // Photos uploaded in this form session that the tea did not keep: no saved record uses them.
+        const unused = sessionUploads.filter(path => path !== form.image_path)
+        if (unused.length > 0) void deleteUnreferencedTeaImages(unused, useTeasStore.getState().teas)
+        setSessionUploads([])
 
         if (!isEditing) {
             setForm(emptyForm)
             setPreview('')
             setShowMoreFields(false)
-            setImagePath(null)
-            setPendingImageDeletion(false)
             if (fileInputRef.current) fileInputRef.current.value = ''
         }
     }
@@ -228,8 +234,8 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                                 <input
                                     type="text"
                                     placeholder={t('teas_form_img_p')}
-                                    value={form.image ?? ''}
-                                    onChange={e => handleChange({ ...form, image: e.target.value })}
+                                    value={form.image_path ? '' : (form.image ?? '')}
+                                    onChange={e => handleImageUrlChange(e.target.value)}
                                 />
                                 <input
                                     type="file"
@@ -252,7 +258,7 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                                         : <><i className="bxr bx-archive-arrow-up" /> {t('upload')}</>}
                                 </button>
 
-                                {form.image && (
+                                {(form.image || form.image_path) && (
                                     <button
                                         type="button"
                                         className="btn btn-danger"
@@ -263,10 +269,10 @@ export default function TeaForm({ tea, onChange, onSubmit, isEditing = false, on
                                 )}
                             </div>
 
-                            {preview && (
+                            {previewSrc && (
                                 <div style={{ marginTop: 8 }}>
                                     <img
-                                        src={preview}
+                                        src={previewSrc}
                                         alt="Tea Preview"
                                         style={{ maxWidth: 210, borderRadius: 8 }}
                                     />

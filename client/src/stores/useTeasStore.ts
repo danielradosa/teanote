@@ -7,14 +7,21 @@ import type { Tea } from '@/types/Tea'
 import { subscribeTable } from '@/helpers/realtime'
 import { useSyncStore } from '@/stores/useSyncStore'
 import { deleteImage } from '@/helpers/upload'
+import { deleteUnreferencedTeaImages } from '@/helpers/teaImages'
 
 interface TeasState {
     teas: Tea[]
     lastSync: string | null
     addTea: (tea: Omit<Tea, 'id' | 'user_id' | 'updated_at' | 'deleted_at'>) => void
-    updateTea: (id: string, updates: Partial<Tea>) => void
+    /**
+     * `baseImagePath` is the photo path the edit started from (an edit form's
+     * snapshot); without it, the store's current copy. Only that photo is
+     * deleted, and only when the saved tea no longer uses it.
+     */
+    updateTea: (id: string, updates: Partial<Tea>, baseImagePath?: string | null) => void
     deleteTea: (id: string) => void
-    syncTeas: () => Promise<void>
+    /** Resolves true when the teas synced; never rejects. */
+    syncTeas: () => Promise<boolean>
     visibleTeas: () => Tea[]
     initRealtime: () => void
     stopRealtime: () => void
@@ -45,15 +52,30 @@ export const useTeasStore = create<TeasState>((set, get) => ({
         if (navigator.onLine) get().syncTeas()
     },
 
-    updateTea: (id, updates) => {
+    updateTea: (id, updates, baseImagePath) => {
         const now = new Date().toISOString()
+        // A sync may have changed the store's copy while an edit form was open.
+        const previousPath = baseImagePath !== undefined
+            ? baseImagePath
+            : get().teas.find(t => t.id === id)?.image_path
         const updated = get().teas.map(t =>
             t.id === id ? { ...t, ...updates, updated_at: now } : t
         )
         storage.set('teas', updated)
         set({ teas: updated })
 
-        if (navigator.onLine) get().syncTeas()
+        const nextPath = updated.find(t => t.id === id)?.image_path
+        const replacedPath = previousPath && previousPath !== nextPath ? previousPath : null
+
+        if (navigator.onLine) {
+            void get().syncTeas().then(synced => {
+                // Delete a replaced or removed photo only once the server copy of the
+                // tea no longer points at it, and never while any record still does.
+                if (synced && replacedPath) {
+                    return deleteUnreferencedTeaImages([replacedPath], get().teas)
+                }
+            })
+        }
     },
 
     deleteTea: async (id: string) => {
@@ -80,8 +102,10 @@ export const useTeasStore = create<TeasState>((set, get) => ({
     },
 
     syncTeas: async () => {
-        const merged = await syncData<Tea>('teas', 'teas')
-        if (merged) set({ teas: merged, lastSync: new Date().toISOString() })
+        const { records, ok } = await syncData<Tea>('teas', 'teas')
+        if (records) set({ teas: records })
+        if (ok) set({ lastSync: new Date().toISOString() })
+        return ok
     },
 
     initRealtime: () => {

@@ -8,7 +8,9 @@ export interface Tea {
     year?: string
     vendor?: string
     notes?: string
-    image_path?: string
+    /** Storage path of an uploaded photo in the "teas" bucket; null once the photo is removed. */
+    image_path?: string | null
+    /** External image URL. Older records may also hold an expired signed link here, which is ignored when image_path is set. */
     image?: string
     link?: string
     dateAdded?: string

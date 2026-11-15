@@ -13,6 +13,8 @@ export default function TeaProfilesPage() {
 
     const { showFilters, toggleFilters } = useToggleFilters()
     const [editingTea, setEditingTea] = useState<Tea | null>(null)
+    // The photo the tea had when the edit opened: saving deletes that one only if the edit changed it.
+    const [editBaseImagePath, setEditBaseImagePath] = useState<string | null>(null)
 
     const firstOpenRef = useRef(false)
 
@@ -75,14 +77,15 @@ export default function TeaProfilesPage() {
                         deleteTea(id)
                         if (editingTea?.id === id) setEditingTea(null)
                     }}
-                    onEdit={setEditingTea}
+                    onEdit={tea => { setEditingTea(tea); setEditBaseImagePath(tea.image_path ?? null) }}
                 />
 
                 {editingTea && (
                     <TeaForm
+                        key={editingTea.id}
                         tea={editingTea}
                         onChange={setEditingTea}
-                        onSubmit={() => { updateTea(editingTea.id, editingTea); setEditingTea(null) }}
+                        onSubmit={() => { updateTea(editingTea.id, editingTea, editBaseImagePath); setEditingTea(null) }}
                         isEditing
                         onCancel={() => setEditingTea(null)}
                     />

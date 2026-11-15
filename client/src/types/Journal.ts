@@ -1,13 +1,12 @@
 export interface Journal {
-    type?: string
-    name?: string
     id: string
     user_id?: string
     teaId: string
-    brew_preset_id?: string
+    /** The linked brew's id; null when none. Never '': the column is a uuid (see toJournalRecord). */
+    brew_preset_id?: string | null
     title: string
     rating?: number
-    image?: string[]
+    images?: string[]
     content: string
     dateAdded?: string
     updated_at: string

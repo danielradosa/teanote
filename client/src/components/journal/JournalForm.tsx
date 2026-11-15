@@ -9,7 +9,7 @@ type JournalFormShape = Partial<Journal> & {
     title: string
     teaId: string
     content: string
-    brew_preset_id?: string
+    brew_preset_id?: string | null
     rating?: number
     images?: string[]
 }

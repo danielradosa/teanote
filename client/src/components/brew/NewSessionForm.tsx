@@ -8,6 +8,7 @@ interface NewSessionFormProps {
     teas: Tea[]
     presets: Preset[]
     activeBrewId: string | null
+    activePresetId: string | null
     onStart: (teaId: string, presetId: string | undefined) => void
     onClose: () => void
     reportLive: (infusionNumber: number, secs: number, running: boolean) => void
@@ -17,6 +18,7 @@ export default function NewSessionForm({
     teas,
     presets,
     activeBrewId,
+    activePresetId,
     onStart,
     onClose,
     reportLive,
@@ -80,7 +82,7 @@ export default function NewSessionForm({
                 {activeBrewId && (
                     <BrewTimer
                         brewId={activeBrewId}
-                        preset={selectedPresetId ? presets.find(p => p.id === selectedPresetId) : undefined}
+                        preset={activePresetId ? presets.find(p => p.id === activePresetId) : undefined}
                         onClose={handleClose}
                         reportLive={reportLive}
                     />

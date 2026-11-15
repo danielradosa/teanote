@@ -5,6 +5,8 @@ interface SyncState {
     isSyncing: boolean
     justSynced: boolean
     activeSyncs: number
+    /** Set when any sync of the current overlapping round failed; cleared when the round ends. */
+    roundFailed: boolean
     startSync: () => void
     finishSync: (success?: boolean) => void
 }
@@ -14,6 +16,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     isSyncing: false,
     justSynced: false,
     activeSyncs: 0,
+    roundFailed: false,
 
     startSync: () => {
         const count = get().activeSyncs + 1
@@ -26,12 +29,14 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
     finishSync: (success = true) => {
         const count = Math.max(get().activeSyncs - 1, 0)
+        // A failure must not be hidden by another sync that happens to finish last.
+        const failed = get().roundFailed || !success
 
         if (count > 0) {
-            return set({ activeSyncs: count })
+            return set({ activeSyncs: count, roundFailed: failed })
         }
 
-        if (success) {
+        if (!failed) {
             const now = new Date().toISOString()
             set({
                 activeSyncs: 0,
@@ -43,7 +48,8 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         } else {
             set({
                 activeSyncs: 0,
-                isSyncing: false
+                isSyncing: false,
+                roundFailed: false
             })
         }
     }

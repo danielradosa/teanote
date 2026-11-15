@@ -5,11 +5,13 @@ import { t } from 'i18next'
 
 interface TeaItemProps {
     tea: Tea
+    /** The picture to show (see `teaImageSrc`); never read from `tea.image` directly. */
+    imageSrc?: string
     deleteTea: (id: string) => void
     onEdit: (tea: Tea) => void
 }
 
-export default function TeaItem({ tea, deleteTea, onEdit }: TeaItemProps) {
+export default function TeaItem({ tea, imageSrc, deleteTea, onEdit }: TeaItemProps) {
     const [openDetails, setOpenDetails] = useState(false)
 
     return (
@@ -65,10 +67,10 @@ export default function TeaItem({ tea, deleteTea, onEdit }: TeaItemProps) {
                             </p>
                         )}
 
-                        {tea.image && (
+                        {imageSrc && (
                             <div className="tea-image" style={{ margin: '8px 0' }}>
                                 <img
-                                    src={tea.image}
+                                    src={imageSrc}
                                     alt={tea.name}
                                 />
                             </div>

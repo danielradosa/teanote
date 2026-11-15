@@ -1,8 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useBrewsStore } from '@/stores/useBrewsStore'
 import { useTeasStore } from '@/stores/useTeasStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useBrewSessionStore } from '@/stores/useBrewSessionStore'
 import { useToggleFilters } from '@/hooks/toggleFilters'
 import BrewFilters from '@/components/brew/BrewFilters'
 import BrewList from '@/components/brew/BrewList'
@@ -29,8 +31,26 @@ function BrewPage() {
     const brews = visibleBrews()
     const presets = visiblePresets()
 
-    // Cross-cutting state — read by multiple children
-    const [activeBrewId, setActiveBrewId] = useState<string | null>(null)
+    // The running session lives in useBrewSessionStore, so it survives leaving
+    // this page and a reload. It is dropped only on evidence that it is over:
+    // another account, or its brew deleted or ended. A brew missing from the
+    // list for a moment (an older sync landing) keeps it; the timer is shown
+    // again once the brew is back.
+    const user = useAuthStore(s => s.user)
+    const allBrews = useBrewsStore(s => s.brews)
+    const { session, startSession, finishRun, clearSession } = useBrewSessionStore()
+    const sessionBrew = session ? allBrews.find(b => b.id === session.brewId) : undefined
+    const sessionOver =
+        !!session && (session.userId !== user?.id || !!sessionBrew?.deleted_at || !!sessionBrew?.finishedAt)
+    const activeSession = session && sessionBrew && !sessionOver ? session : null
+    const activeBrewId = activeSession?.brewId ?? null
+
+    useEffect(() => {
+        if (sessionOver) clearSession()
+    }, [sessionOver, clearSession])
+
+    // Cross-cutting state — read by multiple children. The live fields mirror
+    // what BrewTimer computes from the session; it reports them on every mount.
     const [liveInfusionNumber, setLiveInfusionNumber] = useState<number | null>(null)
     const [liveInfusionSecs, setLiveInfusionSecs] = useState<number | null>(null)
     const [isLiveRunning, setIsLiveRunning] = useState(false)
@@ -74,7 +94,12 @@ function BrewPage() {
 
     const handleStartSession = (teaId: string, presetId: string | undefined) => {
         const newId = addBrew({ teaId, presetId })
-        if (typeof newId === 'string') setActiveBrewId(newId)
+        if (typeof newId === 'string') {
+            // An infusion still running is recorded on its own brew, as
+            // "finish infusion" does, before the new session replaces it.
+            finishRun(Date.now())
+            startSession(newId, presetId ?? null)
+        }
     }
 
     const handleReportLive = (num: number, secs: number, running: boolean) => {
@@ -163,8 +188,9 @@ function BrewPage() {
                     teas={teas}
                     presets={presets}
                     activeBrewId={activeBrewId}
+                    activePresetId={activeSession?.presetId ?? null}
                     onStart={handleStartSession}
-                    onClose={() => setActiveBrewId(null)}
+                    onClose={clearSession}
                     reportLive={handleReportLive}
                 />
             </div>

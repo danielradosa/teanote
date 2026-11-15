@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { syncData } from '@/helpers/sync'
 import type { Journal } from '@/types/Journal'
 import { subscribeTable } from '@/helpers/realtime'
+import { toJournalRecord } from '@/helpers/records'
 import { useSyncStore } from '@/stores/useSyncStore'
 
 interface JournalsState {
@@ -13,7 +14,8 @@ interface JournalsState {
     addJournal: (j: Omit<Journal, 'id' | 'user_id' | 'updated_at' | 'deleted_at'>) => void
     updateJournal: (id: string, updates: Partial<Journal>) => void
     deleteJournal: (id: string) => void
-    syncJournals: () => Promise<void>
+    /** Resolves true when the journals synced; never rejects. */
+    syncJournals: () => Promise<boolean>
     visibleJournals: () => Journal[]
     initRealtime: () => void
     stopRealtime: () => void
@@ -29,13 +31,13 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
         if (!user) return
 
         const now = new Date().toISOString()
-        const newJournal: Journal = {
+        const newJournal: Journal = toJournalRecord({
             ...j,
             id: uuid(),
             user_id: user.id,
             updated_at: now,
             deleted_at: null,
-        }
+        })
 
         const updated = [...get().journals, newJournal]
         storage.set('journals', updated)
@@ -47,7 +49,7 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
     updateJournal: (id, updates) => {
         const now = new Date().toISOString()
         const updated = get().journals.map(j =>
-            j.id === id ? { ...j, ...updates, updated_at: now } : j
+            j.id === id ? toJournalRecord({ ...j, ...updates, updated_at: now }) : j
         )
         storage.set('journals', updated)
         set({ journals: updated })
@@ -67,8 +69,10 @@ export const useJournalsStore = create<JournalsState>((set, get) => ({
     },
 
     syncJournals: async () => {
-        const merged = await syncData<Journal>('journals', 'journals')
-        if (merged) set({ journals: merged, lastSync: new Date().toISOString() })
+        const { records, ok } = await syncData<Journal>('journals', 'journals', toJournalRecord)
+        if (records) set({ journals: records })
+        if (ok) set({ lastSync: new Date().toISOString() })
+        return ok
     },
 
     initRealtime: () => {

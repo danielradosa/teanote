@@ -25,13 +25,15 @@ function SyncOnReconnect() {
             setStatus('syncing')
             setStatus('online')
             try {
-                await Promise.all([
+                const results = await Promise.all([
                     syncTeas(),
                     syncJournals(),
                     syncBrews(),
                     syncPresets(),
                     syncSettings(),
                 ])
+                // A table whose pull or writes failed reports false; one toast covers the round.
+                if (results.includes(false)) toast.error(t('sync_failed_toast'), { duration: 4000 })
             } catch (err) {
                 console.error('❌ Sync error:', err)
                 toast.error(t('sync_failed_toast'), { duration: 4000 })
