@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo layout
 
-This is a monorepo of four independent sub-projects with no top-level package manager. Each has its own install/dev/build cycle.
+This is a monorepo of five independent sub-projects with no top-level package manager. Each has its own install/dev/build cycle.
 
 - `client/` — React 19 + Vite + TypeScript SPA, the actual Teanote app (served at `app.teanote.xyz`).
 - `site/` — Astro 5 marketing site + blog (served at `teanote.xyz`).
@@ -42,6 +42,8 @@ Requires `client/.env` (gitignored) with:
 - `VITE_AI_SERVICE_URL` (Railway URL for dashboard AI)
 
 No code in `client/` reads `VITE_GOOGLE_CLIENT_ID` or `VITE_APPLE_CLIENT_ID`: Google/Apple sign-in goes through `supabase.auth.signInWithOAuth`, whose providers are configured in Supabase, not in this repo.
+
+On Daniel's machine `npm run dev` talks to the hosted Supabase project and the production AI service, so clicking around locally changes live data and bills model calls (seen in the request logs of 2026-11-14).
 
 ### site/ (Astro marketing site)
 
@@ -86,23 +88,60 @@ Edge functions are Deno scripts using import maps (`import_map.json`); their sou
 - **Order**: deploy the AI service first, and push a client change that depends on it only once that deploy is live; pushing first ships a client that calls the old service.
 - **Edge functions** are deployed by other means not captured in this repo — ask before assuming.
 
+**Domain and DNS** (measured 2026-11-15):
+- The `teanote.xyz` zone is hosted at HostCreators (`ns1`–`ns3.hostcreators.sk`, `ns4.hostcreators.eu`), which also hosts the marketing site and the docs (web host `193.163.77.21`); `ssh.teanote.xyz` is a CNAME to its SSH endpoint `ssh.hostcreators.sk`.
+- `app.teanote.xyz` is a CNAME to `hzd2krcl.up.railway.app`; the app is always reachable at `teanote-production.up.railway.app`.
+- The registrar is Gransy s.r.o. (Regtons); the registration renews every 3 November.
+- On 2026-11-04 the registration lapsed and the registrar parked the whole domain on `ns.parktons.com`, which answers every hostname with 429 or an advertising redirect and closes port 22. When a public name misbehaves, check `dig +short NS teanote.xyz` before anything else.
+
 ## Architecture: the offline-first sync model
 
 This is the most important thing to understand before editing any store or helper. Every domain entity (brews, presets, teas, journals) follows the same pattern:
 
-1. **localStorage is the working copy.** Each Zustand store hydrates from `storage.get('<key>')` on init, and every mutation writes to localStorage **before** attempting any network call.
-2. **Soft deletes only.** Records are never removed — they get `deleted_at: <ISO timestamp>` set. `visibleX()` selectors filter these out. The merge logic preserves tombstones across devices.
+1. **localStorage is the working copy.** Each Zustand store hydrates from `storage.get('<key>')` on init, and every mutation writes to localStorage **before** attempting any network call. One exception: `deleteTea` first awaits the removal of the tea's photo file (see "Tea photos").
+2. **Soft deletes only.** No row is ever removed from the server: a delete sets `deleted_at: <ISO timestamp>` (and `updated_at`). `visibleX()` selectors filter these out. The merge logic preserves tombstones across devices. On this device a tombstone stays in localStorage only until a sync settles it: it is dropped once the server has accepted it, already had the row marked deleted, or never had the row, and kept while the server rejects it, so the next sync sends it again. The in-memory store keeps the tombstones a sync returns until a reload.
 3. **Last-write-wins by `updated_at`.** `helpers/merge.ts` reconciles local vs remote arrays by comparing `updated_at`, with one exception: a tombstone (`deleted_at` set) always wins over a live row regardless of timestamp.
-4. **Sync is opportunistic.** Mutations call `syncX()` only `if (navigator.onLine)`. `components/SyncOnReconnect.tsx` triggers a full sync on the `online` event and every 5 minutes; failures surface a toast (`sync_failed_toast`) but don't block local writes.
+4. **Sync is opportunistic and reports failure instead of throwing.** Mutations call `syncX()` only `if (navigator.onLine)` and ignore its result. `components/SyncOnReconnect.tsx` runs a full sync (teas, journals, brews, presets, settings) as soon as a signed-in user is known, without checking `navigator.onLine`, then on every `online` event and every 5 minutes while `navigator.onLine`. Failures never block local writes.
 5. **Realtime is per-user-per-table.** `helpers/realtime.ts::subscribeTable` opens a Supabase channel filtered by `user_id=eq.<uid>`. Stores expose `initRealtime`/`stopRealtime`; `helpers/realtimeStores.ts::initAllRealtime` wires them all up at once.
 
-Settings are the exception: `useSettingsStore` has no localStorage copy (`settings` starts as `null`; `AppInitializer` mirrors only the theme name to `localStorage.theme`), `updateSettings()` writes straight to the `settings` table, and `syncSettings()` just re-runs `loadSettings()`. Of the points above, only per-user realtime (5) applies to it, through its own channel rather than `subscribeTable`.
+Settings are the exception: `useSettingsStore` has no localStorage copy (`settings` starts as `null`; `AppInitializer` mirrors only the theme name to `localStorage.theme`), `updateSettings()` writes straight to the `settings` table, and `syncSettings()` just re-runs `loadSettings()`. Of the points above, only per-user realtime (5) applies to it, through its own channel rather than `subscribeTable`. `syncSettings()` resolves nothing and `loadSettings()` only logs its errors, so a failed settings load never raises `sync_failed_toast`.
 
-**Schema invariants every synced table must have:** `id` (uuid), `user_id`, `created_at`, `updated_at`, `deleted_at`. Without these, `syncData()` and `mergeRecords()` won't work. Don't break this contract.
+**`syncData(table, key, toRecord?)`** (`helpers/sync.ts`) never throws; it returns `{ records, ok }`. `records` is the merged array, tombstones included, or `null` when nothing could be pulled; `ok` is true only when the pull and every write succeeded. The pull is paged: `select('*')` for the user, ordered by `id`, in `range()` pages of 1000, advancing by the rows actually received and stopping at an empty page, so a server `max-rows` cap below the page size loses nothing. Any failed page fails the sync, which then writes nothing and leaves localStorage as it was. It upserts every live row the server lacks or holds with an older `updated_at`, and sends a tombstone (`update` of `deleted_at` + `updated_at`) only for a row the server has live; every write's error is checked, and a failed one stays local for the next sync to send again. Every upsert sends `user_id` as the signed-in user. Local copies carry no account tag and only `signOut()` clears the record keys; what should happen to another account's records left in a browser is an open decision for Daniel. `toRecord` is described under "Records the server would reject".
+
+`syncTeas` / `syncJournals` / `syncBrews` / `syncPresets` resolve that `ok` as a boolean and never reject; they replace the store's array with `records` when it is not `null`. `SyncOnReconnect` shows one `sync_failed_toast` for a round in which any of them resolves `false`, however many rows and tables failed. An app start with no network is such a round: the pull fails, so the toast shows. A mutation's own background sync shows no toast.
+
+**Schema invariants every table synced by `syncData()` must have:** `id` (uuid), `user_id`, `updated_at`, `deleted_at`. The pull filters on `user_id` and orders by `id`, tombstones are matched on `id` and `user_id`, and `mergeRecords()` compares `updated_at` and `deleted_at`. Neither reads a creation date: `brews` and `presets` have `created_at`, while `teas` and `journals` have `"dateAdded"` instead (both default to `now()` on the server). Without these, `syncData()` and `mergeRecords()` won't work. Don't break this contract.
 
 The first test of merge behaviour lives in `src/__tests__/helpers/merge.test.ts` — covers LWW + tombstone-wins logic.
 
-`useSyncStore` is a refcounting wrapper: multiple in-flight syncs increment `activeSyncs` and only the last one to finish flips `isSyncing` off — used for UI spinners.
+`useSyncStore` is a refcounting wrapper: multiple in-flight syncs increment `activeSyncs` and only the last one to finish flips `isSyncing` off — used for UI spinners. `roundFailed` remembers a failure from any sync of an overlapping round until the last one finishes; that round then sets neither `justSynced` nor `lastSync` (the sidebar's "synced at"), so a sync that happens to finish last cannot hide another's failure.
+
+## Records the server would reject
+
+The server (PostgREST in front of Postgres) refuses a whole upsert for one bad value, and a refused record fails every sync and stays on one device. What it refuses: a key that is not a column (PGRST204), an empty string in a `uuid` or timestamp column, a fraction in an `integer` column or `integer[]` element, a number outside the int4 range, a null in a not-null column. `helpers/records.ts` shapes records for the two tables that need it:
+
+- `toJournalRecord`: `brew_preset_id` `''` (the form's "no brew" choice) becomes `null`; the uuid column holds the linked **brew's** id, despite its name. A fractional `rating` is rounded to the nearest whole number. A rating outside the int4 range is left as typed, so the server keeps refusing it.
+- `toPresetRecord`: every `infusionTimes` entry is rounded to whole seconds and clamped to the int4 range.
+- The stores apply them on add and update (`addJournal`, `updateJournal`, `addPreset`, `updatePreset`), and `syncJournals` / `syncPresets` pass them to `syncData` as `toRecord`, which applies it to every record read from localStorage before the merge, so a record an older version stored in a refused shape is repaired in every sync and then sent like any other unsent change. Brews and teas pass no `toRecord`. A repair never touches `updated_at`, so it is not an edit and cannot win over a newer server copy. The repaired copy reaches localStorage only after a sync whose pull succeeded; until then the state hydrated at start keeps the old shape.
+
+Rule for anyone adding a field: every key a record carries must be a column in `supabase/schema-snapshot.sql`, and an empty string must never reach a uuid or timestamp column. Store "none" as `null`: an `undefined` value is dropped by JSON, so the upsert leaves the server's old value in place (clearing a journal rating still sets it to `undefined`, so the server keeps the old rating and a later sync brings it back). What a rating may be is undecided: the form's `min`/`max` are not enforced, and `JournalItem` draws `'⭐'.repeat(rating)`, which throws for a negative or very large number.
+
+## Tea photos
+
+Uploaded photos live in the private `teas` storage bucket as `<user id>/<random uuid>.<ext>`. A tea record stores only the file's path, `image_path`, never a link to it.
+
+- **Showing**: `helpers/teaImages.ts` signs links when photos are shown (`useSignedTeaImages`, used by `TeaList` for the teas on screen and by `TeaForm` when editing): one `createSignedUrls` batch, 1 hour per link, kept in module memory for the page session and signed again 5 minutes before expiry while the tea stays shown. Signed links are never written to a record or to localStorage: the record syncs to every device, and the link would die for all of them. Offline or on any failure nothing is signed, the tea shows no picture, and a later call tries again.
+- `teaImageSrc()` picks the picture: for a tea with `image_path`, only its signed link (an older record may still hold an expired signed link in `image`, which is ignored); for a tea without one, `image` as stored, an external URL typed in the form.
+- **Uploading** (`TeaForm`): an upload sets `image_path` and clears `image`; the signed link `uploadImage()` returns serves only the form's preview. Typing an image URL clears `image_path`.
+- **Deleting old files**: `deleteTea` deletes the tea's photo file at once; a failure (offline included) is only logged and the file stays. An edit that replaces or removes the photo deletes the file the edit started from only when it was saved online, the teas sync carrying it resolved `true`, and no record in the store still uses that path (`updateTea` + `deleteUnreferencedTeaImages`); after an offline save or a failed sync the old file is never deleted. On submit, `TeaForm` also deletes photos uploaded during that form session that the saved tea does not keep. Cancelling an edit, or leaving the new-tea form unsaved, deletes nothing, so photos uploaded there stay in the bucket.
+
+## Brew timer
+
+- **Time comes from the clock.** An infusion is kept as instants, `run: { startedAt, endsAt }` (`endsAt` is `null` when counting up), never as a tick count. `BrewTimer` computes what it shows from `Date.now()` via `hooks/useNow.ts` (every 250 ms while running, and at once on every visibility change), so a hidden tab or a locked phone shows the right time on return.
+- **The running session** (`{ userId, brewId, presetId, run }`) lives in `stores/useBrewSessionStore.ts`, mirrored to localStorage under `'brewSession'`, so it survives leaving the Brews page and a reload. `BrewPage` drops it only when it is over: another account, or its brew deleted or ended; a brew missing from the list for a moment (an older sync landing) keeps it. The store clears it when the signed-in user changes, and `signOut()` removes the key. Starting another brew first records the running infusion on its own brew.
+- **Completing a countdown**: `finishRun()` clears the run before it calls `addInfusion`, so an infusion is recorded once; a countdown whose end has passed records its planned time. A module-level timer in the store completes a countdown when its end passes, whether or not the timer is on screen: on time while the page runs timers, otherwise as soon as the page is visible again; `BrewTimer` does the same while mounted. It waits while the brew is missing from the list and records nothing onto a deleted or ended brew. Limits: only `BrewPage` and `BrewTimer` import the store, so it loads with the lazy Brews page chunk, and after a reload on another page an ended countdown is completed only once the Brews page is opened. The only signal is the `toast_infusion_finished` toast: no sound, vibration or notification.
+- **Screen wake lock** (`hooks/useWakeLock.ts`): held while a countdown runs and the page is visible, requested again each time the page becomes visible, released when the countdown ends or `BrewTimer` unmounts; none for a count-up. Every failure is ignored.
+- **Two tabs**: a `storage` event for `'brewSession'` (or a full clear) loads the other tab's session into this one, and `finishRun()` re-reads localStorage first, so a run another tab already finished or replaced is not recorded again and this tab takes the stored session instead.
 
 ## Architecture: auth & access
 
@@ -115,7 +154,7 @@ The first test of merge behaviour lives in `src/__tests__/helpers/merge.test.ts`
 - Tests in `src/__tests__/`: `components/ProtectedRoute.test.tsx` pins that `ProtectedRoute` lets any signed-in user through, sends a signed-out user to `/login` with `state.from`, and renders nothing before auth is initialized. `components/PublicRoute.test.tsx` pins the redirect to the remembered path (also when the user signs in on the page), `/` without one or for an off-site `from` (full URL, `//host`, `/\host`), the page for a signed-out user, and nothing before auth is initialized. `stores/useAuthStore.test.ts` re-imports the store per test (the cached session is read at module load) and pins the cached read (a stored non-session is ignored), each `getSession()` outcome above with and without a cache, the `keptOffline` `INITIAL_SESSION` guard both ways, and that `signOut()` clears only app-owned keys.
 - `ProtectedRoute` / `PublicRoute` components guard the router tree in `main.tsx`.
 - Sign-in supports email/password and Google/Apple OAuth (`signInWithProvider`).
-- `signOut()` removes only **app-owned** localStorage keys (`teas`, `brews`, `presets`, `journals`, `theme`, and any `sb-*` / `auth-token` keys). It does **not** call `localStorage.clear()` — that wiped unrelated keys and other tabs' data.
+- `signOut()` removes only **app-owned** localStorage keys (`teas`, `brews`, `presets`, `journals`, `theme`, `brewSession`, and any key that starts with `sb-` or contains `auth-token`). It does **not** call `localStorage.clear()` — that wiped unrelated keys and other tabs' data.
 
 ## Payments: none
 
@@ -167,7 +206,24 @@ Protected routes are nested under `App`, which renders `DesktopNav` + `DesktopSi
 - Stores are plain Zustand (no middleware), and every mutation manually mirrors state to `localStorage` (settings excepted, see the sync model). Don't reach for `zustand/middleware/persist` — the manual approach is intentional because the same shape is then fed into the merge/sync pipeline.
 - IDs are generated client-side with `uuid()` so a record exists in localStorage immediately and gets reconciled to Supabase on next sync. Don't introduce server-generated IDs without rewriting sync.
 - Auth pages submit on Enter — `LoginPage` / `SignupPage` wrap inputs in `<form onSubmit={...}>` with `type="submit"` buttons. Keep that pattern if you add new auth flows.
-- Image upload (in `TeaForm`) validates MIME type + 8 MB cap and auto-resizes to 1920px / quality 0.85 JPEG via `helpers/image.ts` (canvas, no deps). Don't reintroduce raw `uploadImage(file)` without validation.
-- Error handling in stores is mostly `console.warn`/`console.error` with no UI surfacing — sync failures are caught by `SyncOnReconnect` and shown as a toast (`sync_failed_toast`). `react-hot-toast` is the toast library (the `<Toaster/>` lives in `App.tsx`).
-- `BrewPage` orchestrates 8 brew/preset components in `components/brew/` (`BrewFilters`, `BrewList`, `BrewItem`, `BrewTimer`, `PresetForm`, `PresetList`, `PresetItem`, `PresetEditForm`, `NewSessionForm`). It owns only cross-cutting state (active brew, live timer fields, search, which preset is being edited); form-local state lives inside each child. Mirror that pattern if you split another large page.
+- Image upload (in `TeaForm`) validates MIME type + 8 MB cap and re-encodes files over 500 KB (GIFs excepted) at up to 1920px / quality 0.85 JPEG via `helpers/image.ts` (canvas, no deps), keeping the result only when it is smaller. Don't reintroduce raw `uploadImage(file)` without validation. The tea stores only `image_path`: never write the signed link `uploadImage()` returns, or any signed link, into a record (see "Tea photos").
+- Error handling in stores is mostly `console.warn`/`console.error` with no UI surfacing. Sync failures are not thrown: `syncData` reports them as `ok: false`, the stores' `syncX()` resolve `false`, and `SyncOnReconnect` shows one toast (`sync_failed_toast`) for a round with any failure. `react-hot-toast` is the toast library (the `<Toaster/>` lives in `App.tsx`).
+- `BrewPage` orchestrates 9 brew/preset components in `components/brew/` (`BrewFilters`, `BrewList`, `BrewItem`, `BrewTimer`, `PresetForm`, `PresetList`, `PresetItem`, `PresetEditForm`, `NewSessionForm`). It owns only cross-cutting UI state (the live infusion fields `BrewTimer` reports for `BrewList`, search and filters, which preset is being edited); the running session and its timer live in `useBrewSessionStore` (see "Brew timer"), and form-local state lives inside each child. Mirror that pattern if you split another large page.
 - Tests live in `client/src/__tests__/` mirroring the source tree. See the README in that folder for conventions. Vitest globals (`describe`/`it`/`expect`/`vi`) are configured — don't import them.
+
+## Tests (client)
+
+`npm test` runs 15 files under `client/src/__tests__/` in jsdom (`setup.ts` swaps in jsdom's `localStorage` where Node 25+ hides it). The auth, route, brew-session and `BrewPage` tests mock `@/utils/supa` with their own small stubs, `merge.test.ts` needs none, and the other nine use `support/fakeSupabase.ts`, an in-memory client: rows per table, the query shapes the app uses, the photo storage calls, an optional cap on rows per select (like `max-rows`), chosen reads or writes made to fail, and every call recorded. It checks writes to brews, journals, presets and teas against their columns as `supabase/schema-snapshot.sql` declares them (`TABLES`) and refuses what the server refuses (see "Records the server would reject"); keep `TABLES` in step with the snapshot.
+
+- `helpers/merge.test.ts`: last write wins, a tombstone wins, local-only and remote-only rows.
+- `helpers/sync.test.ts`: a failed write reports failure, keeps local data and is retried; a failed pull or later page writes nothing; the indicator shows no success when one table failed; a mutation's failed sync raises no unhandled rejection; tombstones only for live server rows, a rejected one kept and resent; the paged pull past a row cap.
+- `helpers/teaImages.test.ts`: batch signing, reuse, no second request in flight, nothing in localStorage, failure and offline, re-signing before expiry, the `teaImageSrc` rules.
+- `stores/useTeasStore.test.ts`: when `updateTea` deletes the old photo file and when it keeps it.
+- `stores/useJournalsStore.test.ts`, `stores/useBrewsStore.test.ts`: `toJournalRecord` / `toPresetRecord` on add, edit and stored records, `updated_at` kept, a newer server copy left alone, an out-of-range rating sent as typed and refused.
+- `stores/useBrewSessionStore.test.ts`: hydration, an infusion recorded once, a countdown longer than a browser timeout can hold, a bad stored value, two tabs.
+- `stores/useAuthStore.test.ts`, `components/ProtectedRoute.test.tsx`, `components/PublicRoute.test.tsx`: see "Architecture: auth & access".
+- `components/SyncOnReconnect.test.tsx`: one `sync_failed_toast` for a round with rejected writes in several tables, none when every write went through.
+- `components/tea/TeaList.test.tsx`: photos through signed links, never `tea.image`; no picture and no throw when signing fails or offline.
+- `pages/BrewPage.test.tsx`: the clock-based timer (hidden periods, completion once, Brews page closed, missing or ended brew, count-up), the session across unmount, reload, sign-out (also when the page never loaded), another account, a deleted brew and a second brew started, and the wake lock.
+- `pages/JournalPage.test.tsx`: a new journal without a brew is sent with `null`, one with a brew keeps it, a 3.5 rating is saved as a whole number.
+- `pages/TeaProfilesPage.test.tsx`: a photo saved by path only, the edit preview through its signed link, the old file deleted on remove or replace (also when another device changed the photo meanwhile), nothing deleted on cancel.
